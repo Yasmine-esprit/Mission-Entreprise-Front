@@ -19,5 +19,18 @@
   <button type="submit">Login</button>
 </form>
 
+<!-- Display 2FA form if needed -->
+<div *ngIf="is2FAVerificationNeeded">
+  <h2>Enter your 2FA Code</h2>
+  <input
+    type="text"
+    [(ngModel)]="twoFACode"
+    name="twoFACode"
+    required
+    placeholder="2FA Code"
+  />
+  <button (click)="onVerify2FACode()">Verify 2FA</button>
+</div>
+
 <p *ngIf="errorMessage" style="color:red">{{ errorMessage }}</p>
-<button routerLink="/forget">forget password</button>
+<button routerLink="/forget">Forgot password?</button>

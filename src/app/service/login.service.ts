@@ -60,6 +60,11 @@ export class LoginService {
       responseType: 'text' 
     });
   }
+
+
+  verify2FA(twoFactorRequest: any): Observable<any> {
+    return this.http.post<any>("http://localhost:8081/auth/verify-2fa", twoFactorRequest);
+  }
   
   
   
