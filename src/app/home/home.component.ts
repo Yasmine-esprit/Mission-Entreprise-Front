@@ -1,10 +1,128 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { RegisterService } from '../service/register.service';
+import * as XLSX from 'xlsx';
+import { HttpErrorResponse } from '@angular/common/http';
+import { LoginService } from '../service/login.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit  {
+ register : boolean = false;
+ excelData: any[] = [];
+ mappedData: { firstname: string; lastname: string; role: string; email: string; password: string; photoProfil: any }[] = [];
+ role: string | null = null;
+constructor(private registerService : RegisterService ,
+            private authService : LoginService,
+            private router: Router){}
+ngOnInit(): void {
+  this.role = this.authService.getUserRole();
+              console.log('User role:', this.role);
+              if (this.role?.includes("ETUDIANT")){
+                console.log("say yes")
+              }
+            }
+            
+   
+    
+showButton() {
+if (this.register == false){
+  this.register = true
+}
+else{
+  this.register = false
+}
+}
+generateRandomPassword(length: number = 10): string {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+';
+  let password = '';
+  for (let i = 0; i < length; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
+}
+
+onExcelUpload(event: any): void {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e: any) => {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: 'array' });
+
+    const sheetName = workbook.SheetNames[0]; // Read the first sheet
+    const sheet = workbook.Sheets[sheetName];
+
+    // Convert to JSON
+    this.excelData = XLSX.utils.sheet_to_json(sheet);
+    console.log(this.excelData); // Logs the parsed Excel data
+    this.mappedData = this.excelData.map((row: any) => ({
+      firstname: row['Nom'],
+      lastname: row['Prenom'],
+      role: row['role'],
+      email: `${row['Nom']}${row['Prenom']}@esprit.com`.toLowerCase().replace(/\s+/g, ''),
+      password: this.generateRandomPassword(),
+      photoProfil: '' 
+      
+    }));
+    
+    console.log(this.mappedData)
+    // Step 1: Map the data
+this.mappedData = this.excelData.map((row: any) => ({
+  firstname: row['Nom'],
+  lastname: row['Prenom'],
+  role: row['role'],
+  email: `${row['Nom']}${row['Prenom']}@esprit.com`.toLowerCase().replace(/\s+/g, ''),
+  password: this.generateRandomPassword(),
+  photoProfil: ''
+}));
+
+// Step 2: Register each user
+fetch('assets/defaultimage.jpg')
+      .then(res => res.blob())
+      .then(defaultImageBlob => {
+        this.mappedData.forEach((user) => {
+          const form = new FormData();
+          form.append('firstname', user.firstname);
+          form.append('lastname', user.lastname);
+          form.append('role', user.role);
+          form.append('email', user.email);
+          form.append('password', user.password);
+          form.append('photoProfil', defaultImageBlob, 'defaultimage.jpg'); 
+
+          this.registerService.register(form).subscribe({
+            next: (response: any) => console.log('User registered:', response),
+            error: (error: HttpErrorResponse) => {
+              let errorMsg = 'An unknown error occurred.';
+              if (typeof error.error === 'string') errorMsg = error.error;
+              else if (error.error?.message) errorMsg = error.error.message;
+              console.error('Error registering user:', errorMsg);
+            }
+          });
+        });
+      });
+  
+
+  };
+
+  reader.readAsArrayBuffer(file);
+}
+getKeys(obj: any): string[] {
+  return Object.keys(obj);
+}
+
+onLogout(): void {
+  this.authService.logout();
+  console.log('User logged out');
+  this.router.navigate(['/login']); // or wherever you want to redirect
+}
+get isUserLoggedIn(): boolean {
+  return this.authService.isLoggedIn();
+}
+
 
 }

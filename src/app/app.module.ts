@@ -8,6 +8,11 @@ import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { RegisterComponent } from './register/register.component';
+
+import { ForgetPassComponent } from './forget-pass/forget-pass.component';
+import { ResetPassComponent } from './reset-pass/reset-pass.component';
+
 
 
 @NgModule({
@@ -15,6 +20,11 @@ import { HttpClientModule } from '@angular/common/http';
     AppComponent,
     HomeComponent,
     LoginComponent,
+    RegisterComponent,
+
+    ForgetPassComponent,
+      ResetPassComponent,
+
  
   ],
   imports: [

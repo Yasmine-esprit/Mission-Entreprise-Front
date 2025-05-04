@@ -3,6 +3,8 @@ import { AuthenticationRequest } from '../models/authentication-request';
 import { AuthenticationResponse } from '../models/authentication-response';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http'
+import { jwtDecode } from 'jwt-decode';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,4 +29,38 @@ export class LoginService {
   logout(): void {
     localStorage.removeItem('jwtToken');
   }
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('jwtToken');
+  }
+  getUserRole(): string | null {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) return null;
+  
+    try {
+      const decoded: any = jwtDecode(token);
+      console.log(decoded)
+      return decoded.roles   || null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  sendResetLink(payload: any): Observable<any> {
+    return this.http.post('http://localhost:8081/auth/forget', payload, {
+      responseType: 'text' 
+    });
+  }
+
+  resetPassword(token: string, newPassword: string) {
+    const resetPasswordRequest = {
+      password: newPassword
+    };
+    console.log("inside service token ", token , "pass " ,resetPasswordRequest )
+    return this.http.post(`http://localhost:8081/auth/reset-password/${token}`, resetPasswordRequest, {
+      responseType: 'text' 
+    });
+  }
+  
+  
+  
 }
