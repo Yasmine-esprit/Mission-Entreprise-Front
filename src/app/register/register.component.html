@@ -1,11 +1,15 @@
 <form (ngSubmit)="onRegister()" #registerForm="ngForm">
-    <input type="text" [(ngModel)]="firstname" name="firstname" placeholder="First Name" required /><br />
-    <input type="text" [(ngModel)]="lastname" name="lastname" placeholder="Last Name" required /><br />
-    <input type="email" [(ngModel)]="email" name="email" placeholder="Email" required /><br />
-    <input type="password" [(ngModel)]="password" name="password" placeholder="Password" required /><br />
-    <input type="file" (change)="onFileSelected($event)" accept="image/*" /><br />
-    <button type="submit">Register</button>
-    <p>{{message}}</p>
-    <p>{{errorMessage}}</p>
-  </form>
-  
+  <input type="text" [(ngModel)]="firstname" name="firstname" placeholder="First Name" required /><br />
+  <input type="text" [(ngModel)]="lastname" name="lastname" placeholder="Last Name" required /><br />
+  <input type="email" [(ngModel)]="email" name="email" placeholder="Email" required /><br />
+  <input type="password" [(ngModel)]="password" name="password" placeholder="Password" required /><br />
+  <input type="file" (change)="onFileSelected($event)" accept="image/*" /><br />
+  <button type="submit">Register</button>
+  <p>{{message}}</p>
+  <p style="color: red">{{errorMessage}}</p>
+
+  <div *ngIf="qrCodeUrl">
+    <h2>Scan this QR code for 2FA setup:</h2>
+    <img [src]="qrCodeUrl" alt="QR Code for 2FA" />
+  </div>
+</form>

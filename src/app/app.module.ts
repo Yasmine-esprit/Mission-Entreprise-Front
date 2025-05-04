@@ -12,6 +12,8 @@ import { RegisterComponent } from './register/register.component';
 
 import { ForgetPassComponent } from './forget-pass/forget-pass.component';
 import { ResetPassComponent } from './reset-pass/reset-pass.component';
+import { NavbarComponent } from './navbar/navbar.component';
+import { ChangepassComponent } from './changepass/changepass.component';
 
 
 
@@ -24,6 +26,8 @@ import { ResetPassComponent } from './reset-pass/reset-pass.component';
 
     ForgetPassComponent,
       ResetPassComponent,
+      NavbarComponent,
+      ChangepassComponent,
 
  
   ],
