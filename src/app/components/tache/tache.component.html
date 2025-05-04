@@ -1,0 +1,27 @@
+<div class="form-container">
+  <h2>{{ isEditing ? 'Modifier Tâche' : 'Ajouter Tâche' }}</h2>
+  <form (ngSubmit)="saveTache()">
+    <input type="text" placeholder="Titre" [(ngModel)]="newTache.titreTache" name="titreTache" required>
+    <textarea placeholder="Description" [(ngModel)]="newTache.descriptionTache" name="descriptionTache" required></textarea>
+    <input type="date" [(ngModel)]="newTache.dateDebut" name="dateDebut">
+    <input type="date" [(ngModel)]="newTache.dateFin" name="dateFin">
+    <select [(ngModel)]="newTache.statut" name="statut">
+      <option *ngFor="let s of getStatutValues()" [value]="s">{{ s }}</option>
+    </select>
+    <button type="submit">{{ isEditing ? 'Mettre à jour' : 'Ajouter' }}</button>
+    <button type="button" *ngIf="isEditing" (click)="cancelEdit()">Annuler</button>
+  </form>
+</div>
+
+<hr>
+
+<div class="list-container">
+  <h3>Liste des Tâches</h3>
+  <ul>
+    <li *ngFor="let tache of taches">
+      <strong>{{ tache.titreTache }}</strong> - {{ tache.descriptionTache }} ({{ tache.statut }})
+      <button (click)="editTache(tache)">Modifier</button>
+      <button (click)="deleteTache(tache.idTache)">Supprimer</button>
+    </li>
+  </ul>
+</div>

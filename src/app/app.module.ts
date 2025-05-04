@@ -12,6 +12,10 @@ import { RegisterComponent } from './register/register.component';
 
 import { ForgetPassComponent } from './forget-pass/forget-pass.component';
 import { ResetPassComponent } from './reset-pass/reset-pass.component';
+import { GroupeComponent } from './components/groupe/groupe.component';
+import { ProjetComponent } from './components/projet/projet.component';
+import { TacheComponent } from './components/tache/tache.component';
+import { SousTacheComponent } from './components/sous-tache/sous-tache.component';
 
 
 
@@ -24,6 +28,10 @@ import { ResetPassComponent } from './reset-pass/reset-pass.component';
 
     ForgetPassComponent,
       ResetPassComponent,
+      GroupeComponent,
+      ProjetComponent,
+      TacheComponent,
+      SousTacheComponent,
 
  
   ],
