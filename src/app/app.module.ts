@@ -29,7 +29,7 @@ import { ChangepassComponent } from './changepass/changepass.component';
       NavbarComponent,
       ChangepassComponent,
 
- 
+
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,20 @@
+<h2>Liste des Groupes</h2>
+
+<ul>
+  <li *ngFor="let g of groupes">
+    {{ g.nomGroupe }} - {{ g.visibilite }}
+    <button (click)="deleteGroupe(g.idGroupe!)">Supprimer groupe</button>
+  </li>
+</ul>
+
+<h3>Ajouter un groupe</h3>
+<form (ngSubmit)="addGroupe()">
+  <input type="text" [(ngModel)]="newGroupe.nomGroupe" name="nomGroupe" placeholder="Nom du groupe" required />
+  <select [(ngModel)]="newGroupe.visibilite" name="visibilite">
+    <option value="PUBLIQUE">Publique</option>
+    <option value="PRIVE">Privé</option>
+    <option value="PAR_Invitation">Par invitation</option>
+
+  </select>
+  <button type="submit">Ajouter groupe</button>
+</form>

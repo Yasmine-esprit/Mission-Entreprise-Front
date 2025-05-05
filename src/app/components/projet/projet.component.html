@@ -1,0 +1,32 @@
+<h2>Liste des projets</h2>
+
+<ul>
+  <li *ngFor="let p of projets">
+    <strong>{{ p.titreProjet }}</strong> - {{ p.statut }} - {{ p.visibilite }}
+    <button (click)="deleteProjet(p.idProjet!)">Supprimer</button>
+  </li>
+</ul>
+
+<h3>Ajouter un projet</h3>
+<form (ngSubmit)="addProjet()">
+  <input type="text" [(ngModel)]="newProjet.titreProjet" name="titreProjet" placeholder="Titre" required />
+  <textarea [(ngModel)]="newProjet.descriptionProjet" name="descriptionProjet" placeholder="Description" required></textarea>
+  <input type="date" [(ngModel)]="newProjet.dateCreation" name="dateCreation" />
+
+  <select [(ngModel)]="newProjet.visibilite" name="visibilite">
+    <option value="PUBLIQUE">Publique</option>
+    <option value="PRIVE">Privé</option>
+    <option value="PAR_INVITATION">Par invitation</option>
+  </select>
+
+  <select [(ngModel)]="newProjet.statut" name="statut">
+    <option value="ToDo">A faire</option>
+    <option value="EnCours">En cours</option>
+    <option value="Terminé">Terminé</option>
+    <option value="Test">En test</option>
+    <option value="Validé">Validé</option>
+    <option value="Annulé">Annulé</option>
+  </select>
+
+  <button type="submit">Ajouter projet</button>
+</form>
