@@ -14,6 +14,11 @@ import { ForgetPassComponent } from './forget-pass/forget-pass.component';
 import { ResetPassComponent } from './reset-pass/reset-pass.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ChangepassComponent } from './changepass/changepass.component';
+import { CritereComponent } from './components/critere/critere.component';
+import { SousCritereComponent } from './components/sous-critere/sous-critere.component';
+import { NoteTgrpComponent } from './components/note-tgrp/note-tgrp.component';
+import { NoteTindivComponent } from './components/note-tindiv/note-tindiv.component';
+import { GrilleEvaluationComponent } from './components/grille-evaluation/grille-evaluation.component';
 
 
 
@@ -28,6 +33,11 @@ import { ChangepassComponent } from './changepass/changepass.component';
       ResetPassComponent,
       NavbarComponent,
       ChangepassComponent,
+      CritereComponent,
+      SousCritereComponent,
+      NoteTgrpComponent,
+      NoteTindivComponent,
+      GrilleEvaluationComponent,
 
 
   ],
