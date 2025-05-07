@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ProjetService } from 'src/app/services/projet.service';
 import { Projet } from 'src/app/models/projet.model';
+import {ProjetService} from "../../service/projet.service";
 
 @Component({
   selector: 'app-projet',
+  standalone: true,
   templateUrl: './projet.component.html'
 })
 export class ProjetComponent implements OnInit {
@@ -13,17 +14,17 @@ export class ProjetComponent implements OnInit {
     descriptionProjet: '',
     visibilite: 'PUBLIQUE',
     statut: 'Terminé',
-    dateCreation: new Date().toISOString().substring(0, 10)
+    dateCreation: new Date()
   };
 
-  constructor(private projetService: ProjetService) {}
+  constructor(private projetService: ProjetService) { }
 
   ngOnInit(): void {
     this.getProjets();
   }
 
   getProjets() {
-    this.projetService.getAll().subscribe(data => this.projets = data);
+    this.projetService.getAll().subscribe((data: Projet[]) => this.projets = data);
   }
 
   addProjet() {
@@ -34,7 +35,7 @@ export class ProjetComponent implements OnInit {
         descriptionProjet: '',
         visibilite: 'PUBLIQUE',
         statut: 'Terminé',
-        dateCreation: new Date().toISOString().substring(0, 10)
+        dateCreation: new Date()
       };
     });
   }
