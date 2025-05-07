@@ -10,7 +10,7 @@ import { jwtDecode } from 'jwt-decode';
 })
 export class LoginService {
 
-  private apiUrl = 'http://localhost:8081/auth/authenticate'; // update with your backend endpoint
+  private apiUrl = 'http://localhost:8081/auth/authenticate';
 
   constructor(private http: HttpClient) {}
 
