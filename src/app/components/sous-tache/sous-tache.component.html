@@ -1,0 +1,18 @@
+<h2>Liste des Sous-Tâches</h2>
+
+<ul>
+  <li *ngFor="let st of sousTaches">
+    <strong>{{ st.titreSousTache }}</strong> - {{ st.descriptionSousTache }}
+    <button (click)="deleteSousTache(st.idSousTache!)">Supprimer sous-tâche</button>
+  </li>
+</ul>
+
+<h3>Ajouter une nouvelle Sous-Tâche</h3>
+<form (ngSubmit)="addSousTache()">
+  <input [(ngModel)]="newSousTache.titreSousTache" name="titre" required placeholder="Titre" />
+  <input [(ngModel)]="newSousTache.descriptionSousTache" name="description" required placeholder="Description" />
+  <select [(ngModel)]="newSousTache.statut" name="statut">
+    <option *ngFor="let s of statutEnum" [value]="s">{{ s }}</option>
+  </select>
+  <button type="submit">Ajouter sous-tâche</button>
+</form>

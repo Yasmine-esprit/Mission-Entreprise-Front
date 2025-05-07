@@ -1,12 +1,14 @@
 import { TestBed } from '@angular/core/testing';
-import { UserService } from './user.service';
 
-describe('UserService', () => {
-  let service: UserService;
+// @ts-ignore
+import { GroupeMsgService } from './GroupeMsg.service';
+
+describe('GroupeMsgService', () => {
+  let service: GroupeMsgService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(UserService);
+    service = TestBed.inject(GroupeMsgService);
   });
 
   it('should be created', () => {
