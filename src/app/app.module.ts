@@ -15,6 +15,10 @@ import { ResetPassComponent } from './reset-pass/reset-pass.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ChangepassComponent } from './changepass/changepass.component';
 
+import { DiscussionComponent } from './discussion/discussion.component';
+import { AdminComponent } from './admin/admin.component';
+
+
 
 
 @NgModule({
@@ -28,6 +32,9 @@ import { ChangepassComponent } from './changepass/changepass.component';
       ResetPassComponent,
       NavbarComponent,
       ChangepassComponent,
+
+      DiscussionComponent,
+        AdminComponent
 
  
   ],

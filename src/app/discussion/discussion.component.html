@@ -1,0 +1,32 @@
+<div class="container">
+    <!-- Left side for group list -->
+    <div class="group-list">
+      <ul>
+        <li *ngFor="let group of data" (click)="selectGroup(group)">
+          {{ group.idGrpMsg }}
+          <button class="delete-btn" (click)="deleteGroup(group.idGrpMsg)">Delete</button>
+
+        </li>
+      </ul>
+    </div>
+  
+    <!-- Right side for displaying messages -->
+    <div class="message-display" *ngIf="selectedGroup">
+        <h2>Messages in {{ selectedGroup.idGrpMsg }}</h2>
+         <!-- If messages are available, display them -->
+    <div *ngIf="messages && messages.length > 0">
+        <div *ngFor="let message of messages">
+          <div class="message">
+            <p><strong>Content:</strong> {{ message.contenu }}</p>
+            <p><strong>Date:</strong> {{ message.dateEnvoi | date:'short' }}</p>
+            <p><strong>Status:</strong> {{ message.lu ? 'Read' : 'Unread' }}</p>
+          </div>
+        </div>
+      </div>
+  
+      <!-- If no messages available -->
+      <div *ngIf="messages.length === 0">
+        <p>No messages available for this group.</p>
+      </div>
+  </div>
+  

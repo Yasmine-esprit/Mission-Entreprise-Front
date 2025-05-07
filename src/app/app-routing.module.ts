@@ -8,6 +8,8 @@ import { authGuard } from './Auth/auth.guard';
 import { authOnlyGuardGuard } from './Auth/auth-only-guard.guard';
 import { ForgetPassComponent } from './forget-pass/forget-pass.component';
 import { ResetPassComponent } from './reset-pass/reset-pass.component';
+import { DiscussionComponent } from './discussion/discussion.component';
+import { AdminComponent } from './admin/admin.component';
 
 
 
@@ -16,9 +18,10 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'forget', component: ForgetPassComponent },
   { path: 'home', canActivate:[authOnlyGuardGuard], component: HomeComponent },
-  { path: 'registerUser', component: RegisterComponent }, //,canActivate:[authOnlyGuardGuard]
-  {path: 'reset-password',component: ResetPassComponent
-  },
+  { path: 'registerUser', canActivate:[authOnlyGuardGuard] , component: RegisterComponent }, 
+  { path: 'discussion', canActivate:[authOnlyGuardGuard] , component: DiscussionComponent },
+  { path: 'admin', canActivate:[authOnlyGuardGuard] , component: AdminComponent },
+  {path: 'reset-password',component: ResetPassComponent},
 
 ];
 

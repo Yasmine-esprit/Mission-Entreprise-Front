@@ -1,0 +1,62 @@
+.container {
+    display: flex;
+    height: 100vh; /* Full viewport height */
+  }
+  
+  .group-list {
+    width: 20%;  /* Left section takes 20% of the width */
+    background-color: #f0f0f0; /* Light background for the list */
+    padding: 10px;
+    box-sizing: border-box;
+    overflow-y: auto; /* Scroll if the list is too long */
+  }
+  
+  .group-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .group-list li {
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .group-list li:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .message-display {
+    width: 80%;  /* Right section takes the remaining 80% */
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    overflow-y: auto;
+  }
+  
+  .message-display h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .message-display p {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  .delete-btn {
+    background-color: red;  /* Red background color */
+    color: white;           /* White text color */
+    border: none;           /* Remove the default border */
+    padding: 8px 16px;      /* Padding inside the button */
+    font-size: 14px;        /* Font size */
+    cursor: pointer;       /* Change the cursor to pointer on hover */
+    border-radius: 5px;     /* Rounded corners */
+  }
+  
+  .delete-btn:hover {
+    background-color: darkred;  /* Darker red when the user hovers */
+  }
+  
