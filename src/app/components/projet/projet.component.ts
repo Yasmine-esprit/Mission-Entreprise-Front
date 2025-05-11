@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ProjetService } from 'src/app/services/projet.service';
+
 import { Projet } from 'src/app/models/projet.model';
+import { ProjetService } from 'src/app/service/projet.service';
 
 @Component({
   selector: 'app-projet',
@@ -13,7 +14,7 @@ export class ProjetComponent implements OnInit {
     descriptionProjet: '',
     visibilite: 'PUBLIQUE',
     statut: 'Terminé',
-    dateCreation: new Date().toISOString().substring(0, 10)
+    dateCreation: new Date()
   };
 
   constructor(private projetService: ProjetService) {}
@@ -34,7 +35,7 @@ export class ProjetComponent implements OnInit {
         descriptionProjet: '',
         visibilite: 'PUBLIQUE',
         statut: 'Terminé',
-        dateCreation: new Date().toISOString().substring(0, 10)
+        dateCreation: new Date()
       };
     });
   }

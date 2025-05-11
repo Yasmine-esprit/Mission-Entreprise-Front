@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DiscussionService } from '../service/discussion.service';
 import { MessageService } from '../service/message.service';
+import { NgModule } from '@angular/core';
+;
 
 @Component({
   selector: 'app-discussion',

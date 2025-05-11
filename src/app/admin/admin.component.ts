@@ -7,17 +7,30 @@ import { UserService } from '../service/user.service';
   styleUrls: ['./admin.component.css']
 })
 export class AdminComponent implements OnInit {
-  constructor(private userService : UserService){}
+  users: any[] = []; 
+  constructor(private userService: UserService) {}
+
   ngOnInit(): void {
     this.userService.getAllUsers().subscribe(
+      (response: any) => {
+        this.users = response; 
+        console.log(this.users);
+      },
+      error => {
+        console.error('Error loading users:', error);
+      }
+    );
+  }
+
+  DeleteUser(id : any){
+    this.userService.DeleteUser(id).subscribe(
       response=>{
-        console.log(response);
+        console.log(response)
       },
       error=>{
         console.log(error)
       }
     )
-    
-  }
 
+  }
 }

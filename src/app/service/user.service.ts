@@ -1,14 +1,15 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
+import { LoginService } from './login.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
 
- constructor(private http: HttpClient) {}
- private apiUrl = 'http://localhost:8081/users'; 
+ constructor(private http: HttpClient , private loginService : LoginService) {}
+ private apiUrl = 'http://localhost:8081/users/list'; 
  
  getAllUsers() : Observable<any>{
    const token = localStorage.getItem('jwtToken');  
@@ -19,4 +20,18 @@ export class UserService {
       return this.http.get<any>(`${this.apiUrl}`, { headers })
 
  }
+
+DeleteUser(id: number): Observable<any> {
+  const token = this.loginService.getToken() || '';
+
+
+const headers = new HttpHeaders({
+  'Authorization': `Bearer ${token}` 
+});
+
+  return this.http.delete<any>(`${this.apiUrl}/${id}`, { headers });
+}
+
+
+
 }

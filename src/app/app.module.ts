@@ -19,6 +19,9 @@ import { SousCritereComponent } from './components/sous-critere/sous-critere.com
 import { NoteTgrpComponent } from './components/note-tgrp/note-tgrp.component';
 import { GrilleEvaluationComponent } from './components/grille-evaluation/grille-evaluation.component';
 import { NoteTindivComponent } from './components/note-tindiv/note-tindiv.component';
+import { DiscussionComponent } from './discussion/discussion.component';
+import { AdminComponent } from './admin/admin.component';
+import { UpdateUserComponent } from './update-user/update-user.component';
 
 
 
@@ -38,6 +41,9 @@ import { NoteTindivComponent } from './components/note-tindiv/note-tindiv.compon
       NoteTgrpComponent,
       NoteTindivComponent,
       GrilleEvaluationComponent,
+      DiscussionComponent,
+      AdminComponent,
+      UpdateUserComponent
 
  
   ],

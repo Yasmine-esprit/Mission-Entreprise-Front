@@ -10,6 +10,7 @@ import { ForgetPassComponent } from './forget-pass/forget-pass.component';
 import { ResetPassComponent } from './reset-pass/reset-pass.component';
 import { DiscussionComponent } from './discussion/discussion.component';
 import { AdminComponent } from './admin/admin.component';
+import { UpdateUserComponent } from './update-user/update-user.component';
 
 
 
@@ -20,7 +21,8 @@ const routes: Routes = [
   { path: 'home', canActivate:[authOnlyGuardGuard], component: HomeComponent },
   { path: 'registerUser', canActivate:[authOnlyGuardGuard] , component: RegisterComponent }, 
   { path: 'discussion', canActivate:[authOnlyGuardGuard] , component: DiscussionComponent },
-  { path: 'admin', canActivate:[authOnlyGuardGuard] , component: AdminComponent },
+  { path: 'admin', component: AdminComponent },
+  { path: 'updateUser', component: UpdateUserComponent },
   {path: 'reset-password',component: ResetPassComponent},
 
 ];
