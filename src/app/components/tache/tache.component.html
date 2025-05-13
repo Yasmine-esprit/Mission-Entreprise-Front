@@ -1,44 +1,117 @@
-<div class="form-container">
-  <h2>{{ isEditing ? 'Modifier Tâche' : 'Ajouter Tâche' }}</h2>
-  <form (ngSubmit)="saveTache()">
-    <input type="text" placeholder="Titre" [(ngModel)]="newTache.titreTache" name="titreTache" required>
-    <textarea placeholder="Description" [(ngModel)]="newTache.descriptionTache" name="descriptionTache" required></textarea>
-    <input type="text" placeholder="Assigné à" [(ngModel)]="newTache.assigneA" name="assigneA">
-    <input type="date" [(ngModel)]="newTache.dateDebut" name="dateDebut">
-    <input type="date" [(ngModel)]="newTache.dateFin" name="dateFin">
-    <select [(ngModel)]="newTache.statut" name="statut">
-      <option *ngFor="let s of getStatutValues()" [value]="s">{{ s }}</option>
-    </select>
-    <button type="submit">{{ isEditing ? 'Mettre à jour' : 'Ajouter' }}</button>
-    <button type="button" *ngIf="isEditing" (click)="cancelEdit()">Annuler</button>
-  </form>
-</div>
-
-<hr>
-
 <div class="kanban-board">
   <div class="kanban-column" *ngFor="let statut of getStatutValues()">
-    <h3>{{ statut }}</h3>
+    <div class="column-header">
+      <h3>{{ statut }}</h3>
+      <span class="task-count">{{ getTachesByStatut(statut).length }}</span>
+    </div>
+
     <div
       class="kanban-card"
       *ngFor="let tache of getTachesByStatut(statut)"
       (click)="openTacheDetails(tache)"
     >
-      <strong>{{ tache.titreTache }}</strong><br>
-      <small>Assigné à : {{ tache.assigneA || 'Non défini' }}</small>
+      <div class="card-labels">
+        <span class="label" [ngClass]="'label-' + label"
+              *ngFor="let label of tache.labels"></span>
+      </div>
+      <strong>{{ tache.titreTache }}</strong>
+      <div class="card-footer">
+        <span class="due-date" *ngIf="tache.dateFin">
+          📅 {{ tache.dateFin | date:'shortDate' }}
+        </span>
+        <div class="card-members">
+          <span class="member" *ngFor="let member of tache.members">
+  {{ getInitials(member) }}
+</span>
+        </div>
+      </div>
     </div>
+
+    <button class="add-card-btn" (click)="initNewTask(statut)">
+      + Ajouter une carte
+    </button>
   </div>
 </div>
 
-<div *ngIf="selectedTache" class="tache-details">
-  <h3>Détails de la Tâche</h3>
-  <p><strong>Titre:</strong> {{ selectedTache.titreTache }}</p>
-  <p><strong>Description:</strong> {{ selectedTache.descriptionTache }}</p>
-  <p><strong>Date début:</strong> {{ selectedTache.dateDebut }}</p>
-  <p><strong>Date fin:</strong> {{ selectedTache.dateFin }}</p>
-  <p><strong>Statut:</strong> {{ selectedTache.statut }}</p>
-  <p><strong>Assigné à:</strong> {{ selectedTache.assigneA || 'Non défini' }}</p>
-  <button (click)="editTache(selectedTache)">Modifier</button>
-  <button (click)="deleteTache(selectedTache.idTache)">Supprimer</button>
-  <button (click)="closeTacheDetails()">Fermer</button>
+<!-- Popup de détails style Trello -->
+<div class="task-overlay" *ngIf="selectedTache" (click)="closeTacheDetails()"></div>
+<div class="task-popup" *ngIf="selectedTache">
+  <div class="popup-header">
+    <h2>{{ selectedTache.titreTache }}</h2>
+    <button class="close-btn" (click)="closeTacheDetails()">×</button>
+  </div>
+
+  <div class="popup-content">
+    <div class="main-content">
+      <!-- Section Description -->
+      <div class="section">
+        <div class="section-header">
+          <span class="icon">📝</span>
+          <h3>Description</h3>
+          <button class="edit-btn" (click)="editDescription()">Modifier</button>
+        </div>
+        <div class="description" *ngIf="!editingDescription">
+          {{ selectedTache.descriptionTache || "Ajouter une description plus détaillée..." }}
+        </div>
+        <div class="description-edit" *ngIf="editingDescription">
+          <textarea [(ngModel)]="selectedTache.descriptionTache"></textarea>
+          <div class="edit-actions">
+            <button (click)="saveDescription()">Enregistrer</button>
+            <button (click)="cancelEditDescription()">Annuler</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Checklist -->
+      <div class="section">
+        <div class="section-header">
+          <span class="icon">✅</span>
+          <h3>Checklist</h3>
+        </div>
+        <div class="checklist">
+          <div class="checklist-item" *ngFor="let item of selectedTache.checklist">
+            <input type="checkbox" [checked]="item.completed">
+            <span>{{ item.text }}</span>
+          </div>
+          <button class="add-item-btn">Ajouter un item</button>
+        </div>
+      </div>
+
+      <!-- Section Commentaires -->
+      <div class="section">
+        <div class="section-header">
+          <span class="icon">💬</span>
+          <h3>Commentaires</h3>
+        </div>
+        <div class="comment">
+          <div class="comment-input">
+            <div class="avatar">YJ</div>
+            <input placeholder="Écrire un commentaire...">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <!-- Ajouté à la carte -->
+      <div class="sidebar-section">
+        <h4>AJOUTÉ À LA CARTE</h4>
+        <button class="sidebar-btn">📅 Dates</button>
+        <button class="sidebar-btn">👥 Membres</button>
+        <button class="sidebar-btn">🏷️ Étiquettes</button>
+        <button class="sidebar-btn">📎 Pièces jointes</button>
+        <button class="sidebar-btn">✅ Checklist</button>
+      </div>
+
+      <!-- Actions -->
+      <div class="sidebar-section">
+        <h4>ACTIONS</h4>
+        <button class="sidebar-btn">🔀 Déplacer</button>
+        <button class="sidebar-btn">📋 Copier</button>
+        <button class="sidebar-btn">👁️ Surveiller</button>
+        <button class="sidebar-btn" (click)="editTache(selectedTache)">✏️ Modifier</button>
+        <button class="sidebar-btn delete" (click)="deleteTache(selectedTache.idTache)">🗑️ Supprimer</button>
+      </div>
+    </div>
+  </div>
 </div>

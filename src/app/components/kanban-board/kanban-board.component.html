@@ -1,5 +1,5 @@
 <div class="app-container">
-  <!-- BANNIÈRE DU HAUT -->
+  <!-- Header -->
   <header class="header">
     <div class="logo">UniGit</div>
     <nav class="nav">
@@ -13,13 +13,13 @@
     </div>
     <div class="actions">
       <button>⚙️</button>
-      <div class="avatar">YJ</div>
+      <div class="avatar">YT</div>
     </div>
   </header>
 
-  <!-- CONTENU PRINCIPAL -->
+  <!-- Main Content -->
   <div class="main">
-    <!-- MENU LATÉRAL GAUCHE -->
+    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="project-info">
         <div class="circle">logo</div>
@@ -31,26 +31,73 @@
       <button class="create-btn">Create ▼</button>
     </aside>
 
+    <!-- Dashboard Content -->
     <div class="dashboard-container">
-      <h1>Tableau de bord des tâches</h1>
-
-      <section class="board">
-        <div class="column" *ngFor="let colonne of colonnes">
-          <h2>{{ colonne.titre }}</h2>
-
-          <div class="task-card" *ngFor="let t of colonne.taches" (click)="ouvrirDetails(t)">
-            <h4>{{ t.titre }}</h4>
-            <p class="assigned">Assignée à : {{ t.assignee || 'Non assignée' }}</p>
+      <!-- Kanban Board -->
+      <div class="board" cdkDropListGroup>
+        <div
+          *ngFor="let colonne of colonnes"
+          cdkDropList
+          [id]="colonne.titre"
+          [cdkDropListData]="colonne.taches"
+          [cdkDropListConnectedTo]="connectedColumns"
+          (cdkDropListDropped)="drop($event)"
+          class="column"
+        >
+          <div class="column-header">
+            <h2>{{ colonne.titre }}</h2>
+            <span class="task-count">{{ colonne.taches.length }}</span>
           </div>
+
+          <!-- Liste des tâches existantes -->
+          <div
+            cdkDrag
+            *ngFor="let tache of colonne.taches"
+            (click)="openTacheDetails(tache)"
+            class="task-card"
+          >
+            <h4>{{ tache.titreTache }}</h4>
+            <p class="assigned">Assignée à : {{ tache.assigneA || 'Non assignée' }}</p>
+          </div>
+
+          <!-- Formulaire d'ajout rapide -->
+          <div class="add-task-container" *ngIf="isAddingTask && newTache.statut === colonne.titre">
+            <input
+              type="text"
+              [(ngModel)]="newTache.titreTache"
+              placeholder="Saisir le titre de la tâche"
+              (keyup.enter)="saveTacheForm()"
+              autofocus
+              class="add-task-input"
+            >
+            <div class="add-task-actions">
+              <button (click)="saveTacheForm()" class="add-btn">Ajouter</button>
+              <button (click)="resetForm()" class="cancel-btn">Annuler</button>
+            </div>
+          </div>
+
+          <!-- Bouton d'ajout de tâche -->
+          <button
+            class="add-task-btn"
+            (click)="initNewTask(colonne.titre)"
+            *ngIf="!isAddingTask || newTache.statut !== colonne.titre"
+          >
+            + Créer une tâche
+          </button>
         </div>
-      </section>
-      <div class="task-details" *ngIf="tacheSelectionnee">
-        <h3>{{ tacheSelectionnee.titre }}</h3>
-        <p><strong>Description :</strong> {{ tacheSelectionnee.description }}</p>
-        <p><strong>Assignée à :</strong> {{ tacheSelectionnee.assignee }}</p>
-        <p><strong>Deadline :</strong> {{ tacheSelectionnee.deadline }}</p>
-        <button (click)="fermerDetails()">Fermer</button>
       </div>
     </div>
+  </div>
 
-  </div> </div>
+  <!-- Task Details Modal -->
+  <div class="overlay" *ngIf="selectedTache" (click)="closeTacheDetails()"></div>
+  <div class="task-details" *ngIf="selectedTache">
+    <h3>{{ selectedTache.titreTache }}</h3>
+    <p><strong>Description:</strong> {{ selectedTache.descriptionTache }}</p>
+    <p><strong>Status:</strong> {{ selectedTache.statut }}</p>
+    <p><strong>Assigned to:</strong> {{ selectedTache.assigneA || 'Unassigned' }}</p>
+    <button (click)="editTache(selectedTache)">Edit</button>
+    <button (click)="deleteTache(selectedTache.idTache)">Delete</button>
+    <button (click)="closeTacheDetails()">Close</button>
+  </div>
+</div>
