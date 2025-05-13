@@ -7,7 +7,7 @@ import { Tache } from '../models/tache.model';
   providedIn: 'root'
 })
 export class TacheService {
-  private apiUrl = 'http://localhost:8081/missionEntreprise/tache';
+  private apiUrl = 'http://localhost:8081/api/taches';
 
   constructor(private http: HttpClient) {}
 
@@ -27,7 +27,7 @@ export class TacheService {
     return this.http.put<Tache>(`${this.apiUrl}/update`, tache);
   }
 
-  deleteTache(id: number): Observable<void> {
+    deleteTache(id: number | undefined): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
   }
 }

@@ -1,0 +1,66 @@
+
+:host {
+  background-color: white;
+  color: black;
+  display: block;
+  padding: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+/* Formulaire */
+.form-container {
+  margin-bottom: 2rem;
+}
+input, textarea, select, button {
+  display: block;
+  margin: 0.5rem 0;
+  width: 100%;
+  padding: 0.5rem;
+}
+
+/* Kanban Style */
+.kanban-board {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.kanban-column {
+  flex: 1;
+  background: #f4f4f4;
+  padding: 1rem;
+  border-radius: 8px;
+  min-height: 300px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.kanban-column h3 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.kanban-card {
+  background: white;
+  border-radius: 4px;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.kanban-card:hover {
+  background-color: #eaeaea;
+}
+
+/* Détails */
+.tache-details {
+  margin-top: 2rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  border-radius: 8px;
+}
+.tache-details button {
+  margin-top: 1rem;
+  margin-right: 0.5rem;
+}

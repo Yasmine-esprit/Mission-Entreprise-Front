@@ -1,16 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { Tache} from 'src/app/models/tache.model';
+import { Tache } from 'src/app/models/tache.model';
 import { TacheService } from 'src/app/service/tache.service';
-import {Statut} from "../../models/sousTache.model";
 
 @Component({
   selector: 'app-tache',
-  templateUrl: './tache.component.html'
+  templateUrl: './tache.component.html',
+  styleUrls: ['./tache.component.css']
 })
 export class TacheComponent implements OnInit {
   taches: Tache[] = [];
-  newTache: Tache = this.initTache();
+  selectedTache: Tache | null = null;
+
   isEditing = false;
+  newTache: Tache = this.resetTache();
 
   constructor(private tacheService: TacheService) {}
 
@@ -18,18 +20,26 @@ export class TacheComponent implements OnInit {
     this.loadTaches();
   }
 
-  initTache(): Tache {
-    return {
-      titreTache: '',
-      descriptionTache: '',
-      dateDebut: undefined,
-      dateFin: undefined,
-      statut: Statut.ToDo
-    };
+  loadTaches(): void {
+    this.tacheService.getAllTaches().subscribe(data => {
+      this.taches = data;
+    });
   }
 
-  loadTaches(): void {
-    this.tacheService.getAllTaches().subscribe(data => this.taches = data);
+  getStatutValues(): string[] {
+    return ['ToDo', 'EnCours', 'Terminé'];
+  }
+
+  getTachesByStatut(statut: string): Tache[] {
+    return this.taches.filter(t => t.statut === statut);
+  }
+
+  openTacheDetails(tache: Tache): void {
+    this.selectedTache = { ...tache };
+  }
+
+  closeTacheDetails(): void {
+    this.selectedTache = null;
   }
 
   saveTache(): void {
@@ -41,28 +51,37 @@ export class TacheComponent implements OnInit {
     } else {
       this.tacheService.addTache(this.newTache).subscribe(() => {
         this.loadTaches();
-        this.newTache = this.initTache();
+        this.newTache = this.resetTache();
       });
     }
   }
 
   editTache(tache: Tache): void {
-    this.newTache = { ...tache };
     this.isEditing = true;
-  }
-
-  deleteTache(id: number | undefined): void {
-    if (id) {
-      this.tacheService.deleteTache(id).subscribe(() => this.loadTaches());
-    }
+    this.newTache = { ...tache };
   }
 
   cancelEdit(): void {
-    this.newTache = this.initTache();
     this.isEditing = false;
+    this.newTache = this.resetTache();
   }
 
-  getStatutValues(): string[] {
-    return Object.values(Statut);
+  deleteTache(id: number | undefined): void {
+    this.tacheService.deleteTache(id).subscribe(() => {
+      this.loadTaches();
+      this.closeTacheDetails();
+    });
+  }
+
+  private resetTache(): Tache {
+    return {
+      idTache: 0,
+      titreTache: '',
+      descriptionTache: '',
+      assigneA: '',
+      //dateDebut: '',
+      //dateFin: '',
+      statut: 'ToDo'
+    };
   }
 }

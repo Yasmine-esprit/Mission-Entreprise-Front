@@ -3,6 +3,7 @@
   <form (ngSubmit)="saveTache()">
     <input type="text" placeholder="Titre" [(ngModel)]="newTache.titreTache" name="titreTache" required>
     <textarea placeholder="Description" [(ngModel)]="newTache.descriptionTache" name="descriptionTache" required></textarea>
+    <input type="text" placeholder="Assigné à" [(ngModel)]="newTache.assigneA" name="assigneA">
     <input type="date" [(ngModel)]="newTache.dateDebut" name="dateDebut">
     <input type="date" [(ngModel)]="newTache.dateFin" name="dateFin">
     <select [(ngModel)]="newTache.statut" name="statut">
@@ -15,13 +16,29 @@
 
 <hr>
 
-<div class="list-container">
-  <h3>Liste des Tâches</h3>
-  <ul>
-    <li *ngFor="let tache of taches">
-      <strong>{{ tache.titreTache }}</strong> - {{ tache.descriptionTache }} ({{ tache.statut }})
-      <button (click)="editTache(tache)">Modifier</button>
-      <button (click)="deleteTache(tache.idTache)">Supprimer</button>
-    </li>
-  </ul>
+<div class="kanban-board">
+  <div class="kanban-column" *ngFor="let statut of getStatutValues()">
+    <h3>{{ statut }}</h3>
+    <div
+      class="kanban-card"
+      *ngFor="let tache of getTachesByStatut(statut)"
+      (click)="openTacheDetails(tache)"
+    >
+      <strong>{{ tache.titreTache }}</strong><br>
+      <small>Assigné à : {{ tache.assigneA || 'Non défini' }}</small>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="selectedTache" class="tache-details">
+  <h3>Détails de la Tâche</h3>
+  <p><strong>Titre:</strong> {{ selectedTache.titreTache }}</p>
+  <p><strong>Description:</strong> {{ selectedTache.descriptionTache }}</p>
+  <p><strong>Date début:</strong> {{ selectedTache.dateDebut }}</p>
+  <p><strong>Date fin:</strong> {{ selectedTache.dateFin }}</p>
+  <p><strong>Statut:</strong> {{ selectedTache.statut }}</p>
+  <p><strong>Assigné à:</strong> {{ selectedTache.assigneA || 'Non défini' }}</p>
+  <button (click)="editTache(selectedTache)">Modifier</button>
+  <button (click)="deleteTache(selectedTache.idTache)">Supprimer</button>
+  <button (click)="closeTacheDetails()">Fermer</button>
 </div>

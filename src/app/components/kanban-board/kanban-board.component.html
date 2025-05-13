@@ -1,0 +1,56 @@
+<div class="app-container">
+  <!-- BANNIÈRE DU HAUT -->
+  <header class="header">
+    <div class="logo">UniGit</div>
+    <nav class="nav">
+      <span>Projects ▼</span>
+      <span>Board</span>
+      <span>Levels ▼</span>
+    </nav>
+    <div class="search">
+      <input type="text" placeholder="Search" />
+      <button>🔍</button>
+    </div>
+    <div class="actions">
+      <button>⚙️</button>
+      <div class="avatar">YJ</div>
+    </div>
+  </header>
+
+  <!-- CONTENU PRINCIPAL -->
+  <div class="main">
+    <!-- MENU LATÉRAL GAUCHE -->
+    <aside class="sidebar">
+      <div class="project-info">
+        <div class="circle">logo</div>
+        <h2>ProjectName</h2>
+      </div>
+      <div class="dropdown">Phases ▼</div>
+      <div class="dropdown">Levels ▼</div>
+      <div class="dropdown">Teams ▼</div>
+      <button class="create-btn">Create ▼</button>
+    </aside>
+
+    <div class="dashboard-container">
+      <h1>Tableau de bord des tâches</h1>
+
+      <section class="board">
+        <div class="column" *ngFor="let colonne of colonnes">
+          <h2>{{ colonne.titre }}</h2>
+
+          <div class="task-card" *ngFor="let t of colonne.taches" (click)="ouvrirDetails(t)">
+            <h4>{{ t.titre }}</h4>
+            <p class="assigned">Assignée à : {{ t.assignee || 'Non assignée' }}</p>
+          </div>
+        </div>
+      </section>
+      <div class="task-details" *ngIf="tacheSelectionnee">
+        <h3>{{ tacheSelectionnee.titre }}</h3>
+        <p><strong>Description :</strong> {{ tacheSelectionnee.description }}</p>
+        <p><strong>Assignée à :</strong> {{ tacheSelectionnee.assignee }}</p>
+        <p><strong>Deadline :</strong> {{ tacheSelectionnee.deadline }}</p>
+        <button (click)="fermerDetails()">Fermer</button>
+      </div>
+    </div>
+
+  </div> </div>
