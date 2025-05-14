@@ -4,6 +4,7 @@ import * as XLSX from 'xlsx';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LoginService } from '../service/login.service';
 import { Router } from '@angular/router';
+import { UserService } from '../service/user.service';
 
 @Component({
   selector: 'app-home',
@@ -15,18 +16,22 @@ export class HomeComponent implements OnInit  {
  excelData: any[] = [];
  mappedData: { firstname: string; lastname: string; role: string; email: string; password: string; photoProfil: any }[] = [];
  role: string | null = null;
+
 constructor(private registerService : RegisterService ,
             private authService : LoginService,
-            private router: Router){}
+            private router: Router,
+          private userService : UserService){}
 ngOnInit(): void {
   this.role = this.authService.getUserRole();
               console.log('User role:', this.role);
               if (this.role?.includes("ETUDIANT")){
                 console.log("say yes")
               }
+
+             
             }
             
-   
+           
     
 showButton() {
 if (this.register == false){
@@ -115,14 +120,7 @@ getKeys(obj: any): string[] {
   return Object.keys(obj);
 }
 
-onLogout(): void {
-  this.authService.logout();
-  console.log('User logged out');
-  this.router.navigate(['/login']); // or wherever you want to redirect
-}
-get isUserLoggedIn(): boolean {
-  return this.authService.isLoggedIn();
-}
+
 
 
 }

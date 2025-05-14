@@ -1,3 +1,10 @@
-<p>app</p>
 
+
+<button *ngIf="isUserLoggedIn" (click)="onLogout()">Logout</button>
+<img *ngIf="isUserLoggedIn and connectedUserId?.photoProfil" 
+  
+  [src]="'data:image/jpeg;base64,' + connectedUserId.photoProfil"
+  alt="User Profile"
+  class="profile-image"
+/>
 <router-outlet></router-outlet>

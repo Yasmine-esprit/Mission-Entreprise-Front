@@ -1,0 +1,65 @@
+/* Full screen wrapper with black background */
+.login-wrapper {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    background-color: black; /* Set the background to black */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  /* Dark transparent overlay (optional, if you still want an overlay effect) */
+  .overlay {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.852); /* Black with transparency */
+    z-index: 0;
+  }
+  
+  /* Register Form Styling */
+  form {
+    font-family: Arial, sans-serif;
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 400px;
+    background-color: #f4f4f9; /* Keep the form's background color light */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    color: #333; /* Text color inside the form */
+  }
+  
+  /* Input and button styles */
+  form input,
+  form button {
+    width: 90%;
+    padding: 14px;
+    margin: 12px 0;
+    border-radius: 5px;
+    border: 2px solid #ccc;
+    background: transparent;
+    color: #333;
+    font-size: 16px;
+    outline: none;
+  }
+  
+  /* Button and other form elements */
+  form button {
+    background-color: #e53935;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    border-radius: 5px;
+    padding: 14px;
+    margin-top: 20px;
+  }
+  
+  form button:hover {
+    background-color: #d32f2f;
+  }
+  

@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DiscussionService } from '../service/discussion.service';
 import { MessageService } from '../service/message.service';
-import { NgModule } from '@angular/core';
-;
+import { UserService } from '../service/user.service';
 
 @Component({
   selector: 'app-discussion',
@@ -11,53 +10,153 @@ import { NgModule } from '@angular/core';
 })
 export class DiscussionComponent implements OnInit {
 
+  constructor(
+    private discussionService: DiscussionService,
+    private messageService: MessageService,
+    private userService: UserService
+  ) {}
 
-  constructor (private discussionService : DiscussionService,
-                private messageService : MessageService
-  ){}
-  data: any[] = [];
-  messages: any[] = [];
-  selectedGroup: any = null;
-
-
+  data: any[] = [];               // Liste des groupes
+  messages: any[] = [];           // Messages du groupe sélectionné
+  selectedGroup: any = null;      // Groupe sélectionné
+  users: any[] = [];              // Utilisateurs disponibles
+  showPopup: boolean = false;     // Affichage de la popup
+  selectedUserIds: number[] = []; // Utilisateurs sélectionnés
+  messageContent: string = '';
+  connectedUserId : any;
   ngOnInit(): void {
-    this.discussionService.getGroupes().subscribe(
-      response=>{
-        this.data =  response
-        console.log(this.data)
-      },
-      error =>{
-        console.log("error fetching ", error)
-      }
-    )
-    
+    this.loadGroupes();
+    this.loadUsers();
+    this.connectedUser();
   }
-  selectGroup(group: any): void {
-    this.selectedGroup = group;
-    this.messageService.getMessagesByGroupId(this.selectedGroup.idGrpMsg).subscribe(
-      response=>{
-        this.messages = response
-        console.log(this.messages)
+  connectedUser(){
+    this.userService.getCurrentUser().subscribe(
+      (response)=>{
+        
        
-      },
-      error=>{
+        console.log(response)
+        if (response && response.idUser !== undefined) {
+          this.connectedUser = response.idUser;
+          console.log('idUser:', this.connectedUser);
+        } else {
+          console.error('idUser is undefined');
+        }
+      },(error)=>{
         console.log(error)
       }
     )
   }
-  deleteGroup(groupId: number) {
-    this.discussionService.deleteGroup(groupId).subscribe((
-      response) => {
-        this.data = this.data.filter(group => group.idGrpMsg !== groupId);
-        console.log('Group deleted successfully');
+  loadGroupes() {
+    this.discussionService.getGroupes().subscribe({
+      next: (response) => {
+        this.data = response;
+        console.log('Groupes:', this.data);
       },
-      (error) => {
-        console.error('Error deleting group:', error);
+      error: (error) => {
+        console.error("Erreur lors du chargement des groupes :", error);
       }
-    )
-    
-    }
+    });
+  }
 
+  loadUsers() {
+    this.userService.getAllUsers().subscribe({
+      next: (response: any[]) => {
+        // Exclure l'utilisateur connecté (optionnel, si le backend ne le fait pas déjà)
+        const connectedUserId = Number(localStorage.getItem('idUser'));
+        this.users = response.filter(user => user.idUser !== connectedUserId);
+        console.log('Utilisateurs disponibles :', this.users);
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des utilisateurs:', error);
+      }
+    });
+  }
+
+  selectGroup(group: any): void {
+    this.selectedGroup = group;
+  
+    this.messageService.getMessagesByGroupId(group.idGrpMsg).subscribe({
+      next: (response) => {
+        // Trier du plus ancien au plus récent par ID
+        this.messages = response.sort((a: any, b: any) => a.idMsg - b.idMsg);
+
+        console.log('Messages triés:', this.messages);
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des messages:', error);
+      }
+    });
+  }
+  
   
 
+  deleteGroup(groupId: number): void {
+    this.discussionService.deleteGroup(groupId).subscribe({
+      next: () => {
+        this.data = this.data.filter(group => group.idGrpMsg !== groupId);
+        console.log('Groupe supprimé avec succès');
+      },
+      error: (error) => {
+        console.error('Erreur lors de la suppression du groupe:', error);
+      }
+    });
+  }
+
+  onUserCheckboxChange(event: Event, user: any): void {
+    const isChecked = (event.target as HTMLInputElement).checked;
+
+    if (isChecked) {
+      this.selectedUserIds.push(user.idUser);
+    } else {
+      this.selectedUserIds = this.selectedUserIds.filter(id => id !== user.idUser);
+    }
+  }
+
+  confirmSelection(): void {
+    console.log('Utilisateurs sélectionnés :', this.selectedUserIds);
+
+    this.showPopup = false;
+
+    this.discussionService.creerGroupe(this.selectedUserIds).subscribe({
+      next: (response) => {
+        console.log('Groupe créé avec succès:', response);
+
+        // Recharge la liste des groupes après création
+        this.loadGroupes();
+
+        // Réinitialise la sélection
+        this.selectedUserIds = [];
+      },
+      error: (error) => {
+        console.error('Erreur lors de la création du groupe:', error);
+      }
+    });
+  }
+
+  EnvoyerMsg(): void {
+    if (!this.selectedGroup) {
+      console.error('Aucun groupe sélectionné');
+      return;
+    }
+  
+    if (!this.messageContent.trim()) {
+      console.error('Le message est vide');
+      return;
+    }
+  
+    const groupId = this.selectedGroup.idGrpMsg;
+  
+  
+    this.messageService.envoyerMessage(groupId, this.messageContent).subscribe({
+      next: (response) => {
+        console.log('Message envoyé avec succès:', response);
+        this.messageContent = '';
+        this.selectGroup(this.selectedGroup); // Recharger les messages
+      },
+      error: (error) => {
+        console.error('Erreur lors de l\'envoi du message:', error);
+      }
+    });
+  }
+  
 }

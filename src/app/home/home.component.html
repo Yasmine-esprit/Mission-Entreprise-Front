@@ -1,4 +1,6 @@
 <app-navbar></app-navbar>
+
+
 <a *ngIf="role?.includes('ADMINISTRATEUR') || role?.includes('COORDINATEUR')"> routerLink="/registerUser">Ajouter un utilisateur </a>
 <a *ngIf="role?.includes('ADMINISTRATEUR') || role?.includes('COORDINATEUR')"> (click)="showButton()"> Ajouter les utilisateurs</a>
 
@@ -20,8 +22,7 @@
 </table>
 
 </div>
-<!-- Only show if user is logged in -->
-<button *ngIf="isUserLoggedIn" (click)="onLogout()">Logout</button>
+
 <!-- Show button if role includes 'ETUDIANT' -->
 <button *ngIf="role?.includes('ETUDIANT')">Special Button for ETUDIANT</button>
 

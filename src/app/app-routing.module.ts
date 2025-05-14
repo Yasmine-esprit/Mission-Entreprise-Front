@@ -19,10 +19,10 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'forget', component: ForgetPassComponent },
   { path: 'home', canActivate:[authOnlyGuardGuard], component: HomeComponent },
-  { path: 'registerUser', canActivate:[authOnlyGuardGuard] , component: RegisterComponent }, 
+  { path: 'registerUser', component: RegisterComponent }, 
   { path: 'discussion', canActivate:[authOnlyGuardGuard] , component: DiscussionComponent },
   { path: 'admin', component: AdminComponent },
-  { path: 'updateUser', component: UpdateUserComponent },
+  { path: 'updateUser/:id', component: UpdateUserComponent },
   {path: 'reset-password',component: ResetPassComponent},
 
 ];

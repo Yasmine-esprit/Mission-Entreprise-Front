@@ -19,13 +19,14 @@
           <td>{{ user.roles }}</td>
           <td>{{ user.accountLockedUser }}</td>
           <td><button (click)="DeleteUser(user.idUser)">Delete</button></td>
-          <td><a routerLink="/updateUser">Update</a></td>
+          <td><a [routerLink]="['/updateUser', user.idUser]">Update</a></td>
+
           <td><button>Enable</button></td>
          
         </tr>
       </tbody>
     </table>
-    <a routerLink="admin">Add User</a>
+    <a routerLink="/registerUser">Add User</a>
   </div>
   
   <ng-template #noUsers>

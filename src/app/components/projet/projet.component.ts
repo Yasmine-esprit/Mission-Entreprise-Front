@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-
 import { Projet } from 'src/app/models/projet.model';
-import { ProjetService } from 'src/app/service/projet.service';
+import {ProjetService} from "../../service/projet.service";
 
 @Component({
   selector: 'app-projet',
+  standalone: true,
   templateUrl: './projet.component.html'
 })
 export class ProjetComponent implements OnInit {
@@ -17,14 +17,14 @@ export class ProjetComponent implements OnInit {
     dateCreation: new Date()
   };
 
-  constructor(private projetService: ProjetService) {}
+  constructor(private projetService: ProjetService) { }
 
   ngOnInit(): void {
     this.getProjets();
   }
 
   getProjets() {
-    this.projetService.getAll().subscribe(data => this.projets = data);
+    this.projetService.getAll().subscribe((data: Projet[]) => this.projets = data);
   }
 
   addProjet() {

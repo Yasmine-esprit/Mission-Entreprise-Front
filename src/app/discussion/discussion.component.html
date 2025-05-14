@@ -9,6 +9,7 @@
           </button>
         </li>
       </ul>
+      <button (click)="showPopup = true">Create Group</button>
     </div>
   
     <!-- Right side for displaying messages -->
@@ -16,18 +17,58 @@
       <h2>Messages in Group {{ selectedGroup.idGrpMsg }}</h2>
   
       <!-- If messages are available -->
-      <div *ngIf="messages && messages.length > 0">
-        <div *ngFor="let message of messages" class="message">
+      <div style="height: 90%;" *ngIf="messages && messages.length > 0">
+        <div *ngFor="let message of messages" 
+             class="message" 
+             [ngClass]="{'sent-by-me': message.senderId === connectedUser}">
           <p><strong>Content:</strong> {{ message.contenu }}</p>
-          <p><strong>Date:</strong> {{ message.dateEnvoi }}</p>
-          <p><strong>Status:</strong> {{ message.lu ? 'Read' : 'Unread' }}</p>
         </div>
       </div>
+      
   
       <!-- If no messages -->
       <div *ngIf="messages.length === 0">
         <p>No messages available for this group.</p>
       </div>
+
+      <div *ngIf="selectedGroup">
+        <h3>Envoyer un message</h3>
+        <textarea [(ngModel)]="messageContent" placeholder="Écrire un message..."></textarea>
+        <button (click)="EnvoyerMsg()">Envoyer</button>
+      </div>
+      
+
+      
+        
+
+      
+    </div>
+  </div>
+  <!-- Popup content -->
+  <div *ngIf="showPopup" class="popup-overlay">
+    <div class="popup-content">
+      <h3>Select Users</h3>
+  
+      <div *ngFor="let user of users">
+        
+        <label>
+          <img
+          *ngIf="user?.photoProfil"
+          [src]="'data:image/jpeg;base64,' + user.photoProfil"
+          alt="User Profile"
+          class="profile-image"
+        />
+          <input type="checkbox"
+                 [value]="user.idUser"
+                 (change)="onUserCheckboxChange($event, user)">
+          {{ user.nomUser }} {{ user.prenomUser }}
+
+        </label>
+       
+      </div>
+  
+      <button (click)="confirmSelection()">Confirm</button>
+      <button (click)="showPopup = false">Cancel</button>
     </div>
   </div>
   

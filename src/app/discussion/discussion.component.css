@@ -30,7 +30,7 @@
     width: 80%;  /* Right section takes the remaining 80% */
     padding: 10px;
     box-sizing: border-box;
-    background-color: #ffffff;
+    
     overflow-y: auto;
   }
   
@@ -58,5 +58,36 @@
   
   .delete-btn:hover {
     background-color: darkred;  /* Darker red when the user hovers */
+  }
+  
+
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .popup-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+  }
+  .sent-by-me {
+    background-color: red;
+    font-weight: bold;
+  }
+  .profile-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
   }
   

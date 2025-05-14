@@ -26,6 +26,7 @@ export class AdminComponent implements OnInit {
     this.userService.DeleteUser(id).subscribe(
       response=>{
         console.log(response)
+        this.users = this.users.filter(user => user.idUser !== id);
       },
       error=>{
         console.log(error)

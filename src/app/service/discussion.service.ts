@@ -33,6 +33,19 @@ private apiUrl = 'http://localhost:8081/groupes'; // update with your backend en
   
       return this.http.delete<any>(`${this.apiUrl}/${groupId}`, { headers });
     }
+
+    creerGroupe(userIds: number[]): Observable<any> {
+      const token = this.loginService.getToken();
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+    
+      return this.http.post(`${this.apiUrl}/creeGroupe`, userIds, {
+        headers,
+        responseType: 'text' as 'json'
+      });
+    }
+    
   
 
 }

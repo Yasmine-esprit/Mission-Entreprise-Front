@@ -32,4 +32,19 @@ const headers = new HttpHeaders({
   return this.http.delete<any>(`${this.apiUrl}/${groupId}`, { headers });
 }
 
+envoyerMessage(groupeId: number, messageContent: string) {
+  const token = this.loginService.getToken();
+
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  });
+
+  const body = {
+    contenu: messageContent
+  };
+
+  return this.http.post(`${this.apiUrl}/envoyerMsg/${groupeId}`, body, { headers ,  responseType: 'text' as 'json' });
+}
+
 }
