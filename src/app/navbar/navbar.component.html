@@ -1,4 +1,11 @@
-<nav>
-    <li><a href="">Acceuil</a></li>
-    <li><a href="">Changer mot de passe</a></li>
+<nav class="navbar">
+  <div class="container">
+    <a class="logo" routerLink="/">UniGit</a>
+
+    <ul class="nav-links">
+      <li><a routerLink="/home">Home</a></li>
+      <li><a routerLink="/change-password">Reset password</a></li>
+      <li><button (click)="goToDashboard()" class="btn-dashboard">Dashboard</button></li>
+    </ul>
+  </div>
 </nav>

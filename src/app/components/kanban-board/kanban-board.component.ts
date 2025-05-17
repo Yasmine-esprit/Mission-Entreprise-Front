@@ -1,5 +1,6 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import {Component, ChangeDetectorRef, ViewEncapsulation} from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import {Router} from "@angular/router";
 
 type StatutTache = "ToDo" | "EnCours" | "Terminé" | "Test" | "Validé" | "Annulé";
 
@@ -25,9 +26,11 @@ interface Column {
   selector: 'app-kanban-board',
   templateUrl: './kanban-board.component.html',
   styleUrls: ['./kanban-board.component.css']
+  //encapsulation: ViewEncapsulation.None
 })
 export class KanbanBoardComponent {
   selectedTache: Task | null = null;
+  showTaskDetails = false;
   isEditing = false;
   isAddingTask = false;
   editingDescription = false;
@@ -88,8 +91,14 @@ export class KanbanBoardComponent {
       ]
     }
   ];
+  constructor(private router: Router, private cdRef: ChangeDetectorRef) {}
 
-  constructor(private cdRef: ChangeDetectorRef) {}
+  ouvrirTache(tacheId: number) {
+    this.router.navigate(['/tache', tacheId]);
+  }
+
+
+  //constructor(private cdRef: ChangeDetectorRef) {}
 
   get connectedColumns(): string[] {
     return this.colonnes.map(colonne => colonne.titre);
@@ -122,106 +131,92 @@ export class KanbanBoardComponent {
     console.log('Tâche sauvegardée:', task);
   }
 
-  openTacheDetails(tache: Task): void {
+  openTacheDetails(tache: Task, event: MouseEvent): void {
+    event.stopPropagation();
     this.selectedTache = { ...tache };
+    this.showTaskDetails = true;
+    this.cdRef.detectChanges(); // Ajout critique ici
   }
 
   closeTacheDetails(): void {
     this.selectedTache = null;
+    this.showTaskDetails = false;
+    this.editingDescription = false;
+    this.cdRef.detectChanges(); // pour bien forcer l’UI à se mettre à jour
   }
 
   editDescription(): void {
-    this.tempDescription = this.selectedTache?.descriptionTache || '';
     this.editingDescription = true;
+    this.tempDescription = this.selectedTache?.descriptionTache || '';
+  }
+
+  cancelEditDescription(): void {
+    this.editingDescription = false;
+    if (this.selectedTache) {
+      this.selectedTache.descriptionTache = this.tempDescription;
+    }
   }
 
   saveDescription(): void {
     this.editingDescription = false;
     if (this.selectedTache) {
-      this.saveTask(this.selectedTache);
+      // Normalement tu enregistres côté backend ici
+      console.log('Description mise à jour:', this.selectedTache.descriptionTache);
     }
-  }
-
-  cancelEditDescription(): void {
-    if (this.selectedTache) {
-      this.selectedTache.descriptionTache = this.tempDescription;
-    }
-    this.editingDescription = false;
   }
 
   editTache(tache: Task): void {
-    this.isEditing = true;
-    this.newTache = { ...tache };
-    this.closeTacheDetails();
+    console.log('Édition de la tâche:', tache);
   }
 
   deleteTache(id: number): void {
-    this.colonnes.forEach(colonne => {
-      colonne.taches = colonne.taches.filter(t => t.idTache !== id);
-    });
+    for (const col of this.colonnes) {
+      const index = col.taches.findIndex(t => t.idTache === id);
+      if (index > -1) {
+        col.taches.splice(index, 1);
+        break;
+      }
+    }
     this.closeTacheDetails();
   }
 
-  saveTacheForm(): void {
-    if (this.newTache.titreTache.trim() === '') return;
+  initNewTask(statut: StatutTache): void {
+    this.newTache = {
+      idTache: Date.now(),
+      titreTache: '',
+      descriptionTache: '',
+      assigneA: '',
+      statut: statut,
+      checklist: [],
+      labels: [],
+      members: []
+    };
+    this.isAddingTask = true;
+  }
 
-    if (this.isEditing && this.newTache.idTache > 0) {
-      const colonne = this.colonnes.find(c => c.titre === this.newTache.statut);
-      if (colonne) {
-        const index = colonne.taches.findIndex(t => t.idTache === this.newTache.idTache);
-        if (index !== -1) {
-          colonne.taches[index] = { ...this.newTache };
-        }
-      }
-    } else {
-      const newId = Math.max(0, ...this.colonnes.flatMap(c => c.taches.map(t => t.idTache))) + 1;
-      this.newTache.idTache = newId;
-      const targetColumn = this.colonnes.find(c => c.titre === this.newTache.statut);
-      if (targetColumn) {
-        targetColumn.taches.unshift({ ...this.newTache });
-      }
+  saveTacheForm(): void {
+    const colonne = this.colonnes.find(col => col.titre === this.newTache.statut);
+    if (colonne) {
+      colonne.taches.push({ ...this.newTache });
     }
     this.resetForm();
   }
 
   resetForm(): void {
-    this.isAddingTask = false;
-    this.isEditing = false;
     this.newTache = this.resetTache();
+    this.isAddingTask = false;
   }
 
-  getStatutValues(): StatutTache[] {
-    return ["ToDo", "EnCours", "Terminé", "Test", "Validé", "Annulé"];
-  }
-
-  initNewTask(columnTitle: StatutTache): void {
-    this.newTache = {
-      ...this.resetTache(),
-      statut: columnTitle
-    };
-    this.isAddingTask = true;
-    this.isEditing = false;
-  }
-
-  private resetTache(): Task {
+  resetTache(): Task {
     return {
-      idTache: 0,
+      idTache: Date.now(),
       titreTache: '',
       descriptionTache: '',
       assigneA: '',
       statut: 'ToDo',
       checklist: [],
-      members: [],
-      labels: []
+      labels: [],
+      members: []
     };
-  }
-
-  getInitials(name: string): string {
-    if (!name) return '';
-    return name
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase())
-      .join('')
-      .substring(0, 2);
   }
 }

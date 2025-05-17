@@ -1,0 +1,98 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.navbar {
+  background: linear-gradient(90deg, #393939, #101010);
+  color: white;
+  padding: 1rem 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.8rem;
+  color: white;
+  text-decoration: none;
+  letter-spacing: 2px;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links li a,
+.btn-dashboard {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+
+.nav-links li a:hover,
+.btn-dashboard:hover {
+  background-color: #040404;
+}
+
+.btn-dashboard {
+  background: #E11D48;
+  color: white;
+  border-radius: 25px;
+  padding: 0.5rem 1.3rem;
+  font-weight: 700;
+  border: none;
+}
+
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.menu-toggle span {
+  width: 25px;
+  height: 3px;
+  background: white;
+  margin-bottom: 4px;
+  border-radius: 3px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-links {
+    position: absolute;
+    right: 0;
+    top: 70px;
+    background: #182848;
+    flex-direction: column;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in;
+  }
+
+  .nav-links.open {
+    max-height: 300px;
+  }
+
+  .menu-toggle {
+    display: flex;
+  }
+}

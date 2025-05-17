@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {map, Observable} from 'rxjs';
 import { Tache } from '../models/tache.model';
 
 @Injectable({
@@ -15,8 +15,11 @@ export class TacheService {
     return this.http.get<Tache[]>(`${this.apiUrl}/all`);
   }
 
-  getTacheById(id: number): Observable<Tache> {
-    return this.http.get<Tache>(`${this.apiUrl}/get/${id}`);
+
+  getTacheById(id: number): Observable<Tache | undefined> {
+    return this.getAllTaches().pipe(
+      map(taches => taches.find(t => t.idTache === id))
+    );
   }
 
   addTache(tache: Tache): Observable<Tache> {

@@ -53,11 +53,14 @@
           <div
             cdkDrag
             *ngFor="let tache of colonne.taches"
-            (click)="openTacheDetails(tache)"
+            (click)="openTacheDetails(tache, $event)"
             class="task-card"
           >
             <h4>{{ tache.titreTache }}</h4>
             <p class="assigned">Assignée à : {{ tache.assigneA || 'Non assignée' }}</p>
+            <div class="card-labels">
+              <span *ngFor="let label of tache.labels" class="label label-{{label}}"></span>
+            </div>
           </div>
 
           <!-- Formulaire d'ajout rapide -->
@@ -88,16 +91,97 @@
       </div>
     </div>
   </div>
+  <div *ngFor="let colonne of colonnes">
+    <h3>{{colonne.titre}}</h3>
+    <div *ngFor="let tache of colonne.taches" (click)="ouvrirTache(tache.idTache)">
+      {{tache.titreTache}}
+    </div>
+  </div>
+
 
   <!-- Task Details Modal -->
-  <div class="overlay" *ngIf="selectedTache" (click)="closeTacheDetails()"></div>
-  <div class="task-details" *ngIf="selectedTache">
-    <h3>{{ selectedTache.titreTache }}</h3>
-    <p><strong>Description:</strong> {{ selectedTache.descriptionTache }}</p>
-    <p><strong>Status:</strong> {{ selectedTache.statut }}</p>
-    <p><strong>Assigned to:</strong> {{ selectedTache.assigneA || 'Unassigned' }}</p>
-    <button (click)="editTache(selectedTache)">Edit</button>
-    <button (click)="deleteTache(selectedTache.idTache)">Delete</button>
-    <button (click)="closeTacheDetails()">Close</button>
+  <div class="task-overlay" *ngIf="showTaskDetails" (click)="closeTacheDetails()"></div>
+
+  <div class="task-popup" *ngIf="showTaskDetails && selectedTache" (click)="$event.stopPropagation()">
+    <div class="popup-header">
+      <h2>{{ selectedTache.titreTache }}</h2>
+      <button class="close-btn" (click)="closeTacheDetails()">×</button>
+    </div>
+
+    <div class="popup-content">
+      <div class="main-content">
+        <!-- Section Description -->
+        <div class="section">
+          <div class="section-header">
+            <span class="icon">📝</span>
+            <h3>Description</h3>
+            <button *ngIf="!editingDescription" class="edit-btn" (click)="editDescription()">Modifier</button>
+          </div>
+          <div class="description" *ngIf="!editingDescription">
+            {{ selectedTache.descriptionTache || "Ajouter une description plus détaillée..." }}
+          </div>
+          <div class="description-edit" *ngIf="editingDescription">
+            <textarea [(ngModel)]="selectedTache.descriptionTache"></textarea>
+            <div class="edit-actions">
+              <button (click)="saveDescription()">Enregistrer</button>
+              <button (click)="cancelEditDescription()">Annuler</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section Assignation -->
+        <div class="section">
+          <div class="section-header">
+            <span class="icon">👤</span>
+            <h3>Assigné à</h3>
+          </div>
+          <div class="description">
+            {{ selectedTache.assigneA || "Non assigné" }}
+          </div>
+        </div>
+
+        <!-- Section Statut -->
+        <div class="section">
+          <div class="section-header">
+            <span class="icon">📌</span>
+            <h3>Statut</h3>
+          </div>
+          <div class="description">
+            {{ selectedTache.statut }}
+          </div>
+        </div>
+
+        <!-- Section Checklist -->
+        <div class="section" *ngIf="selectedTache.checklist && selectedTache.checklist.length > 0">
+          <div class="section-header">
+            <span class="icon">✅</span>
+            <h3>Checklist</h3>
+          </div>
+          <div class="checklist">
+            <div class="checklist-item" *ngFor="let item of selectedTache.checklist">
+              <input type="checkbox" [checked]="item.completed" (change)="item.completed = !item.completed">
+              <span [class.completed]="item.completed">{{ item.text }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <!-- Ajouté à la carte -->
+        <div class="sidebar-section">
+          <h4>AJOUTÉ À LA CARTE</h4>
+          <button class="sidebar-btn">📅 Dates</button>
+          <button class="sidebar-btn">👥 Membres</button>
+          <button class="sidebar-btn">🏷️ Étiquettes</button>
+        </div>
+
+        <!-- Actions -->
+        <div class="sidebar-section">
+          <h4>ACTIONS</h4>
+          <button class="sidebar-btn" (click)="editTache(selectedTache)">✏️ Modifier</button>
+          <button class="sidebar-btn delete" (click)="deleteTache(selectedTache.idTache)">🗑️ Supprimer</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
