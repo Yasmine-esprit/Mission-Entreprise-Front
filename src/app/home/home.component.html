@@ -1,27 +1,8 @@
-<app-navbar></app-navbar>
 
 
-<a *ngIf="role?.includes('ADMINISTRATEUR') || role?.includes('COORDINATEUR')"> routerLink="/registerUser">Ajouter un utilisateur </a>
-<a *ngIf="role?.includes('ADMINISTRATEUR') || role?.includes('COORDINATEUR')"> (click)="showButton()"> Ajouter les utilisateurs</a>
-
-<div *ngIf="register">
-    <input type="file" (change)="onExcelUpload($event)" accept=".xlsx, .xls" />
 
 
-<table *ngIf="excelData.length">
-  <thead>
-    <tr>
-      <th *ngFor="let key of getKeys(excelData[0])">{{ key }}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let row of excelData">
-      <td *ngFor="let key of getKeys(row)">{{ row[key] }}</td>
-    </tr>
-  </tbody>
-</table>
 
-</div>
 
 <!-- Show button if role includes 'ETUDIANT' -->
 <button *ngIf="role?.includes('ETUDIANT')">Special Button for ETUDIANT</button>

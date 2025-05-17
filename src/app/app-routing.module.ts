@@ -11,6 +11,7 @@ import { ResetPassComponent } from './reset-pass/reset-pass.component';
 import { DiscussionComponent } from './discussion/discussion.component';
 import { AdminComponent } from './admin/admin.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
+import { AddUsersComponent } from './add-users/add-users.component';
 
 
 
@@ -24,6 +25,7 @@ const routes: Routes = [
   { path: 'admin', component: AdminComponent },
   { path: 'updateUser/:id', component: UpdateUserComponent },
   {path: 'reset-password',component: ResetPassComponent},
+  {path: 'addUsers' , component:AddUsersComponent}
 
 ];
 

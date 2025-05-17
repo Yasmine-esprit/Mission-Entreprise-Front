@@ -26,26 +26,7 @@
     background-color: #e0e0e0;
   }
   
-  .message-display {
-    width: 80%;  /* Right section takes the remaining 80% */
-    padding: 10px;
-    box-sizing: border-box;
-    
-    overflow-y: auto;
-  }
-  
-  .message-display h2 {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-  }
-  
-  .message-display p {
-    margin-bottom: 10px;
-    padding: 10px;
-    background-color: #f9f9f9;
-    border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
+
   .delete-btn {
     background-color: red;  /* Red background color */
     color: white;           /* White text color */
@@ -79,15 +60,66 @@
     border-radius: 8px;
     width: 300px;
   }
-  .sent-by-me {
-    background-color: red;
-    font-weight: bold;
-  }
+
+
   .profile-image {
     width: 50px;
     height: 50px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #fff;
+  }
+  .user-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .user-item:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .user-item.selected {
+    background-color: #d0e8ff;
+  }
+  .message {
+    display: flex;
+    align-items: flex-start;
+    margin: 8px 0;
+  }
+  
+  .sent-by-me {
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+  
+  .sent-by-other {
+    flex-direction: row;
+    text-align: left;
+  }
+  
+  .message-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 10px;
+  }
+  
+  .message-content {
+    max-width: 70%;
+    padding: 10px 15px;
+    border-radius: 20px;
+    background-color: #e53935;
+    word-wrap: break-word;
+  }
+  
+  .sent-by-me .message-content {
+    background-color: #e53935;
+    color: rgb(18, 16, 16);
   }
   

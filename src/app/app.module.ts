@@ -22,6 +22,7 @@ import { NoteTindivComponent } from './components/note-tindiv/note-tindiv.compon
 import { DiscussionComponent } from './discussion/discussion.component';
 import { AdminComponent } from './admin/admin.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
+import { AddUsersComponent } from './add-users/add-users.component';
 
 
 
@@ -43,7 +44,8 @@ import { UpdateUserComponent } from './update-user/update-user.component';
       GrilleEvaluationComponent,
       DiscussionComponent,
       AdminComponent,
-      UpdateUserComponent
+      UpdateUserComponent,
+      AddUsersComponent
 
  
   ],

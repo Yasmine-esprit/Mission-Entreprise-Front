@@ -52,18 +52,7 @@
 }
 
 /* Sign In button */
-.sign-in-button {
-  width: 100%;
-  padding: 14px;
-  margin-top: 20px;
-  background-color: #e53935;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
+
 
 .sign-in-button:hover {
   background-color: #d32f2f;

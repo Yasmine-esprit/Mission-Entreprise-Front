@@ -21,9 +21,16 @@ export class DiscussionComponent implements OnInit {
   selectedGroup: any = null;      // Groupe sélectionné
   users: any[] = [];              // Utilisateurs disponibles
   showPopup: boolean = false;     // Affichage de la popup
-  selectedUserIds: number[] = []; // Utilisateurs sélectionnés
+  selectedUserIds: any[] = []; // Utilisateurs sélectionnés
   messageContent: string = '';
   connectedUserId : any;
+  selectedUsersProfiles: any[] = [];
+  selectedUsersByGroup: { [groupId: number]: any[] } = {};
+
+  getUserById(id: number) {
+    return this.users.find(user => user.idUser === id);
+  }
+  
   ngOnInit(): void {
     this.loadGroupes();
     this.loadUsers();
@@ -104,34 +111,43 @@ export class DiscussionComponent implements OnInit {
 
   onUserCheckboxChange(event: Event, user: any): void {
     const isChecked = (event.target as HTMLInputElement).checked;
-
+  
     if (isChecked) {
-      this.selectedUserIds.push(user.idUser);
+      this.selectedUserIds.push(user);
     } else {
-      this.selectedUserIds = this.selectedUserIds.filter(id => id !== user.idUser);
+      this.selectedUserIds = this.selectedUserIds.filter(u => u.idUser !== user.idUser);
     }
   }
+  
 
   confirmSelection(): void {
-    console.log('Utilisateurs sélectionnés :', this.selectedUserIds);
-
+    const selectedUser = this.selectedUserIds.map(user => user.idUser);
+  
     this.showPopup = false;
-
-    this.discussionService.creerGroupe(this.selectedUserIds).subscribe({
+  
+    this.discussionService.creerGroupe(selectedUser).subscribe({
       next: (response) => {
-        console.log('Groupe créé avec succès:', response);
-
-        // Recharge la liste des groupes après création
-        this.loadGroupes();
-
-        // Réinitialise la sélection
+        console.log('Group created:', response);
+  
+        // Assume response has new group ID
+        const newGroupId = response.idGrpMsg;
+  
+        // Save selected users profiles by group ID
+        this.selectedUsersByGroup[newGroupId] = [...this.selectedUserIds];
+  
+        // Reset selection
         this.selectedUserIds = [];
+  
+        // Reload groups
+        this.loadGroupes();
       },
       error: (error) => {
-        console.error('Erreur lors de la création du groupe:', error);
+        console.error('Error creating group:', error);
       }
     });
   }
+  
+  
 
   EnvoyerMsg(): void {
     if (!this.selectedGroup) {
@@ -158,5 +174,24 @@ export class DiscussionComponent implements OnInit {
       }
     });
   }
+
+  toggleUserSelection(user: any) {
+    const index = this.selectedUserIds.findIndex(u => Number(u.idUser) === Number(user.idUser));
+    if (index > -1) {
+      // Remove user from selection
+      this.selectedUserIds.splice(index, 1);
+    } else {
+      // Add user to selection
+      this.selectedUserIds.push(user);
+    }
+    // Create a new array to trigger Angular change detection
+    this.selectedUserIds = [...this.selectedUserIds];
+  }
+  
+  
+  isUserSelected(user: any): boolean {
+    return this.selectedUserIds.some(u => u.idUser === user.idUser);
+  }
+  
   
 }

@@ -1,4 +1,19 @@
-<nav>
-    <li><a href="">Acceuil</a></li>
-    <li><a href="">Changer mot de passe</a></li>
-</nav>
+<nav *ngIf="isUserLoggedIn" class="navbar">
+    <div class="navbar-left">
+      <span class="logo">MyApp</span>
+    </div>
+  
+    <div class="navbar-right">
+      <button  (click)="onLogout()" class="logout-button">
+        Logout
+      </button>
+  
+      <img
+        *ngIf="connectedUserId?.photoProfil"
+        [src]="'data:image/jpeg;base64,' + connectedUserId.photoProfil"
+        alt="User Profile"
+        class="profile-image"
+      />
+    </div>
+  </nav>
+  
