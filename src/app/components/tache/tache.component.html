@@ -1,68 +1,74 @@
-<div class="task-container" *ngIf="tache">
-  <div class="task-main">
-    <div class="task-header">
-      <h2>{{ tache?.titreTache }}</h2>
-      <span class="task-list">
-        Dans la liste <strong>{{ tache.statut }}</strong>
-      </span>
-    </div>
+<div class="task-modal" *ngIf="tache">
+  <div class="close-btn" (click)="retour()">×</div>
 
-    <div class="task-section">
-      <h3>Membres</h3>
-      <div *ngIf="tache.assigneA; else noMember">
-        <div class="member-info">
-          <div class="avatar">
-            {{ getInitials(tache.assigneA) }}
+  <div class="task-container">
+    <div class="task-main">
+      <div class="task-header">
+        <h2>{{ tache.titreTache }}</h2>
+        <span class="task-list">
+          Dans la liste <strong>{{ tache.statut }}</strong>
+        </span>
+      </div>
+
+      <div class="task-section">
+        <h3>Membres</h3>
+        <div *ngIf="tache.assigneA; else noMember">
+          <div class="member-info">
+            <div class="avatar">
+              {{ getInitials(tache.assigneA) }}
+            </div>
+            <p>{{ tache.assigneA }}</p>
           </div>
-          <p>{{ tache.assigneA }}</p>
+        </div>
+        <ng-template #noMember>
+          <p>Aucun membre assigné</p>
+        </ng-template>
+      </div>
+
+      <div class="task-section">
+        <h3>Description</h3>
+        <div *ngIf="!editingDescription">
+          <p>{{ tache.descriptionTache || 'Ajouter une description détaillée...' }}</p>
+          <button class="btn btn-primary" (click)="editDescription()">✏️ Modifier</button>
+        </div>
+        <div *ngIf="editingDescription">
+          <textarea [(ngModel)]="tache.descriptionTache" rows="4" class="description-textarea"></textarea>
+          <div class="action-buttons">
+            <button class="btn btn-success" (click)="saveDescription()">💾 Sauvegarder</button>
+            <button class="btn btn-danger" (click)="cancelEditDescription()">❌ Annuler</button>
+          </div>
         </div>
       </div>
-      <ng-template #noMember>
-        <p>Aucun membre assigné</p>
-      </ng-template>
-    </div>
 
-    <div class="task-section">
-      <h3>Description</h3>
-      <div *ngIf="!editingDescription">
-        <p>{{ tache.descriptionTache || 'Ajouter une description détaillée...' }}</p>
-        <button (click)="editDescription()">✏️ Modifier</button>
+      <div class="task-section" *ngIf="tache.dateDebut || tache.dateFin">
+        <h3>Dates</h3>
+        <p *ngIf="tache.dateDebut">
+          <strong>Début :</strong> {{ tache.dateDebut | date: 'longDate' }}
+        </p>
+        <p *ngIf="tache.dateFin">
+          <strong>Fin :</strong> {{ tache.dateFin | date: 'longDate' }}
+        </p>
       </div>
-      <div *ngIf="editingDescription">
-        <textarea [(ngModel)]="tache.descriptionTache" rows="4"></textarea>
-        <button (click)="saveDescription()">💾 Sauvegarder</button>
-        <button (click)="cancelEditDescription()">❌ Annuler</button>
+
+      <!-- <div class="task-section">
+         <h3>Projet lié</h3>
+         <p *ngIf="tache.projet?.nomProjet">{{ tache.projet.nomProjet }}</p>
+         <p *ngIf="!tache.projet">Aucun projet associé</p>
+       </div> -->
+    </div>
+
+    <div class="task-sidebar">
+      <div>
+        <h3>Ajouté à la carte</h3>
+        <button class="sidebar-btn">📅 Dates</button>
+        <button class="sidebar-btn">👤 Membres</button>
+        <button class="sidebar-btn">🏷️ Étiquettes</button>
       </div>
-    </div>
-
-    <div class="task-section" *ngIf="tache.dateDebut || tache.dateFin">
-      <h3>Dates</h3>
-      <p *ngIf="tache.dateDebut">
-        <strong>Début :</strong> {{ tache.dateDebut | date: 'longDate' }}
-      </p>
-      <p *ngIf="tache.dateFin">
-        <strong>Fin :</strong> {{ tache.dateFin | date: 'longDate' }}
-      </p>
-    </div>
-
-   <!-- <div class="task-section">
-      <h3>Projet lié</h3>
-      <p *ngIf="tache.projet?.nomProjet">{{ tache.projet.nomProjet }}</p>
-      <p *ngIf="!tache.projet">Aucun projet associé</p>
-    </div> -->
-  </div>
-
-  <div class="task-sidebar">
-    <div>
-      <h3>Ajouté à la carte</h3>
-      <button>📅 Dates</button>
-      <button>👤 Membres</button>
-      <button>🏷️ Étiquettes</button>
-    </div>
-    <div>
-      <h3>Actions</h3>
-      <button (click)="editDescription()">✏️ Modifier</button>
-      <button (click)="deleteTache()">🗑️ Supprimer</button>
+      <div>
+        <h3>Actions</h3>
+        <button class="sidebar-btn" (click)="editDescription()">✏️ Modifier</button>
+        <button class="sidebar-btn delete-btn" (click)="deleteTache()">🗑️ Supprimer</button>
+      </div>
     </div>
   </div>
 </div>

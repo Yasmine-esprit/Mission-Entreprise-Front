@@ -1,6 +1,9 @@
-import {Component, ChangeDetectorRef, ViewEncapsulation} from '@angular/core';
+import {Component, ChangeDetectorRef, OnInit} from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import {Router} from "@angular/router";
+import {Tache} from "../../models/tache.model";
+import { Projet } from '../../models/projet.model';
+import { sousTache } from '../../models/sousTache.model';
 
 type StatutTache = "ToDo" | "EnCours" | "Terminé" | "Test" | "Validé" | "Annulé";
 
@@ -8,13 +11,15 @@ interface Task {
   idTache: number;
   titreTache: string;
   descriptionTache: string;
-  assigneA: string;
+  assigneA?: string;
   statut: StatutTache;
-  dateDebut?: string;
-  dateFin?: string;
-  checklist?: { text: string, completed: boolean }[];
-  members?: string[];
-  labels?: string[];
+  dateDebut?: Date;
+  dateFin?: Date;
+  checklist: any[];
+  members: any[];
+  labels: string[];
+  projet?: Projet;
+  sousTaches?: sousTache[];
 }
 
 interface Column {
@@ -26,10 +31,9 @@ interface Column {
   selector: 'app-kanban-board',
   templateUrl: './kanban-board.component.html',
   styleUrls: ['./kanban-board.component.css']
-  //encapsulation: ViewEncapsulation.None
 })
-export class KanbanBoardComponent {
-  selectedTache: Task | null = null;
+export class KanbanBoardComponent implements OnInit {
+  selectedTache!: Tache; // Using non-null assertion
   showTaskDetails = false;
   isEditing = false;
   isAddingTask = false;
@@ -49,7 +53,8 @@ export class KanbanBoardComponent {
           descriptionTache: 'Mettre en place Spring Boot',
           statut: 'ToDo',
           members: ['Yas'],
-          labels: ['green']
+          labels: ['green'],
+          checklist: []
         },
         {
           idTache: 2,
@@ -58,7 +63,8 @@ export class KanbanBoardComponent {
           descriptionTache: 'Modèle UML',
           statut: 'ToDo',
           members: ['Feten'],
-          labels: ['blue']
+          labels: ['blue'],
+          checklist: []
         },
       ]
     },
@@ -72,7 +78,8 @@ export class KanbanBoardComponent {
           descriptionTache: 'Créer maquette Figma',
           statut: 'EnCours',
           members: ['Lina'],
-          labels: ['red']
+          labels: ['red'],
+          checklist: []
         }
       ]
     },
@@ -86,19 +93,23 @@ export class KanbanBoardComponent {
           descriptionTache: 'Repo GitHub, Angular init',
           statut: 'Terminé',
           members: ['Dali'],
-          labels: ['green', 'blue']
+          labels: ['green', 'blue'],
+          checklist: []
         }
       ]
     }
   ];
+
   constructor(private router: Router, private cdRef: ChangeDetectorRef) {}
+
+  ngOnInit(): void {
+    // Alternative initialization approach
+    // this.selectedTache = this.createEmptyTache();
+  }
 
   ouvrirTache(tacheId: number) {
     this.router.navigate(['/tache', tacheId]);
   }
-
-
-  //constructor(private cdRef: ChangeDetectorRef) {}
 
   get connectedColumns(): string[] {
     return this.colonnes.map(colonne => colonne.titre);
@@ -133,16 +144,31 @@ export class KanbanBoardComponent {
 
   openTacheDetails(tache: Task, event: MouseEvent): void {
     event.stopPropagation();
-    this.selectedTache = { ...tache };
+    // Ensure the type conversion is explicit here
+    this.selectedTache = { ...tache } as Tache;
     this.showTaskDetails = true;
-    this.cdRef.detectChanges(); // Ajout critique ici
+    this.cdRef.detectChanges();
   }
 
   closeTacheDetails(): void {
-    this.selectedTache = null;
+    // Don't set to null - either use undefined or initialize an empty object
+    this.selectedTache = this.createEmptyTache();
     this.showTaskDetails = false;
     this.editingDescription = false;
-    this.cdRef.detectChanges(); // pour bien forcer l’UI à se mettre à jour
+    this.cdRef.detectChanges();
+  }
+
+  private createEmptyTache(): Tache {
+    return {
+      idTache: 0,
+      titreTache: '',
+      descriptionTache: '',
+      assigneA: '',
+      statut: 'ToDo',
+      members: [],
+      labels: [],
+      checklist: []
+    };
   }
 
   editDescription(): void {
@@ -218,5 +244,13 @@ export class KanbanBoardComponent {
       labels: [],
       members: []
     };
+  }
+
+  updateTacheDescription(newDescription: string): void {
+    if (this.selectedTache) {
+      this.selectedTache.descriptionTache = newDescription;
+      console.log('Description mise à jour:', newDescription);
+      this.cdRef.detectChanges();
+    }
   }
 }

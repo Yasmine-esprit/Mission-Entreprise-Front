@@ -57,3 +57,4 @@ import {TacheComponent} from "./components/tache/tache.component";
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+export class TacheModule {}
