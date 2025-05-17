@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -19,6 +19,8 @@ import { SousCritereComponent } from './components/sous-critere/sous-critere.com
 import { NoteTgrpComponent } from './components/note-tgrp/note-tgrp.component';
 import { NoteTindivComponent } from './components/note-tindiv/note-tindiv.component';
 import { GrilleEvaluationComponent } from './components/grille-evaluation/grille-evaluation.component';
+import { KanbanBoardComponent } from './components/kanban-board/kanban-board.component';
+import {TacheComponent} from "./components/tache/tache.component";
 
 
 
@@ -30,14 +32,16 @@ import { GrilleEvaluationComponent } from './components/grille-evaluation/grille
     RegisterComponent,
 
     ForgetPassComponent,
-      ResetPassComponent,
-      NavbarComponent,
-      ChangepassComponent,
-      CritereComponent,
-      SousCritereComponent,
-      NoteTgrpComponent,
-      NoteTindivComponent,
-      GrilleEvaluationComponent,
+    ResetPassComponent,
+    NavbarComponent,
+    ChangepassComponent,
+    CritereComponent,
+    SousCritereComponent,
+    NoteTgrpComponent,
+    NoteTindivComponent,
+    GrilleEvaluationComponent,
+    KanbanBoardComponent,
+    TacheComponent,
 
 
   ],
@@ -45,7 +49,8 @@ import { GrilleEvaluationComponent } from './components/grille-evaluation/grille
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    DragDropModule
 
   ],
   providers: [],

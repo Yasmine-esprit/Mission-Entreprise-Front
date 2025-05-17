@@ -1,27 +1,68 @@
-<div class="form-container">
-  <h2>{{ isEditing ? 'Modifier Tâche' : 'Ajouter Tâche' }}</h2>
-  <form (ngSubmit)="saveTache()">
-    <input type="text" placeholder="Titre" [(ngModel)]="newTache.titreTache" name="titreTache" required>
-    <textarea placeholder="Description" [(ngModel)]="newTache.descriptionTache" name="descriptionTache" required></textarea>
-    <input type="date" [(ngModel)]="newTache.dateDebut" name="dateDebut">
-    <input type="date" [(ngModel)]="newTache.dateFin" name="dateFin">
-    <select [(ngModel)]="newTache.statut" name="statut">
-      <option *ngFor="let s of getStatutValues()" [value]="s">{{ s }}</option>
-    </select>
-    <button type="submit">{{ isEditing ? 'Mettre à jour' : 'Ajouter' }}</button>
-    <button type="button" *ngIf="isEditing" (click)="cancelEdit()">Annuler</button>
-  </form>
-</div>
+<div class="task-container" *ngIf="tache">
+  <div class="task-main">
+    <div class="task-header">
+      <h2>{{ tache?.titreTache }}</h2>
+      <span class="task-list">
+        Dans la liste <strong>{{ tache.statut }}</strong>
+      </span>
+    </div>
 
-<hr>
+    <div class="task-section">
+      <h3>Membres</h3>
+      <div *ngIf="tache.assigneA; else noMember">
+        <div class="member-info">
+          <div class="avatar">
+            {{ getInitials(tache.assigneA) }}
+          </div>
+          <p>{{ tache.assigneA }}</p>
+        </div>
+      </div>
+      <ng-template #noMember>
+        <p>Aucun membre assigné</p>
+      </ng-template>
+    </div>
 
-<div class="list-container">
-  <h3>Liste des Tâches</h3>
-  <ul>
-    <li *ngFor="let tache of taches">
-      <strong>{{ tache.titreTache }}</strong> - {{ tache.descriptionTache }} ({{ tache.statut }})
-      <button (click)="editTache(tache)">Modifier</button>
-      <button (click)="deleteTache(tache.idTache)">Supprimer</button>
-    </li>
-  </ul>
+    <div class="task-section">
+      <h3>Description</h3>
+      <div *ngIf="!editingDescription">
+        <p>{{ tache.descriptionTache || 'Ajouter une description détaillée...' }}</p>
+        <button (click)="editDescription()">✏️ Modifier</button>
+      </div>
+      <div *ngIf="editingDescription">
+        <textarea [(ngModel)]="tache.descriptionTache" rows="4"></textarea>
+        <button (click)="saveDescription()">💾 Sauvegarder</button>
+        <button (click)="cancelEditDescription()">❌ Annuler</button>
+      </div>
+    </div>
+
+    <div class="task-section" *ngIf="tache.dateDebut || tache.dateFin">
+      <h3>Dates</h3>
+      <p *ngIf="tache.dateDebut">
+        <strong>Début :</strong> {{ tache.dateDebut | date: 'longDate' }}
+      </p>
+      <p *ngIf="tache.dateFin">
+        <strong>Fin :</strong> {{ tache.dateFin | date: 'longDate' }}
+      </p>
+    </div>
+
+   <!-- <div class="task-section">
+      <h3>Projet lié</h3>
+      <p *ngIf="tache.projet?.nomProjet">{{ tache.projet.nomProjet }}</p>
+      <p *ngIf="!tache.projet">Aucun projet associé</p>
+    </div> -->
+  </div>
+
+  <div class="task-sidebar">
+    <div>
+      <h3>Ajouté à la carte</h3>
+      <button>📅 Dates</button>
+      <button>👤 Membres</button>
+      <button>🏷️ Étiquettes</button>
+    </div>
+    <div>
+      <h3>Actions</h3>
+      <button (click)="editDescription()">✏️ Modifier</button>
+      <button (click)="deleteTache()">🗑️ Supprimer</button>
+    </div>
+  </div>
 </div>
