@@ -1,4 +1,3 @@
-<!-- Modal overlay for better effect -->
 <div class="modal-overlay" *ngIf="showTaskDetails" (click)="closeTacheDetails()"></div>
 
 <div class="app-container">
@@ -37,6 +36,7 @@
     <!-- Kanban Board -->
     <div class="dashboard-container">
       <div class="board" cdkDropListGroup>
+        <!-- Colonnes existantes -->
         <div
           *ngFor="let colonne of colonnes"
           cdkDropList
@@ -100,11 +100,32 @@
             + Add task
           </button>
         </div>
+
+        <!-- Ajouter une nouvelle colonne - Intégré directement dans le board -->
+        <div class="add-list-container">
+          <ng-container *ngIf="isAddingList; else showAddListButton">
+            <input
+              type="text"
+              [(ngModel)]="newListTitle"
+              placeholder="Nom de la liste"
+              class="add-list-input"
+            />
+            <div class="list-actions">
+              <button (click)="addNewList()" class="add-list-btn">Ajouter</button>
+              <button (click)="cancelAddingList()" class="cancel-list-btn">Annuler</button>
+            </div>
+          </ng-container>
+          <ng-template #showAddListButton>
+            <button class="btn-add-list" (click)="startAddingList()">
+              + Ajouter une liste
+            </button>
+          </ng-template>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Task Detail Popup - Using ng-container to avoid nesting issues -->
+  <!-- Task Detail Popup -->
   <ng-container *ngIf="showTaskDetails">
     <app-tache
       [tache]="selectedTache"

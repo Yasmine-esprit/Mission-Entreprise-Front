@@ -66,6 +66,7 @@ export class KanbanBoardComponent implements OnInit {
       this.cdRef.detectChanges();
     }
   }
+
   newTache: Task = this.resetTache();
 
   colonnes: Column[] = [
@@ -126,7 +127,8 @@ export class KanbanBoardComponent implements OnInit {
     }
   ];
 
-  constructor(private router: Router, private cdRef: ChangeDetectorRef) {}
+  constructor(private router: Router, private cdRef: ChangeDetectorRef) {
+  }
 
   ngOnInit(): void {
     // Alternative initialization approach
@@ -171,7 +173,7 @@ export class KanbanBoardComponent implements OnInit {
   openTacheDetails(tache: Task, event: MouseEvent): void {
     event.stopPropagation();
     // Ensure the type conversion is explicit here
-    this.selectedTache = { ...tache } as Tache;
+    this.selectedTache = {...tache} as Tache;
     this.showTaskDetails = true;
     this.cdRef.detectChanges();
   }
@@ -190,6 +192,8 @@ export class KanbanBoardComponent implements OnInit {
       titreTache: '',
       descriptionTache: '',
       assigneA: '',
+      dateDebut:null,
+      dateFin:null,
       statut: 'ToDo',
       members: [],
       labels: [],
@@ -249,7 +253,7 @@ export class KanbanBoardComponent implements OnInit {
   saveTacheForm(): void {
     const colonne = this.colonnes.find(col => col.titre === this.newTache.statut);
     if (colonne) {
-      colonne.taches.push({ ...this.newTache });
+      colonne.taches.push({...this.newTache});
     }
     this.resetForm();
   }
@@ -277,6 +281,31 @@ export class KanbanBoardComponent implements OnInit {
       this.selectedTache.descriptionTache = newDescription;
       console.log('Description mise à jour:', newDescription);
       this.cdRef.detectChanges();
+    }
+
+    this.startAddingList()
+    {
+      this.isAddingList = true;
+      this.newListTitle = '';
+    }
+
+    this.cancelAddingList()
+    {
+      this.isAddingList = false;
+      this.newListTitle = '';
+    }
+
+    this.addNewList()
+    {
+      if (this.newListTitle.trim()) {
+        this.colonnes.push({
+          titre: this.newListTitle.trim() as StatutTache,
+          taches: []
+        });
+        this.isAddingList = false;
+        this.newListTitle = '';
+        this.cdRef.detectChanges();
+      }
     }
   }
 }

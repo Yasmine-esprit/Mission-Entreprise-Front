@@ -12,7 +12,7 @@ body {
   color: #111827;
 }
 
-
+/* Modal overlay */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -24,14 +24,14 @@ body {
   backdrop-filter: blur(2px);
 }
 
-
+/* Container principal */
 .app-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
-
+/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -50,7 +50,7 @@ body {
   color: #3b82f6;
 }
 
-
+/* Navigation */
 .nav {
   display: flex;
   gap: 24px;
@@ -68,7 +68,7 @@ body {
   color: #3b82f6;
 }
 
-
+/* Barre de recherche */
 .search {
   display: flex;
   align-items: center;
@@ -95,7 +95,7 @@ body {
   padding: 4px;
 }
 
-
+/* Actions header */
 .actions {
   display: flex;
   align-items: center;
@@ -122,13 +122,25 @@ body {
   font-weight: 500;
 }
 
-
+/* Layout principal */
 .main {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
+/* Sidebar (maintenant à gauche) */
+.sidebar {
+  width: 240px;
+  background-color: #ffffff;
+  border-right: 1px solid #e5e7eb; /* Changé de border-left à border-right */
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Contenu principal */
 .dashboard-container {
   flex: 1;
   overflow-x: auto;
@@ -136,17 +148,7 @@ body {
   background-color: #f3f4f6;
 }
 
-
-.sidebar {
-  width: 240px;
-  background-color: #ffffff;
-  border-left: 1px solid #e5e7eb;
-  padding: 24px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
+/* Info projet */
 .project-info {
   display: flex;
   align-items: center;
@@ -172,6 +174,7 @@ body {
   font-weight: 600;
 }
 
+/* Dropdowns */
 .dropdown {
   display: flex;
   align-items: center;
@@ -189,6 +192,7 @@ body {
   background-color: #f3f4f6;
 }
 
+/* Bouton principal */
 .create-btn {
   background-color: #3b82f6;
   color: white;
@@ -205,12 +209,16 @@ body {
   background-color: #2563eb;
 }
 
+
 .board {
   display: flex;
   gap: 16px;
   min-width: max-content;
+  align-items: flex-start;
+  padding-bottom: 24px;
 }
 
+/* Colonnes */
 .column {
   background-color: #f9fafb;
   border-radius: 8px;
@@ -222,6 +230,7 @@ body {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
+/* En-tête colonne */
 .column-header {
   display: flex;
   align-items: center;
@@ -237,6 +246,7 @@ body {
   align-items: center;
 }
 
+/* Indicateurs de couleur */
 .column-header h2::before {
   content: '';
   display: inline-block;
@@ -262,7 +272,7 @@ body {
   background-color: #10b981;
 }
 
-
+/* Compteur de tâches */
 .task-count {
   margin-left: 6px;
   color: #6b7280;
@@ -270,6 +280,7 @@ body {
   font-weight: normal;
 }
 
+/* Cartes de tâches */
 .task-card {
   background-color: white;
   border-radius: 6px;
@@ -284,7 +295,7 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-
+/* Étiquettes */
 .card-labels {
   display: flex;
   gap: 4px;
@@ -329,7 +340,7 @@ body {
   background-color: #10b981;
 }
 
-
+/* Contenu tâche */
 .task-card h4 {
   margin: 0 0 12px 0;
   font-size: 14px;
@@ -337,7 +348,7 @@ body {
   color: #111827;
 }
 
-
+/* Date d'échéance */
 .due-date {
   display: flex;
   align-items: center;
@@ -354,14 +365,14 @@ body {
   color: #10b981;
 }
 
-
+/* Assignation */
 .assigned {
   margin-top: 4px;
   font-size: 12px;
   color: #6b7280;
 }
 
-
+/* Bouton ajouter tâche */
 .add-task-btn {
   display: flex;
   align-items: center;
@@ -375,13 +386,14 @@ body {
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
+  transition: all 0.2s ease;
 }
 
 .add-task-btn:hover {
   background-color: #f3f4f6;
 }
 
-
+/* Formulaire ajout tâche */
 .add-task-container {
   margin-bottom: 12px;
 }
@@ -425,6 +437,7 @@ body {
   cursor: pointer;
 }
 
+/* Styles pour le drag and drop */
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 6px;
@@ -444,6 +457,83 @@ body {
 }
 
 
+.btn-add-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border: 1px dashed #d1d5db;
+  border-radius: 6px;
+  background-color: rgba(249, 250, 251, 0.8);
+  color: #6b7280;
+  width: 280px;
+  min-height: 48px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  margin-left: 16px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-add-list:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+  color: #111827;
+}
+
+.add-list-column {
+  width: auto;
+  min-height: auto !important;
+  align-self: flex-start;
+}
+
+.add-list-column input[type="text"] {
+  width: 280px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  background-color: white;
+  margin-left: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.list-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: 16px;
+}
+
+.list-actions button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.list-actions button:first-child {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+}
+
+.list-actions button:first-child:hover {
+  background-color: #2563eb;
+}
+
+.list-actions button:last-child {
+  background-color: white;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+
+.list-actions button:last-child:hover {
+  background-color: #f3f4f6;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .main {
     flex-direction: column;
@@ -451,8 +541,7 @@ body {
 
   .sidebar {
     width: 100%;
-    order: 1;
-    border-left: none;
+    border-right: none;
     border-bottom: 1px solid #e5e7eb;
   }
 
@@ -462,5 +551,24 @@ body {
 
   .search input {
     width: 120px;
+  }
+
+  .btn-add-list {
+    width: calc(100% - 32px);
+    margin: 0 16px;
+    order: 1;
+  }
+  .board {
+    flex-wrap: wrap;
+    padding-bottom: 16px;
+  }
+
+  .add-list-column input[type="text"] {
+    width: calc(100% - 32px);
+    margin: 0 16px 8px;
+  }
+
+  .list-actions {
+    margin: 0 16px 16px;
   }
 }

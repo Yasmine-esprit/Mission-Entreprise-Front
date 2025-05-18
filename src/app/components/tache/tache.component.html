@@ -57,7 +57,7 @@
       <div class="task-sidebar">
         <div>
           <h3>Ajouté à la carte</h3>
-          <button class="sidebar-btn">📅 Dates</button>
+          <button class="sidebar-btn" (click)="toggleDatePicker($event)">📅 Dates</button>
           <button class="sidebar-btn">👤 Membres</button>
           <button class="sidebar-btn">🏷️ Étiquettes</button>
         </div>
@@ -66,6 +66,91 @@
           <button class="sidebar-btn" (click)="editDescription()">✏️ Modifier</button>
           <button class="sidebar-btn delete-btn" (click)="deleteTache()">🗑️ Supprimer</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendrier -->
+  <!-- non validation error msg -->
+  <div *ngIf="dateErrorMessage" class="date-error-message">
+    <div class="error-icon">⚠️</div>
+    <div class="error-text">{{ dateErrorMessage }}</div>
+  </div>
+  <div class="date-picker-modal" *ngIf="showDatePicker">
+    <div class="date-picker-overlay" (click)="toggleDatePicker()"></div>
+    <div class="date-picker-container" #datePickerContainer>
+      <div class="date-picker-header">
+        <h3>Dates</h3>
+        <button class="close-date-picker" (click)="toggleDatePicker()">×</button>
+      </div>
+
+      <div class="calendar-navigation">
+        <button class="nav-btn start" (click)="moveCalendarYear(-1)">«</button>
+        <button class="nav-btn" (click)="moveCalendarMonth(-1)">‹</button>
+        <div class="current-month">{{ currentMonth | date:'MMMM yyyy':'':'fr' }}</div>
+        <button class="nav-btn" (click)="moveCalendarMonth(1)">›</button>
+        <button class="nav-btn end" (click)="moveCalendarYear(1)">»</button>
+      </div>
+
+      <div class="calendar">
+        <div class="weekdays">
+          <div class="weekday">Dim</div>
+          <div class="weekday">Lun</div>
+          <div class="weekday">Mar</div>
+          <div class="weekday">Mer</div>
+          <div class="weekday">Jeu</div>
+          <div class="weekday">Ven</div>
+          <div class="weekday">Sam</div>
+        </div>
+
+        <div class="days">
+          <div *ngFor="let day of calendarDays"
+               class="day"
+               [ngClass]="{
+               'other-month': day.otherMonth,
+               'selected': isSelectedDate(day.date),
+               'today': isToday(day.date)
+             }"
+               (click)="selectDate(day.date)">
+            {{ day.dayNumber }}
+          </div>
+        </div>
+      </div>
+
+      <div class="date-selection">
+        <div class="date-field">
+          <label for="startDate">
+            <input type="checkbox" id="startDate" [(ngModel)]="hasStartDate" (change)="updateStartDate()">
+            Date de début
+          </label>
+          <input type="date"
+                 [disabled]="!hasStartDate"
+                 [(ngModel)]="startDateValue"
+                 (change)="updateTacheDates()">
+        </div>
+
+        <div class="date-field">
+          <label for="dueDate">
+            <input type="checkbox" id="dueDate" [(ngModel)]="hasDueDate" (change)="updateDueDate()">
+            Date d'échéance
+          </label>
+          <div class="due-date-inputs">
+            <input type="date"
+                   [disabled]="!hasDueDate"
+                   [(ngModel)]="dueDateValue"
+                   (change)="updateTacheDates()">
+            <input type="time"
+                   [disabled]="!hasDueDate"
+                   [(ngModel)]="dueTimeValue"
+                   (change)="updateTacheDates()">
+          </div>
+        </div>
+      </div>
+
+      <div class="date-picker-actions">
+        <button class="btn btn-success" (click)="saveDates()">Enregistrer</button>
+        <button class="btn btn-danger" (click)="toggleDatePicker()">Annuler</button>
+        <button *ngIf="hasStartDate || hasDueDate" class="btn btn-outline-danger" (click)="clearDates()">Supprimer</button>
       </div>
     </div>
   </div>
