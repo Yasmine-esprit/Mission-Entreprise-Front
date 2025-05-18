@@ -25,8 +25,8 @@
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="project-info">
-        <div class="circle">logo</div>
-        <h2>ProjectName</h2>
+        <div class="circle">P</div>
+        <h2>Project Tasks</h2>
       </div>
       <div class="dropdown">Phases ▼</div>
       <div class="dropdown">Levels ▼</div>
@@ -59,11 +59,11 @@
             (click)="openTacheDetails(tache, $event)"
             class="task-card"
           >
-            <h4>{{ tache.titreTache }}</h4>
-            <p class="assigned">Assignée à : {{ tache.assigneA || 'Non assignée' }}</p>
-            <div class="card-labels">
+            <div *ngIf="tache.labels && tache.labels.length > 0" class="card-labels">
               <span *ngFor="let label of tache.labels" class="label label-{{label}}"></span>
             </div>
+            <h4>{{ tache.titreTache }}</h4>
+            <p class="assigned">Assignée à : {{ tache.assigneA || 'Non assignée' }}</p>
           </div>
 
           <!-- Add Task Form -->
@@ -97,7 +97,7 @@
             (click)="initNewTask(colonne.titre)"
             *ngIf="!isAddingTask || newTache.statut !== colonne.titre"
           >
-            + Créer une tâche
+            + Add task
           </button>
         </div>
       </div>

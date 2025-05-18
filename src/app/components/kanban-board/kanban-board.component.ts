@@ -39,7 +39,33 @@ export class KanbanBoardComponent implements OnInit {
   isAddingTask = false;
   editingDescription = false;
   tempDescription = '';
+  isAddingList = false;
+  newListTitle = '';
 
+  //submit list
+  startAddingList() {
+    this.isAddingList = true;
+    this.newListTitle = '';
+  }
+
+  //delete list
+  cancelAddingList() {
+    this.isAddingList = false;
+    this.newListTitle = '';
+  }
+
+  //valider ajout liste
+  addNewList() {
+    if (this.newListTitle.trim()) {
+      this.colonnes.push({
+        titre: this.newListTitle.trim() as StatutTache,
+        taches: []
+      });
+      this.isAddingList = false;
+      this.newListTitle = '';
+      this.cdRef.detectChanges();
+    }
+  }
   newTache: Task = this.resetTache();
 
   colonnes: Column[] = [
