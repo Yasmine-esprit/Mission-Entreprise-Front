@@ -1,220 +1,574 @@
-:host {
-  display: block;
-  height: 100vh;
-  background-color: #393939;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  color: #FFFFFF;
 }
 
-/* Header Styles */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  backdrop-filter: blur(2px);
+}
+
+/* Container principal */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Header */
 .header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  height: 48px;
+  height: 56px;
   padding: 0 16px;
-  background-color: #171717;
-  color: #FFFFFF;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  z-index: 5;
 }
 
 .logo {
-  font-weight: 700;
-  font-size: 20px;
-  margin-right: 20px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #3b82f6;
 }
 
+/* Navigation */
 .nav {
   display: flex;
-  gap: 16px;
-  margin-right: auto;
+  gap: 24px;
+  align-items: center;
 }
 
 .nav span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
   cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 4px;
-  color: #FFFFFF;
-  transition: background-color 0.1s;
 }
 
 .nav span:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  color: #3b82f6;
 }
 
+/* Barre de recherche */
 .search {
   display: flex;
-  margin-right: 16px;
+  align-items: center;
+  gap: 8px;
+  background-color: #f3f4f6;
+  border-radius: 6px;
+  padding: 0 4px;
 }
 
 .search input {
-  padding: 6px 12px;
+  background-color: transparent;
   border: none;
-  border-radius: 3px;
+  outline: none;
+  padding: 8px;
   width: 180px;
-  background-color: #26282A;           /* champ de recherche sombre */
-  color: #FFFFFF;
+  font-size: 14px;
 }
 
+.search button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px;
+}
+
+/* Actions header */
 .actions {
   display: flex;
-  gap: 8px;
   align-items: center;
+  gap: 16px;
+}
+
+.actions button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
 }
 
 .avatar {
   width: 32px;
   height: 32px;
-  background-color: #2A2D31;           /* cercle utilisateur foncé */
-  color: #FFFFFF;
+  background-color: #3b82f6;
+  color: white;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-/* Sidebar Styles */
+/* Layout principal */
 .main {
   display: flex;
-  height: calc(100vh - 48px);
+  flex: 1;
+  overflow: hidden;
 }
 
+/* Sidebar (maintenant à gauche) */
 .sidebar {
   width: 240px;
-  background-color: #181A1B;           /* sidebar assorti au fond */
-  padding: 16px;
-  border-right: 1px solid #2A2D31;
-  overflow-y: auto;
+  background-color: #ffffff;
+  border-right: 1px solid #e5e7eb; /* Changé de border-left à border-right */
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
+/* Contenu principal */
+.dashboard-container {
+  flex: 1;
+  overflow-x: auto;
+  padding: 24px;
+  background-color: #f3f4f6;
+}
+
+/* Info projet */
 .project-info {
   display: flex;
   align-items: center;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.project-info h2 {
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .circle {
-  width: 40px;
-  height: 40px;
-  background-color: #FFFFFF;           /* logo du projet */
+  width: 32px;
+  height: 32px;
+  background-color: #3b82f6;
+  color: white;
   border-radius: 50%;
-  color: #2A2D31;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 12px;
   font-size: 14px;
+  font-weight: 600;
 }
 
+/* Dropdowns */
 .dropdown {
-  padding: 8px 12px;
-  margin-bottom: 8px;
-  border-radius: 4px;
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background-color: #f9fafb;
+  border-radius: 6px;
+  font-size: 14px;
   font-weight: 500;
-  color: #FFFFFF;
-  background-color: #2A2D31;           /* menus déroulants foncés */
+  color: #4b5563;
+  cursor: pointer;
 }
 
 .dropdown:hover {
-  background-color: #383A3D;
+  background-color: #f3f4f6;
 }
 
+/* Bouton principal */
 .create-btn {
-  width: 100%;
-  padding: 8px 12px;
-  background-color: #E11D48;
+  background-color: #3b82f6;
+  color: white;
   border: none;
-  border-radius: 4px;
-  text-align: left;
-  color: #FFFFFF;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 14px;
   font-weight: 500;
-  margin-top: 8px;
   cursor: pointer;
+  margin-top: auto;
 }
 
 .create-btn:hover {
-  background-color: #C81B42;
+  background-color: #2563eb;
 }
 
-/* Board Styles */
-.dashboard-container {
-  flex: 1;
-  padding: 16px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  background-color: #181A1B;
-}
 
 .board {
   display: flex;
   gap: 16px;
-  height: calc(100vh - 120px);
+  min-width: max-content;
   align-items: flex-start;
+  padding-bottom: 24px;
 }
 
+/* Colonnes */
 .column {
-  width: 272px;
-  background-color: #26282A;           /* colonne gris anthracite */
+  background-color: #f9fafb;
   border-radius: 8px;
-  padding: 8px;
-  flex-shrink: 0;
+  width: 280px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.column h2 {
+/* En-tête colonne */
+.column-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.column-header h2 {
+  margin: 0;
   font-size: 14px;
   font-weight: 600;
-  padding: 8px 12px;
-  margin: 0;
-  color: #FFFFFF;
+  color: #111827;
+  display: flex;
+  align-items: center;
 }
 
+/* Indicateurs de couleur */
+.column-header h2::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.column:nth-child(1) .column-header h2::before {
+  background-color: #3b82f6;
+}
+
+.column:nth-child(2) .column-header h2::before {
+  background-color: #f59e0b;
+}
+
+.column:nth-child(3) .column-header h2::before {
+  background-color: #8b5cf6;
+}
+
+.column:nth-child(4) .column-header h2::before {
+  background-color: #10b981;
+}
+
+/* Compteur de tâches */
+.task-count {
+  margin-left: 6px;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+/* Cartes de tâches */
 .task-card {
-  background-color: #1E1F21;           /* carte de tâche presque noire */
-  border-radius: 4px;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
-  padding: 8px 12px;
-  margin-bottom: 8px;
+  background-color: white;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   cursor: pointer;
-  transition: background-color 0.1s;
+  position: relative;
 }
 
 .task-card:hover {
-  background-color: #2D2F31;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Étiquettes */
+.card-labels {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.label {
+  height: 6px;
+  width: 40px;
+  border-radius: 3px;
+}
+
+.label-frontend {
+  background-color: #f59e0b;
+}
+
+.label-auth {
+  background-color: #3b82f6;
+}
+
+.label-bug {
+  background-color: #ef4444;
+}
+
+.label-design {
+  background-color: #8b5cf6;
+}
+
+.label-ui {
+  background-color: #10b981;
+}
+
+.label-backend {
+  background-color: #6366f1;
+}
+
+.label-api {
+  background-color: #8b5cf6;
+}
+
+.label-docs {
+  background-color: #10b981;
+}
+
+/* Contenu tâche */
 .task-card h4 {
-  margin: 0 0 4px 0;
+  margin: 0 0 12px 0;
   font-size: 14px;
-  color: #FFFFFF;
-}
-.task-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  font-weight: 500;
+  color: #111827;
 }
 
-.task-popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  width: 600px;
-  max-height: 90vh;
-  overflow-y: auto;
-  border-radius: 10px;
-  padding: 20px;
-  z-index: 1001;
-}
-.assigned {
+/* Date d'échéance */
+.due-date {
+  display: flex;
+  align-items: center;
   font-size: 12px;
-  color: #8A8F98;
-  margin: 0;
+  color: #ef4444;
+  margin-bottom: 8px;
 }
 
+.due-date.warning {
+  color: #f59e0b;
+}
+
+.due-date.success {
+  color: #10b981;
+}
+
+/* Assignation */
+.assigned {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Bouton ajouter tâche */
+.add-task-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: 1px dashed #d1d5db;
+  border-radius: 6px;
+  background-color: transparent;
+  color: #6b7280;
+  width: 100%;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.add-task-btn:hover {
+  background-color: #f3f4f6;
+}
+
+/* Formulaire ajout tâche */
+.add-task-container {
+  margin-bottom: 12px;
+}
+
+.add-task-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.add-task-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.add-btn {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.add-btn:disabled {
+  background-color: #93c5fd;
+  cursor: not-allowed;
+}
+
+.cancel-btn {
+  background-color: white;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Styles pour le drag and drop */
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 6px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.column.cdk-drop-list-dragging .task-card:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+
+.btn-add-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border: 1px dashed #d1d5db;
+  border-radius: 6px;
+  background-color: rgba(249, 250, 251, 0.8);
+  color: #6b7280;
+  width: 280px;
+  min-height: 48px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  margin-left: 16px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-add-list:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+  color: #111827;
+}
+
+.add-list-column {
+  width: auto;
+  min-height: auto !important;
+  align-self: flex-start;
+}
+
+.add-list-column input[type="text"] {
+  width: 280px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  background-color: white;
+  margin-left: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.list-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: 16px;
+}
+
+.list-actions button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.list-actions button:first-child {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+}
+
+.list-actions button:first-child:hover {
+  background-color: #2563eb;
+}
+
+.list-actions button:last-child {
+  background-color: white;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+
+.list-actions button:last-child:hover {
+  background-color: #f3f4f6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .dashboard-container {
+    order: 1;
+  }
+
+  .search input {
+    width: 120px;
+  }
+
+  .btn-add-list {
+    width: calc(100% - 32px);
+    margin: 0 16px;
+    order: 1;
+  }
+  .board {
+    flex-wrap: wrap;
+    padding-bottom: 16px;
+  }
+
+  .add-list-column input[type="text"] {
+    width: calc(100% - 32px);
+    margin: 0 16px 8px;
+  }
+
+  .list-actions {
+    margin: 0 16px 16px;
+  }
+}
