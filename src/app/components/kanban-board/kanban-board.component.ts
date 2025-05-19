@@ -192,6 +192,7 @@ export class KanbanBoardComponent implements OnInit {
       titreTache: '',
       descriptionTache: '',
       assigneA: '',
+      priorite:null,
       dateDebut:null,
       dateFin:null,
       statut: 'ToDo',

@@ -1,6 +1,4 @@
-<!-- Arrière-plan flou + centrage du pop-up -->
 <div class="modal-backdrop" *ngIf="tache">
-  <!-- Fenêtre modale claire -->
   <div class="task-modal">
     <div class="close-btn" (click)="retour()">×</div>
 
@@ -9,73 +7,69 @@
         <div class="task-header">
           <h2>{{ tache.titreTache }}</h2>
           <span class="task-list">
-            Dans la liste <strong>{{ tache.statut }}</strong>
+            In the list <strong>{{ tache.statut }}</strong>
           </span>
+          <div *ngIf="tache.priorite !== null" class="priority-badge" [attr.data-priority]="tache.priorite">
+            <span class="priority-badge-color" [attr.data-priority]="tache.priorite"></span>
+            <span>{{ getPriorityLabel(tache.priorite) }}</span>
+          </div>
         </div>
 
         <div class="task-section">
-          <h3>Membres</h3>
+          <h3>Members</h3>
           <div *ngIf="tache.assigneA; else noMember">
             <div class="member-info">
-              <div class="avatar">
-                {{ getInitials(tache.assigneA) }}
-              </div>
+              <div class="avatar">{{ getInitials(tache.assigneA) }}</div>
               <p>{{ tache.assigneA }}</p>
             </div>
           </div>
-          <ng-template #noMember>
-            <p>Aucun membre assigné</p>
-          </ng-template>
+          <ng-template #noMember><p>No member assigned</p></ng-template>
         </div>
 
         <div class="task-section">
           <h3>Description</h3>
           <div *ngIf="!editingDescription">
-            <p>{{ tache.descriptionTache || 'Ajouter une description détaillée...' }}</p>
-            <button class="btn btn-primary" (click)="editDescription()">✏️ Modifier</button>
+            <p>{{ tache.descriptionTache || 'Add detailed description...' }}</p>
+            <button class="btn btn-primary" (click)="editDescription()">✏️ Edit</button>
           </div>
           <div *ngIf="editingDescription">
-            <textarea [(ngModel)]="tache.descriptionTache" rows="4" class="description-textarea"></textarea>
+            <textarea [(ngModel)]="tempDescription" rows="4" class="description-textarea"></textarea>
             <div class="action-buttons">
-              <button class="btn btn-success" (click)="saveDescription()">💾 Sauvegarder</button>
-              <button class="btn btn-danger" (click)="cancelEditDescription()">❌ Annuler</button>
+              <button class="btn btn-success" (click)="saveDescription()">💾 Save</button>
+              <button class="btn btn-danger" (click)="cancelEditDescription()">❌ Cancel</button>
             </div>
           </div>
         </div>
 
         <div class="task-section" *ngIf="tache.dateDebut || tache.dateFin">
           <h3>Dates</h3>
-          <p *ngIf="tache.dateDebut">
-            <strong>Début :</strong> {{ tache.dateDebut | date: 'longDate' }}
-          </p>
-          <p *ngIf="tache.dateFin">
-            <strong>Fin :</strong> {{ tache.dateFin | date: 'longDate' }}
-          </p>
+          <p *ngIf="tache.dateDebut"><strong>Start:</strong> {{ tache.dateDebut | date: 'longDate' }}</p>
+          <p *ngIf="tache.dateFin"><strong>Due:</strong> {{ tache.dateFin | date: 'longDate' }}</p>
         </div>
       </div>
 
       <div class="task-sidebar">
         <div>
-          <h3>Ajouté à la carte</h3>
+          <h3>Details</h3>
           <button class="sidebar-btn" (click)="toggleDatePicker($event)">📅 Dates</button>
-          <button class="sidebar-btn">👤 Membres</button>
-          <button class="sidebar-btn">🏷️ Étiquettes</button>
+          <!-- Priority button with new design -->
+          <button class="sidebar-btn priority-btn" (click)="togglePriorityPicker($event)">
+            <span class="priority-color" [attr.data-priority]="tache.priorite"></span>
+            <span class="priority-text">{{ getPriorityLabel(tache.priorite) }}</span>
+          </button>
+          <button class="sidebar-btn">👤 Members</button>
+          <button class="sidebar-btn">🏷️ Labels</button>
         </div>
         <div>
           <h3>Actions</h3>
-          <button class="sidebar-btn" (click)="editDescription()">✏️ Modifier</button>
-          <button class="sidebar-btn delete-btn" (click)="deleteTache()">🗑️ Supprimer</button>
+          <button class="sidebar-btn" (click)="editDescription()"> 💾 Save</button>
+          <button class="sidebar-btn delete-btn" (click)="deleteTache()">🗑️ Delete</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Calendrier -->
-  <!-- non validation error msg -->
-  <div *ngIf="dateErrorMessage" class="date-error-message">
-    <div class="error-icon">⚠️</div>
-    <div class="error-text">{{ dateErrorMessage }}</div>
-  </div>
+  <!-- Date Picker Modal -->
   <div class="date-picker-modal" *ngIf="showDatePicker">
     <div class="date-picker-overlay" (click)="toggleDatePicker()"></div>
     <div class="date-picker-container" #datePickerContainer>
@@ -87,31 +81,32 @@
       <div class="calendar-navigation">
         <button class="nav-btn start" (click)="moveCalendarYear(-1)">«</button>
         <button class="nav-btn" (click)="moveCalendarMonth(-1)">‹</button>
-        <div class="current-month">{{ currentMonth | date:'MMMM yyyy':'':'fr' }}</div>
+        <span class="current-month">
+          {{ currentMonth | date: 'MMMM yyyy' }}
+        </span>
         <button class="nav-btn" (click)="moveCalendarMonth(1)">›</button>
         <button class="nav-btn end" (click)="moveCalendarYear(1)">»</button>
       </div>
 
       <div class="calendar">
         <div class="weekdays">
-          <div class="weekday">Dim</div>
-          <div class="weekday">Lun</div>
-          <div class="weekday">Mar</div>
-          <div class="weekday">Mer</div>
-          <div class="weekday">Jeu</div>
-          <div class="weekday">Ven</div>
-          <div class="weekday">Sam</div>
+          <div class="weekday">Sun</div>
+          <div class="weekday">Mon</div>
+          <div class="weekday">Tue</div>
+          <div class="weekday">Wed</div>
+          <div class="weekday">Thu</div>
+          <div class="weekday">Fri</div>
+          <div class="weekday">Sat</div>
         </div>
 
         <div class="days">
-          <div *ngFor="let day of calendarDays"
-               class="day"
-               [ngClass]="{
-               'other-month': day.otherMonth,
-               'selected': isSelectedDate(day.date),
-               'today': isToday(day.date)
-             }"
-               (click)="selectDate(day.date)">
+          <div
+            *ngFor="let day of calendarDays"
+            class="day"
+            [class.other-month]="day.otherMonth"
+            [class.selected]="isSelectedDate(day.date)"
+            [class.today]="isToday(day.date)"
+            (click)="selectDate(day.date)">
             {{ day.dayNumber }}
           </div>
         </div>
@@ -119,9 +114,11 @@
 
       <div class="date-selection">
         <div class="date-field">
-          <label for="startDate">
-            <input type="checkbox" id="startDate" [(ngModel)]="hasStartDate" (change)="updateStartDate()">
-            Date de début
+          <label>
+            <input type="checkbox"
+                   [(ngModel)]="hasStartDate"
+                   (change)="updateStartDate()">
+            Start date
           </label>
           <input type="date"
                  [disabled]="!hasStartDate"
@@ -130,9 +127,11 @@
         </div>
 
         <div class="date-field">
-          <label for="dueDate">
-            <input type="checkbox" id="dueDate" [(ngModel)]="hasDueDate" (change)="updateDueDate()">
-            Date d'échéance
+          <label>
+            <input type="checkbox"
+                   [(ngModel)]="hasDueDate"
+                   (change)="updateDueDate()">
+            Due date
           </label>
           <div class="due-date-inputs">
             <input type="date"
@@ -148,10 +147,38 @@
       </div>
 
       <div class="date-picker-actions">
-        <button class="btn btn-success" (click)="saveDates()">Enregistrer</button>
-        <button class="btn btn-danger" (click)="toggleDatePicker()">Annuler</button>
-        <button *ngIf="hasStartDate || hasDueDate" class="btn btn-outline-danger" (click)="clearDates()">Supprimer</button>
+        <button class="btn btn-danger" (click)="clearDates()">Remove</button>
+        <button class="btn btn-primary" (click)="saveDates()">Save</button>
       </div>
     </div>
+  </div>
+
+  <!-- Priority Picker Modal with new design -->
+  <div class="priority-picker-modal" *ngIf="showPriorityPicker">
+    <div class="priority-picker-overlay" (click)="togglePriorityPicker()"></div>
+    <div class="priority-picker-container" #priorityPickerContainer>
+      <div class="priority-picker-header">
+        <h3>Priority</h3>
+        <button class="close-priority-picker" (click)="togglePriorityPicker()">×</button>
+      </div>
+
+      <div class="priority-options">
+        <div *ngFor="let priorite of priorites"
+             class="priority-option"
+             [class.selected]="tache.priorite === priorite"
+             [attr.data-priority]="priorite"
+             (click)="setPriority(priorite)">
+          <span class="priority-color-box" [attr.data-priority]="priorite"></span>
+          <span class="priority-label">{{ getPriorityLabel(priorite) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Message for Date Validation -->
+  <div class="date-error-message" *ngIf="dateErrorMessage">
+    <span class="error-icon">⚠️</span>
+    <span class="error-text">{{ dateErrorMessage }}</span>
+    <span class="error-close" (click)="dateErrorMessage = null">×</span>
   </div>
 </div>

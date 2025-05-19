@@ -1,19 +1,25 @@
 import { Projet } from './projet.model';
 import { sousTache } from './sousTache.model';
 
+export type StatutTache = 'ToDo' | 'EnCours' | 'Terminé' | 'Test' | 'Validé' | 'Annulé';
+export type PrioriteTache = "Highest" | "High" | "Medium" | "Low" | "Lowest" | null;
+
 export interface Tache {
-  labels?: string[];
-  members: any[];
-  checklist?: any[];
   idTache?: number;
   titreTache: string;
   descriptionTache: string;
   dateDebut: Date | null;
   dateFin: Date | null;
-  statut?: 'ToDo' | 'EnCours' | 'Terminé' | 'Test' | 'Validé' | 'Annulé';
-  projet?: Projet;
+  statut?: StatutTache;
+  priorite: PrioriteTache;
+  assigneA?: string | null;
+  labels?: string[];
+  members: string[];
+  checklist?: {
+    description: string;
+    completed: boolean;
+  }[];
+  projet?: Projet | null;
   sousTaches?: sousTache[];
-  assigneA?: string;
-  priorite?: string;
 }
 
