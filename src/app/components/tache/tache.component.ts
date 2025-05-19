@@ -1,16 +1,18 @@
-import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges, ElementRef, ViewChild } from '@angular/core';
 import { Tache } from 'src/app/models/tache.model';
 import { TacheService } from 'src/app/service/tache.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { formatDate } from '@angular/common';
 
 type StatutTache = "ToDo" | "EnCours" | "Terminé" | "Test" | "Validé" | "Annulé";
+type PrioriteTache = "Highest" | "High" | "Medium" | "Low" | "Lowest" | null;
 
 interface CalendarDay {
   date: Date;
   dayNumber: number;
   otherMonth: boolean;
 }
+
 @Component({
   selector: 'app-tache',
   templateUrl: './tache.component.html',
@@ -24,6 +26,7 @@ export class TacheComponent implements OnInit, OnChanges {
   @Output() updateDescription = new EventEmitter<string>();
   @Input() tache!: Tache;
   showDatePicker = false;
+  showPriorityPicker = false;
   currentMonth = new Date();
   calendarDays: CalendarDay[] = [];
   hasStartDate = false;
@@ -34,31 +37,39 @@ export class TacheComponent implements OnInit, OnChanges {
   selectedDate: Date | null = null;
   dateErrorMessage: string | null = null;
 
+  priorites: PrioriteTache[] = ["Highest", "High", "Medium", "Low", "Lowest", null];
+
   @ViewChild('datePickerContainer') datePickerContainer!: ElementRef;
+  @ViewChild('priorityPickerContainer') priorityPickerContainer!: ElementRef;
 
   constructor(
     private tacheService: TacheService,
     private route: ActivatedRoute,
     private router: Router
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id && !this.tache) {
       this.chargerTache(+id);
     }
+    if (this.tache && this.tache.priorite === undefined) {
+      this.tache.priorite = null; //de undefined à null
+    }
 
     if (this.tache) {
       this.tempDescription = this.tache.descriptionTache;
       this.initDateValues();
+      // Initialisation sécurisée de la priorité
+      if (this.tache.priorite === undefined) {
+        this.tache.priorite = null;
+      }
     }
     this.generateCalendarDays();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['tache'] && changes['tache'].currentValue) {
-      console.log('Tache changed:', this.tache);
       this.tempDescription = this.tache.descriptionTache;
       this.initDateValues();
     }
@@ -72,31 +83,24 @@ export class TacheComponent implements OnInit, OnChanges {
           members: t.assigneA ? [t.assigneA] : [],
           checklist: t.checklist || [],
           labels: t.labels || ['green'],
-          statut: this.validateStatut(t.statut)
+          statut: this.validateStatut(t.statut),
+          priorite: this.validatePriorite(t.priorite)
         };
         this.tempDescription = this.tache.descriptionTache;
       }
     });
   }
 
+  private validatePriorite(priorite: any): PrioriteTache {
+    const prioritesValides: PrioriteTache[] = ["Highest", "High", "Medium", "Low", "Lowest", null];
+    return prioritesValides.includes(priorite) ? priorite : null;
+  }
+
+
+
   editDescription(): void {
     this.editingDescription = true;
     this.tempDescription = this.tache?.descriptionTache || '';
-  }
-
-  private saveTache(): void {
-    if (this.tache) {
-      this.tacheService.updateTache(this.tache).subscribe({
-        next: (updatedTache) => {
-          console.log('Tâche mise à jour avec succès', updatedTache);
-          this.tache = updatedTache;
-          this.tempDescription = this.tache.descriptionTache;
-        },
-        error: (err) => {
-          console.error('Erreur lors de la mise à jour de la tâche', err);
-        }
-      });
-    }
   }
 
   saveDescription(): void {
@@ -106,25 +110,33 @@ export class TacheComponent implements OnInit, OnChanges {
       this.updateDescription.emit(this.tache.descriptionTache);
       this.saveTache();
     }
-
   }
 
   cancelEditDescription(): void {
+    this.editingDescription = false;
+  }
+
+  private saveTache(): void {
     if (this.tache) {
-      this.tache.descriptionTache = this.tempDescription;
-      this.editingDescription = false;
+      this.tacheService.updateTache(this.tache).subscribe({
+        next: (updatedTache) => {
+          this.tache = updatedTache;
+          this.tempDescription = this.tache.descriptionTache;
+        },
+        error: (err) => {
+          console.error('Erreur lors de la mise à jour', err);
+        }
+      });
     }
   }
 
   deleteTache(): void {
     if (this.tache?.idTache) {
       if (this.route.snapshot.paramMap.get('id')) {
-        // In standalone mode
         this.tacheService.deleteTache(this.tache.idTache).subscribe(() => {
           this.router.navigate(['/']);
         });
       } else {
-        // In popup mode
         this.delete.emit(this.tache.idTache);
       }
     }
@@ -150,6 +162,9 @@ export class TacheComponent implements OnInit, OnChanges {
 
   toggleDatePicker(event?: MouseEvent): void {
     this.showDatePicker = !this.showDatePicker;
+
+    // Fermer le sélecteur de priorité s'il est ouvert
+    this.showPriorityPicker = false;
 
     if (this.showDatePicker) {
       this.dateErrorMessage = null;
@@ -184,6 +199,44 @@ export class TacheComponent implements OnInit, OnChanges {
 
     if (top + calendarHeight > windowHeight) {
       container.style.top = (windowHeight - calendarHeight - 10) + 'px';
+    } else {
+      container.style.top = top + 'px';
+    }
+  }
+
+  togglePriorityPicker(event?: MouseEvent): void {
+    this.showPriorityPicker = !this.showPriorityPicker;
+
+    this.showDatePicker = false;
+
+    if (this.showPriorityPicker && event) {
+      setTimeout(() => {
+        this.positionPriorityPicker(event);
+      });
+    }
+  }
+
+  positionPriorityPicker(event?: MouseEvent): void {
+    if (!this.priorityPickerContainer || !event) return;
+
+    const container = this.priorityPickerContainer.nativeElement;
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
+
+    // Position the picker right below the button
+    const top = rect.bottom + 5;
+    const left = rect.left;
+
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    const pickerWidth = container.offsetWidth;
+    const pickerHeight = container.offsetHeight;
+    if (left + pickerWidth > windowWidth) {
+      container.style.left = (windowWidth - pickerWidth - 10) + 'px';
+    } else {
+      container.style.left = left + 'px';
+    }
+    if (top + pickerHeight > windowHeight) {
+      container.style.top = (rect.top - pickerHeight - 5) + 'px';
     } else {
       container.style.top = top + 'px';
     }
@@ -424,6 +477,43 @@ export class TacheComponent implements OnInit, OnChanges {
     this.saveTache();
   }
 
+  /*getPriorityColor(priorite: PrioriteTache): string {
+    if (!priorite) return '#EBECF0';
+    switch (priorite) {
+      case 'Highest': return '#FF5630';
+      case 'High': return '#FF8B00';
+      case 'Medium': return '#FFAB00';
+      case 'Low': return '#51c26c';
+      case 'Lowest': return '#366ab8';
+      default: return '#EBECF0';
+    }
+  }
+
+   getPriorityIcon(priorite: PrioriteTache): string {
+    if (!priorite) return '🏷️';
+    switch (priorite) {
+      case 'Highest': return '⬆️⬆️';
+      case 'High': return '⬆️';
+      case 'Medium': return '➖';
+      case 'Low': return '⬇️';
+      case 'Lowest': return '⬇️⬇️';
+      default: return '🏷️';
+    }
+  } */
+
+  getPriorityLabel(priorite: PrioriteTache): string {
+    if (!priorite) return 'No Priority';
+
+    return priorite;
+  }
+
+  setPriority(priorite: PrioriteTache): void {
+    if (this.tache) {
+      this.tache.priorite = priorite;
+      this.saveTache();
+      this.showPriorityPicker = false;
+    }
+  }
 
   saveDates(): void {
     if (!this.validateDates()) {
