@@ -15,11 +15,21 @@ export interface Tache {
   assigneA?: string | null;
   labels?: string[];
   members: string[];
+  piecesJointes?: PieceJointe[];
   checklist?: {
     description: string;
     completed: boolean;
   }[];
   projet?: Projet | null;
   sousTaches?: sousTache[];
+}
+
+export interface PieceJointe {
+  id?: number;
+  nom: string;
+  url: string;
+  type: 'fichier' | 'lien';
+  dateAjout?: Date;
+  taille?: number;
 }
 

@@ -64,6 +64,8 @@
           <h3>Actions</h3>
           <button class="sidebar-btn" (click)="editDescription()"> 💾 Save</button>
           <button class="sidebar-btn delete-btn" (click)="deleteTache()">🗑️ Delete</button>
+          <button class="sidebar-btn" (click)="toggleAttachmentModal()"> 📎 Attachments</button>
+        </div>
         </div>
       </div>
     </div>
@@ -180,5 +182,70 @@
     <span class="error-icon">⚠️</span>
     <span class="error-text">{{ dateErrorMessage }}</span>
     <span class="error-close" (click)="dateErrorMessage = null">×</span>
+  </div>
+
+<!-- pièces jointes -->
+<div class="attachment-modal" *ngIf="showAttachmentModal">
+  <div class="attachment-overlay" (click)="toggleAttachmentModal()"></div>
+  <div class="attachment-container">
+    <div class="attachment-header">
+      <h3>Add Attachment</h3>
+      <button class="close-attachment" (click)="toggleAttachmentModal()">×</button>
+    </div>
+
+    <div class="attachment-tabs">
+      <div class="tab active">Link</div>
+      <div class="tab">File</div>
+    </div>
+
+    <div class="attachment-content">
+      <!-- Onglet Lien -->
+      <div class="tab-content active">
+        <input type="text"
+               [(ngModel)]="newAttachmentUrl"
+               placeholder="Paste any link...">
+        <button class="btn btn-primary"
+                (click)="addLinkAttachment()"
+                [disabled]="!newAttachmentUrl.trim()">
+          Add Link
+        </button>
+      </div>
+
+      <!-- Onglet Fichier -->
+      <div class="tab-content">
+        <input type="file"
+               id="fileAttachment"
+               (change)="onFileSelected($event)"
+               multiple
+               style="display: none;">
+        <label for="fileAttachment" class="file-upload-btn">
+          Choose Files
+        </label>
+        <div *ngIf="attachmentFiles.length" class="file-list">
+          <div *ngFor="let file of attachmentFiles" class="file-item">
+            {{ file.name }} ({{ file.size | fileSize }})
+          </div>
+        </div>
+        <button class="btn btn-primary"
+                (click)="addFileAttachments()"
+                [disabled]="!attachmentFiles.length">
+          Upload {{ attachmentFiles.length }} Files
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Liste des pièces jointes déja existantes -->
+<div class="attachments-list" *ngIf="tache.piecesJointes?.length">
+  <h3>Attachments</h3>
+  <div *ngFor="let attachment of tache.piecesJointes; let i = index"
+       class="attachment-item">
+    <a [href]="attachment.url" target="_blank" class="attachment-link">
+      <span *ngIf="attachment.type === 'lien'">🔗</span>
+      <span *ngIf="attachment.type === 'fichier'">📄</span>
+      {{ attachment.nom }}
+    </a>
+    <button class="remove-attachment" (click)="removeAttachment(i)">×</button>
   </div>
 </div>

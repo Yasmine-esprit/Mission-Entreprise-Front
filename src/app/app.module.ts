@@ -21,6 +21,7 @@ import { NoteTindivComponent } from './components/note-tindiv/note-tindiv.compon
 import { GrilleEvaluationComponent } from './components/grille-evaluation/grille-evaluation.component';
 import { KanbanBoardComponent } from './components/kanban-board/kanban-board.component';
 import {TacheComponent} from "./components/tache/tache.component";
+import {FileSizePipe} from "./pipes/file-size.pipe";
 
 
 registerLocaleData(localeFr);
@@ -43,6 +44,7 @@ registerLocaleData(localeFr);
     GrilleEvaluationComponent,
     KanbanBoardComponent,
     TacheComponent,
+    FileSizePipe,
 
 
   ],

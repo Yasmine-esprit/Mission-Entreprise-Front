@@ -36,6 +36,9 @@ export class TacheComponent implements OnInit, OnChanges {
   dueTimeValue = '20:00';
   selectedDate: Date | null = null;
   dateErrorMessage: string | null = null;
+  showAttachmentModal = false;
+  newAttachmentUrl = '';
+  attachmentFiles: File[] = [];
 
   priorites: PrioriteTache[] = ["Highest", "High", "Medium", "Low", "Lowest", null];
 
@@ -60,7 +63,6 @@ export class TacheComponent implements OnInit, OnChanges {
     if (this.tache) {
       this.tempDescription = this.tache.descriptionTache;
       this.initDateValues();
-      // Initialisation sécurisée de la priorité
       if (this.tache.priorite === undefined) {
         this.tache.priorite = null;
       }
@@ -561,5 +563,74 @@ export class TacheComponent implements OnInit, OnChanges {
   formatDate(date: Date | null): string {
     if (!date) return '';
     return formatDate(date, 'dd MMMM yyyy', 'fr');
+  }
+
+  //Attachement
+  toggleAttachmentModal(): void {
+    this.showAttachmentModal = !this.showAttachmentModal;
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      this.attachmentFiles = Array.from(input.files);
+    }
+  }
+
+  addLinkAttachment(): void {
+    if (this.newAttachmentUrl.trim()) {
+      if (!this.tache.piecesJointes) {
+        this.tache.piecesJointes = [];
+      }
+
+      this.tache.piecesJointes.push({
+        nom: this.getDomainFromUrl(this.newAttachmentUrl),
+        url: this.newAttachmentUrl,
+        type: 'lien',
+        dateAjout: new Date()
+      });
+
+      this.saveTache();
+      this.newAttachmentUrl = '';
+      this.showAttachmentModal = false;
+    }
+  }
+
+  addFileAttachments(): void {
+    if (this.attachmentFiles.length > 0) {
+      if (!this.tache.piecesJointes) { //! => attachement exists now
+        this.tache.piecesJointes = [];
+      }
+
+      this.attachmentFiles.forEach(file => {
+        this.tache.piecesJointes!.push({
+          nom: file.name,
+          url: URL.createObjectURL(file),
+          type: 'fichier',
+          taille: file.size,
+          dateAjout: new Date()
+        });
+      });
+
+      this.saveTache();
+      this.attachmentFiles = [];
+      this.showAttachmentModal = false;
+    }
+  }
+
+  removeAttachment(index: number): void {
+    if (this.tache.piecesJointes) {
+      this.tache.piecesJointes.splice(index, 1);
+      this.saveTache();
+    }
+  }
+
+  private getDomainFromUrl(url: string): string {
+    try {
+      const domain = new URL(url).hostname;
+      return domain.startsWith('www.') ? domain.substring(4) : domain;
+    } catch {
+      return url.length > 30 ? url.substring(0, 30) + '...' : url;
+    }
   }
 }
