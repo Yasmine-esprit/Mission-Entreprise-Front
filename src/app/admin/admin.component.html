@@ -1,0 +1,54 @@
+<div *ngIf="users.length > 0; else noUsers" class="user-table-container">
+  <table class="user-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Roles</th>
+        <th>Locked</th>
+        <th colspan="3" class="actions-header">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>{{ user.idUser }}</td>
+        <td>{{ user.nomUser }}</td>
+        <td>{{ user.prenomUser }}</td>
+        <td>{{ user.emailUser }}</td>
+        <td>{{ user.roles }}</td>
+        <td>
+          <span [class.locked]="user.accountLockedUser" [class.unlocked]="!user.accountLockedUser">
+            {{ user.accountLockedUser ? 'Yes' : 'No' }}
+          </span>
+        </td>
+        <td>
+          <button (click)="DeleteUser(user.idUser)" class="icon-button" title="Delete">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </td>
+        <td>
+          <a [routerLink]="['/updateUser', user.idUser]" class="icon-button" title="Edit">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </a>
+        </td>
+        <td>
+          <button class="icon-button" title="Enable" (click)="EnableUser(user.emailUser)">
+            <i class="fa-solid fa-check-circle" style="color: green;"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+
+<ng-template #noUsers>
+  <p class="no-users-message">No users available.</p>
+</ng-template>
+
+
+
+  <a routerLink="/registerUser" class="sign-in-button add-user-btn">Register User </a>
+  <a routerLink="/addUsers" class="sign-in-button add-user-btn">Add Users</a>

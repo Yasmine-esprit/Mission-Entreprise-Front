@@ -1,4 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChatMessage, WebSocketService } from '../service/web-socket.service';
+import { UserService } from '../service/user.service';
+import { Subscription } from 'rxjs'; // ✅ Correct
+
+import { UserDTO } from '../models/user-dto';
 
 @Component({
   selector: 'app-changepass',
@@ -6,5 +11,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./changepass.component.css']
 })
 export class ChangepassComponent {
-
 }
+

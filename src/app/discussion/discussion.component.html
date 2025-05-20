@@ -1,0 +1,121 @@
+<div class="container">
+    <!-- Left side for group list -->
+   <div class="group-list" style="width: 20%; float: left;">
+  <ul>
+    <li *ngFor="let group of data" (click)="selectGroup(group)" class="group-item">
+
+     <div class="group-users-avatars" *ngIf="hasGroupMembers(group.idGrpMsg)">
+  <div *ngFor="let member of selectedUsersByGroup[group.idGrpMsg]">
+    <span>{{ member.nomUser}} {{member.prenomUser}}</span>
+  </div>
+</div>
+
+      
+
+      <button class="delete-btn" (click)="deleteGroup(group.idGrpMsg); $event.stopPropagation()">
+        <i class="fa-solid fa-trash" style="color: white;"></i>
+      </button>
+    </li>
+  </ul>
+
+  <button (click)="showPopup = true" class="sign-in-button">
+    <i class="fa-solid fa-plus" style="margin-right: 5px;"></i> Add
+  </button>
+</div>
+
+
+  
+    <!-- Right side for displaying messages -->
+    <div class="message-display" style="width: 75%; float: right;" *ngIf="selectedGroup" >
+      
+  
+      <!-- If messages are available -->
+      <!-- Zone d’affichage des messages -->
+<div style="height: 90%;" *ngIf="messages && messages.length > 0">
+
+  <div style="max-height: 90%; overflow-y: auto; padding-right: 8px;">
+    <div *ngFor="let message of messages"
+         class="message"
+        >
+
+
+      <img
+        *ngIf="getUserById(message.senderId)?.photoProfil"
+        [src]="'data:image/jpeg;base64,' + getUserById(message.senderId).photoProfil"
+        alt="User Avatar"
+        class="message-avatar"
+      />
+
+      <div class="message-content">
+        <p>{{ message.contenu }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+      
+      
+  
+      <!-- If no messages -->
+      <div *ngIf="messages.length === 0">
+        <p>No messages available for this group.</p>
+      </div>
+
+      <div *ngIf="selectedGroup">
+       
+        
+        <div style="display: flex; align-items: center;">
+          <textarea
+            [(ngModel)]="messageContent"
+            placeholder="Write your message..."
+            style="resize: none; width: 100%; height: 60px; padding: 8px; border-radius: 4px; border: 1px solid #ccc; margin-right: 10px;"
+          ></textarea>
+      
+          <button
+            (click)="sendMessage()"
+            style=" background-color: #e53935; color: white; border: none; padding: 10px 14px; border-radius: 4px; cursor: pointer;"
+          >
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+      
+      
+
+      
+        
+
+      
+    </div>
+
+
+</div>
+
+
+
+
+  <!-- Popup content -->
+<div *ngIf="showPopup" class="popup-overlay">
+  <div class="popup-content">
+
+    <div
+      *ngFor="let user of users"
+      (click)="toggleUserSelection(user)"
+      [class.selected]="isUserSelected(user)"
+      class="user-item"
+    >
+        <img
+    [src]="user?.photoProfil ? ('data:image/jpeg;base64,' + user.photoProfil) : 'assets/defaultimage.jpg'"
+    alt="User Profile"
+    class="profile-image"
+  />
+      
+
+
+      <span>{{ user.nomUser }} {{ user.prenomUser }}</span>
+    </div>
+
+    <button (click)="confirmSelection()" class="sign-in-button">Confirm</button>
+    <button (click)="showPopup = false" class="sign-in-button">Cancel</button>
+  </div>
+</div>

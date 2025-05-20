@@ -1,0 +1,94 @@
+/* Full screen wrapper with background image */
+.login-wrapper {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  background: url('/assets/back.png') no-repeat center center/cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Dark transparent overlay */
+.overlay {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.852); /* stronger black transparency */
+  z-index: 0;
+}
+
+/* Login box centered */
+.login-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 350px;
+  padding: 40px;
+;
+  
+  border-radius: 10px;
+  color: white;
+}
+
+/* Inputs */
+.login-container input {
+  width: 100%;
+  padding: 14px;
+  margin: 12px 0;
+  border: none;
+  border-bottom: 2px solid white;
+  background: transparent;
+  color: white;
+  font-size: 16px;
+  outline: none;
+}
+
+.login-container input::placeholder {
+  color: #ccc;
+}
+
+/* Sign In button */
+
+
+.sign-in-button:hover {
+  background-color: #d32f2f;
+}
+
+/* Forgot password */
+.forgot-password {
+  margin-top: 15px;
+  color: #ccc;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+/* Error message */
+.error {
+  color: red;
+  margin-top: 10px;
+}
+
+/* Social icons */
+.social-icons {
+  margin-top: 25px;
+}
+
+.social-icons img {
+  width: 28px;
+  margin: 0 10px;
+  filter: brightness(0) invert(1);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.social-icons img:hover {
+  transform: scale(1.1);
+}

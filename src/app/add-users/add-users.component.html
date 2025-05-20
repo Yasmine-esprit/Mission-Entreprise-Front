@@ -1,0 +1,19 @@
+<div  class="user-table-container">
+    <input type="file" (change)="onExcelUpload($event)" accept=".xlsx, .xls" class="sign-in-button"/>
+
+
+    <table *ngIf="excelData.length" class="styled-table">
+        <thead>
+          <tr>
+            <th *ngFor="let key of getKeys(excelData[0])">{{ key }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of excelData">
+            <td *ngFor="let key of getKeys(row)">{{ row[key] }}</td>
+          </tr>
+        </tbody>
+      </table>
+      
+
+</div>

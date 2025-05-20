@@ -1,0 +1,76 @@
+.icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 1.2em;
+  }
+  
+  .icon-button:hover {
+    opacity: 0.7;
+  }
+  
+  .user-table-container {
+    margin: 20px auto;
+    max-width: 1000px;
+    height: 80vh;
+    overflow-x: auto;
+   
+  }
+  
+  .user-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background-color: #fff;
+  }
+  
+  .user-table thead {
+    background-color: #e53935;
+    color: white;
+  }
+  
+  .user-table th, .user-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+  }
+  
+  .actions-header {
+    text-align: center;
+  }
+  
+  .user-table tbody tr:hover {
+    background-color: #f5f7ff;
+  }
+  
+  .icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 5px;
+    transition: opacity 0.3s ease;
+  }
+  
+  .icon-button:hover {
+    opacity: 0.7;
+  }
+  
+  .locked {
+    color: red;
+    font-weight: bold;
+  }
+  
+  .unlocked {
+    color: green;
+    font-weight: bold;
+  }
+
+  .add-user-btn{
+    margin: 20cm 10px;
+  }
+  
+  

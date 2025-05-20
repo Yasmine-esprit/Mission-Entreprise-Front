@@ -1,36 +1,49 @@
-<h2>Login</h2>
-<form (ngSubmit)="onLogin()" #loginForm="ngForm">
-  <input
-    type="email"
-    [(ngModel)]="email"
-    name="email"
-    required
-    placeholder="Email"
-  />
-  <br />
-  <input
-    type="password"
-    [(ngModel)]="password"
-    name="password"
-    required
-    placeholder="Password"
-  />
-  <br />
-  <button type="submit">Login</button>
-</form>
+<!-- login.component.html -->
+<div class="login-wrapper">
+  <div class="overlay"></div> <!-- Transparent black overlay -->
 
-<!-- Display 2FA form if needed -->
-<div *ngIf="is2FAVerificationNeeded">
-  <h2>Enter your 2FA Code</h2>
-  <input
-    type="text"
-    [(ngModel)]="twoFACode"
-    name="twoFACode"
-    required
-    placeholder="2FA Code"
-  />
-  <button (click)="onVerify2FACode()">Verify 2FA</button>
+  <!-- Centered login card -->
+  <div class="login-container">
+    <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+      <input
+        type="email"
+        [(ngModel)]="email"
+        name="email"
+        required
+        placeholder="Email"
+      />
+
+      <input
+        type="password"
+        [(ngModel)]="password"
+        name="password"
+        required
+        placeholder="Password"
+      />
+
+      <button type="submit" class="sign-in-button">Sign In</button>
+    </form>
+
+    <a routerLink="/forget" class="forgot-password">Forgot Password?</a>
+
+    <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+
+    <div *ngIf="is2FAVerificationNeeded" class="twofa-container">
+      <h3>Enter your 2FA Code</h3>
+      <input
+        type="text"
+        [(ngModel)]="twoFACode"
+        name="twoFACode"
+        required
+        placeholder="2FA Code"
+      />
+      <button (click)="onVerify2FACode()" class="sign-in-button">Verify 2FA</button>
+    </div>
+
+    <div class="social-icons">
+      <p><i class="fa-solid fa-envelope"></i> Email </p>
+      <p><i class="fa-brands fa-linkedin"></i> Linkedin </p>
+      <p><i class="fa-solid fa-phone"></i> Phone </p>
+    </div>
+  </div>
 </div>
-
-<p *ngIf="errorMessage" style="color:red">{{ errorMessage }}</p>
-<button routerLink="/forget">Forgot password?</button>
