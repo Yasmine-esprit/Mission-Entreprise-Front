@@ -9,6 +9,10 @@
     align-items: center;
     overflow: hidden;
   }
+  .login-container{
+   
+    width: 50%;
+  }
   
   /* Dark transparent overlay (optional, if you still want an overlay effect) */
   .overlay {
@@ -24,7 +28,7 @@
     font-family: Arial, sans-serif;
     margin: 0 auto;
     padding: 20px;
-    max-width: 400px;
+    max-width: 1000px;
     background-color: #f4f4f9; /* Keep the form's background color light */
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

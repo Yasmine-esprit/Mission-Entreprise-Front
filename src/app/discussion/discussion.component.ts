@@ -1,19 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { DiscussionService } from '../service/discussion.service';
 import { MessageService } from '../service/message.service';
 import { UserService } from '../service/user.service';
+import { Subscription } from 'rxjs';
+
+
+import * as SockJS from 'sockjs-client';
+import * as Stomp from 'stompjs';
+import { WebSocketService } from '../service/web-socket.service';
+
 
 @Component({
   selector: 'app-discussion',
   templateUrl: './discussion.component.html',
   styleUrls: ['./discussion.component.css']
 })
-export class DiscussionComponent implements OnInit {
+export class DiscussionComponent implements OnInit{
 
   constructor(
     private discussionService: DiscussionService,
     private messageService: MessageService,
-    private userService: UserService
+    private userService: UserService,
+    private webSocketService : WebSocketService,
+     private cdr: ChangeDetectorRef 
   ) {}
 
   data: any[] = [];               // Liste des groupes
@@ -26,51 +35,102 @@ export class DiscussionComponent implements OnInit {
   connectedUserId : any;
   selectedUsersProfiles: any[] = [];
   selectedUsersByGroup: { [groupId: number]: any[] } = {};
+  memberGroup : any [] = []
 
-  getUserById(id: number) {
-    return this.users.find(user => user.idUser === id);
-  }
-  
+
+  sub!: Subscription;
+connectedUsername: string = '';
+userId : number = 0;
+ 
+
   ngOnInit(): void {
+       this.connectedUser();
     this.loadGroupes();
-    this.loadUsers();
-    this.connectedUser();
+
+ 
+   
+
   }
-  connectedUser(){
-    this.userService.getCurrentUser().subscribe(
-      (response)=>{
+
+
+
+
+getUserById(id: number) {
+  
+  const user = this.users.find(user => {
+   
+    return user.idUser === id;
+  });
+  
+  return user;
+}
+
+  
+
+   connectedUser() {
+    this.userService.getCurrentUser().subscribe({
+      next: (responseText) => {
         
        
-        console.log(response)
-        if (response && response.idUser !== undefined) {
-          this.connectedUser = response.idUser;
-          console.log('idUser:', this.connectedUser);
-        } else {
-          console.error('idUser is undefined');
-        }
-      },(error)=>{
-        console.log(error)
-      }
-    )
-  }
-  loadGroupes() {
-    this.discussionService.getGroupes().subscribe({
-      next: (response) => {
-        this.data = response;
-        console.log('Groupes:', this.data);
+        this.connectedUserId = responseText
+        console.log("connected user in conneted user function " ,this.connectedUserId)
+
+        this.userId = responseText.idUser;
+this.connectedUsername = responseText.nomUser + ' ' + responseText.prenomUser;
+
+
+         // Maintenant que connectedUserId est chargé, on peut charger les utilisateurs
+      this.loadUsers();
+        
+        
       },
       error: (error) => {
-        console.error("Erreur lors du chargement des groupes :", error);
+        console.error('Erreur HTTP:', error);
       }
     });
+    
+    
   }
+  hasGroupMembers(groupId: number): boolean {
+  return Array.isArray(this.selectedUsersByGroup[groupId]) && this.selectedUsersByGroup[groupId].length > 0;
+}
+
+  
+  loadGroupes() {
+  this.discussionService.getGroupes().subscribe({
+    next: (groupes) => {
+      this.data = groupes;
+      console.log('Groupes:', this.data);
+
+      // Charger les membres pour chaque groupe
+      this.data.forEach(group => {
+        this.userService.getUsersGroupId(group.idGrpMsg).subscribe({
+          next: (members) => {
+            console.log(members)
+            // On filtre seulement les objets utilisateurs (éliminer les ids numériques éventuels)
+            this.selectedUsersByGroup[group.idGrpMsg] = members.filter((u: any) => typeof u === 'object' && u.idUser);
+          },
+          error: (err) => {
+            console.error('Erreur lors du chargement des membres du groupe', err);
+          }
+        });
+      });
+    },
+    error: (error) => {
+      console.error("Erreur lors du chargement des groupes :", error);
+    }
+  });
+}
+
+
 
   loadUsers() {
     this.userService.getAllUsers().subscribe({
       next: (response: any[]) => {
         // Exclure l'utilisateur connecté (optionnel, si le backend ne le fait pas déjà)
-        const connectedUserId = Number(localStorage.getItem('idUser'));
-        this.users = response.filter(user => user.idUser !== connectedUserId);
+        const id = this.connectedUserId.idUser
+        console.log("id connected user ", id)
+        this.users = response.filter(user => user.idUser !== id);
         console.log('Utilisateurs disponibles :', this.users);
       },
       error: (error) => {
@@ -80,8 +140,9 @@ export class DiscussionComponent implements OnInit {
   }
 
   selectGroup(group: any): void {
+      console.log(" select group ", group)
     this.selectedGroup = group;
-  
+    // 1. Charger les anciens messages du groupe
     this.messageService.getMessagesByGroupId(group.idGrpMsg).subscribe({
       next: (response) => {
         // Trier du plus ancien au plus récent par ID
@@ -93,6 +154,27 @@ export class DiscussionComponent implements OnInit {
         console.error('Erreur lors du chargement des messages:', error);
       }
     });
+
+
+    // 2. Connexion WebSocket au bon groupe
+  this.webSocketService.connect(group.idGrpMsg);
+
+  // 3. Écoute des messages en temps réel
+this.sub = this.webSocketService.messages$.subscribe((newMsg: any) => {
+  console.log('🟡 Message reçu dans subscribe :', JSON.stringify(newMsg, null, 2));
+  if (newMsg && newMsg.groupId === this.selectedGroup.idGrpMsg) {
+    this.messages = [...this.messages, newMsg];
+    this.cdr.detectChanges();
+    console.log('➡️ Message ajouté: ', newMsg);
+   console.log(this.messages)
+  } else {
+    console.log('❌ Message ignoré (groupe ne correspond pas ou newMsg invalide)');
+    console.log('Group dans newMsg:', newMsg.groupeMsg?.idGrpMsg);
+    console.log('Groupe sélectionné:', this.selectedGroup?.idGrpMsg);
+  }
+});
+
+
   }
   
   
@@ -147,33 +229,23 @@ export class DiscussionComponent implements OnInit {
     });
   }
   
-  
-
-  EnvoyerMsg(): void {
-    if (!this.selectedGroup) {
-      console.error('Aucun groupe sélectionné');
-      return;
-    }
-  
-    if (!this.messageContent.trim()) {
-      console.error('Le message est vide');
-      return;
-    }
-  
-    const groupId = this.selectedGroup.idGrpMsg;
-  
-  
-    this.messageService.envoyerMessage(groupId, this.messageContent).subscribe({
-      next: (response) => {
-        console.log('Message envoyé avec succès:', response);
-        this.messageContent = '';
-        this.selectGroup(this.selectedGroup); // Recharger les messages
-      },
-      error: (error) => {
-        console.error('Erreur lors de l\'envoi du message:', error);
-      }
-    });
+sendMessage(): void {
+  if (!this.selectedGroup || !this.messageContent.trim()) {
+    return;
   }
+
+  const messagePayload = {
+    contenu: this.messageContent,
+    groupeMsg: { idGrpMsg: this.selectedGroup.idGrpMsg },
+    userMessage: { idUser: this.userId,  username: this.connectedUsername }
+  };
+
+  this.webSocketService.sendMessage(messagePayload);
+  this.messageContent = ''; // Réinitialiser la zone de texte
+}
+
+
+  
 
   toggleUserSelection(user: any) {
     const index = this.selectedUserIds.findIndex(u => Number(u.idUser) === Number(user.idUser));
@@ -186,6 +258,8 @@ export class DiscussionComponent implements OnInit {
     }
     // Create a new array to trigger Angular change detection
     this.selectedUserIds = [...this.selectedUserIds];
+
+    
   }
   
   

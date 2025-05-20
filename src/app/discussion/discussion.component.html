@@ -1,52 +1,58 @@
 <div class="container">
     <!-- Left side for group list -->
-    <div class="group-list" style="width: 20%; float: left;">
-      <ul>
-        <li *ngFor="let group of data" (click)="selectGroup(group)" class="group-item">
-          <div class="group-users-avatars" *ngIf="(selectedUsersByGroup[group.idGrpMsg] ?? []).length > 0">
-            <img
-              *ngFor="let user of selectedUsersByGroup[group.idGrpMsg]"
-              [src]="'data:image/jpeg;base64,' + user.photoProfil"
-              alt="{{ user.nomUser }}"
-              class="avatar"
-              [title]="user.nomUser + ' ' + user.prenomUser"
-            />
-          </div>
-          
-        
-          <div class="group-id">{{ group.idGrpMsg }}</div>
-        
-          <button class="delete-btn" (click)="deleteGroup(group.idGrpMsg); $event.stopPropagation()">
-            <i class="fa-solid fa-trash" style="color: white;"></i>
-          </button>
-        </li>
-        
-      </ul>
-      <button (click)="showPopup = true" class="sign-in-button"> <i class="fa-solid fa-plus" style="margin-right: 5px;"></i> Add</button>
-    </div>
+   <div class="group-list" style="width: 20%; float: left;">
+  <ul>
+    <li *ngFor="let group of data" (click)="selectGroup(group)" class="group-item">
+
+     <div class="group-users-avatars" *ngIf="hasGroupMembers(group.idGrpMsg)">
+  <div *ngFor="let member of selectedUsersByGroup[group.idGrpMsg]">
+    <span>{{ member.nomUser}} {{member.prenomUser}}</span>
+  </div>
+</div>
+
+      
+
+      <button class="delete-btn" (click)="deleteGroup(group.idGrpMsg); $event.stopPropagation()">
+        <i class="fa-solid fa-trash" style="color: white;"></i>
+      </button>
+    </li>
+  </ul>
+
+  <button (click)="showPopup = true" class="sign-in-button">
+    <i class="fa-solid fa-plus" style="margin-right: 5px;"></i> Add
+  </button>
+</div>
+
+
   
     <!-- Right side for displaying messages -->
-    <div class="message-display" style="width: 75%; float: right;" *ngIf="selectedGroup">
+    <div class="message-display" style="width: 75%; float: right;" *ngIf="selectedGroup" >
       
   
       <!-- If messages are available -->
-      <div style="height: 90%;" *ngIf="messages && messages.length > 0">
-        <div *ngFor="let message of messages"
-             class="message"
-             [ngClass]="{'sent-by-me': message.senderId === connectedUser, 'sent-by-other': message.senderId !== connectedUser}">
-             
-          <img
-            *ngIf="getUserById(message.senderId)?.photoProfil"
-            [src]="'data:image/jpeg;base64,' + getUserById(message.senderId).photoProfil"
-            alt="User Avatar"
-            class="message-avatar"
-          />
-          
-          <div class="message-content">
-            <p>{{ message.contenu }}</p>
-          </div>
-        </div>
+      <!-- Zone d’affichage des messages -->
+<div style="height: 90%;" *ngIf="messages && messages.length > 0">
+
+  <div style="max-height: 90%; overflow-y: auto; padding-right: 8px;">
+    <div *ngFor="let message of messages"
+         class="message"
+        >
+
+
+      <img
+        *ngIf="getUserById(message.senderId)?.photoProfil"
+        [src]="'data:image/jpeg;base64,' + getUserById(message.senderId).photoProfil"
+        alt="User Avatar"
+        class="message-avatar"
+      />
+
+      <div class="message-content">
+        <p>{{ message.contenu }}</p>
       </div>
+    </div>
+  </div>
+</div>
+
       
       
   
@@ -66,7 +72,7 @@
           ></textarea>
       
           <button
-            (click)="EnvoyerMsg()"
+            (click)="sendMessage()"
             style=" background-color: #e53935; color: white; border: none; padding: 10px 14px; border-radius: 4px; cursor: pointer;"
           >
             <i class="fa-solid fa-paper-plane"></i>
@@ -81,9 +87,14 @@
 
       
     </div>
-  </div>
+
+
+</div>
+
+
+
+
   <!-- Popup content -->
-  <!-- popup.component.html -->
 <div *ngIf="showPopup" class="popup-overlay">
   <div class="popup-content">
 
@@ -93,12 +104,14 @@
       [class.selected]="isUserSelected(user)"
       class="user-item"
     >
-      <img
-        *ngIf="user?.photoProfil"
-        [src]="'data:image/jpeg;base64,' + user.photoProfil"
-        alt="User Profile"
-        class="profile-image"
-      />
+        <img
+    [src]="user?.photoProfil ? ('data:image/jpeg;base64,' + user.photoProfil) : 'assets/defaultimage.jpg'"
+    alt="User Profile"
+    class="profile-image"
+  />
+      
+
+
       <span>{{ user.nomUser }} {{ user.prenomUser }}</span>
     </div>
 

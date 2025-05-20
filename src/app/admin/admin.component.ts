@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../service/user.service';
+import { LoginService } from '../service/login.service';
 
 @Component({
   selector: 'app-admin',
@@ -8,7 +9,10 @@ import { UserService } from '../service/user.service';
 })
 export class AdminComponent implements OnInit {
   users: any[] = []; 
-  constructor(private userService: UserService) {}
+  email : any;
+  constructor(private userService: UserService,
+    private loginService : LoginService
+  ) {}
 
   ngOnInit(): void {
     this.userService.getAllUsers().subscribe(
@@ -33,5 +37,17 @@ export class AdminComponent implements OnInit {
       }
     )
 
+  }
+
+  EnableUser (emailUti : any){
+    console.log(" email is " , emailUti)
+    this.loginService.enableUser(emailUti).subscribe({
+      next: (res) => {
+        console.log('User enabled successfully');
+      },
+      error: (err) => {
+        console.error('Error enabling user:', err);
+      }
+    });
   }
 }

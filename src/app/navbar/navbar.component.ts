@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginService } from '../service/login.service';
 import { UserService } from '../service/user.service';
+import { UserDTO } from '../models/user-dto';
+import { RegisterService } from '../service/register.service';
+import { ProfileServiceService } from '../service/profile-service.service';
 
 @Component({
   selector: 'app-navbar',
@@ -9,41 +12,67 @@ import { UserService } from '../service/user.service';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent {
-  constructor(  private authService : LoginService,
-                private router: Router , private userService : UserService){}
+  menuOpen = false;
+  connectedUserId : any;
+  isMenuOpen = false;
+
+role: string | null = null;
+ profilePhoto: string ='';
+ 
+    constructor(  private authService : LoginService,
+    private router: Router , private userService : UserService , private registerService : RegisterService ,
+    private photoService : ProfileServiceService){}
+         
+
+
+  ngOnInit(): void {
+    this.connectedUser();
+    this.role = this.authService.getUserRole();
+              console.log('User role:', this.role);
+              if (this.role?.includes("ETUDIANT")){
+                console.log("say yes")
+              }
+  }
+
+ 
+
+
+
+  goToDashboard(): void {
+    this.router.navigate(['/kanban']);
+  }
+
+
+  onLogout(): void {
+    this.authService.logout();
+    console.log('User logged out');
+    this.router.navigate(['/login']); // or wherever you want to redirect
+  }
+  get isUserLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
+  
+connectedUser() {
+ this.userService.getCurrentUser().subscribe({
+  next: (user: UserDTO) => {
+    console.log('Logged‐in user:', user);
+    // now user.idUser, user.nomUser, etc. are available
+    this.connectedUserId   = user;
     
-  
-  
-                connectedUserId : any;
-    ngOnInit(): void {
-      this.connectedUser()
-    }
-  
-    onLogout(): void {
-      this.authService.logout();
-      console.log('User logged out');
-      this.router.navigate(['/login']); // or wherever you want to redirect
-    }
-    get isUserLoggedIn(): boolean {
-      return this.authService.isLoggedIn();
-    }
-  
-    
-    connectedUser() {
-      this.userService.getCurrentUser().subscribe(
-        (response) => {
-          console.log(response);
-          if (response && response.idUser !== undefined) {
-            this.connectedUserId = response;
-            console.log('connectedUser:', this.connectedUserId);
-          } else {
-            console.error('idUser is undefined');
-          }
-        },
-        (error) => {
-          console.error(error);
-        }
-      );
-    }
+  },
+  error: (error) => {
+    console.error('Failed loading user:', error);
+  }
+});
+
+
+   
+}
+
+toggleMenu() {
+  this.isMenuOpen = !this.isMenuOpen;
+}
+
 
 }

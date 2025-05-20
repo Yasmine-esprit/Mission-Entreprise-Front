@@ -1,19 +1,38 @@
-<nav *ngIf="isUserLoggedIn" class="navbar">
-    <div class="navbar-left">
-      <span class="logo">MyApp</span>
-    </div>
+<nav class="navbar" *ngIf="isUserLoggedIn">
+    <div class="container">
+      <a class="logo" routerLink="/">UniGit</a>
   
+      <ul class="nav-links">
+        <li><a routerLink="/home">Home</a></li>
+        <li><a routerLink="/changePass">Reset password</a></li>
+        <li><button (click)="goToDashboard()" class="btn-dashboard">Dashboard</button></li>
+      </ul>
+   
+
     <div class="navbar-right">
-      <button  (click)="onLogout()" class="logout-button">
-        Logout
-      </button>
-  
-      <img
-        *ngIf="connectedUserId?.photoProfil"
-        [src]="'data:image/jpeg;base64,' + connectedUserId.photoProfil"
-        alt="User Profile"
-        class="profile-image"
-      />
-    </div>
+        <button  (click)="onLogout()" class="logout-button">
+          Logout
+        </button>
+    <div class="profile-container" (click)="toggleMenu()">
+  <img
+    [src]="connectedUserId?.photoProfil ? ('data:image/jpeg;base64,' + connectedUserId.photoProfil) : 'assets/defaultimage.jpg'"
+    alt="User Profile"
+    class="profile-image"
+  />
+
+  <!-- Dropdown menu -->
+  <ul class="profile-menu" *ngIf="isMenuOpen">
+    <p>{{connectedUserId.nomUser }} {{connectedUserId.prenomUser}}</p>
+    <li><a routerLink="/changePhoto">Change your profile photo</a></li>
+    <li><a routerLink="/discussion">Discussion</a></li>
+    <li><a  *ngIf="role?.includes('ADMINISTRATEUR')" routerLink="/admin">Admin Dashboard</a></li>
+
+    <!-- Add more items as needed -->
+  </ul>
+</div>
+
+
+      </div>  
+    </div>  
   </nav>
   

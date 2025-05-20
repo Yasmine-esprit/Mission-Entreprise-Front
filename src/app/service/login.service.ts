@@ -51,6 +51,12 @@ export class LoginService {
     });
   }
 
+  enableUser(email: string): Observable<string> {
+    return this.http.put(`http://localhost:8081/auth/enable/${email}`, {}, { responseType: 'text' });
+  }
+  
+  
+
   resetPassword(token: string, newPassword: string) {
     const resetPasswordRequest = {
       password: newPassword
