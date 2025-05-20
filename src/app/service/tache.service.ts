@@ -16,18 +16,16 @@ export class TacheService {
   }
 
 
-  getTacheById(id: number): Observable<Tache | undefined> {
-    return this.getAllTaches().pipe(
-      map(taches => taches.find(t => t.idTache === id))
-    );
+  getTacheById(id: number): Observable<Tache> {
+    return this.http.get<Tache>(`${this.apiUrl}/${id}`);
+  }
+
+  updateTache(tache: Tache): Observable<Tache> {
+    return this.http.put<Tache>(`${this.apiUrl}/${tache.idTache}`, tache);
   }
 
   addTache(tache: Tache): Observable<Tache> {
     return this.http.post<Tache>(`${this.apiUrl}/add`, tache);
-  }
-
-  updateTache(tache: Tache): Observable<Tache> {
-    return this.http.put<Tache>(`${this.apiUrl}/update`, tache);
   }
 
     deleteTache(id: number | undefined): Observable<void> {

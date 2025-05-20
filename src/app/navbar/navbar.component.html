@@ -10,9 +10,7 @@
    
 
     <div class="navbar-right">
-        <button  (click)="onLogout()" class="logout-button">
-          Logout
-        </button>
+      
     <div class="profile-container" (click)="toggleMenu()">
   <img
     [src]="connectedUserId?.photoProfil ? ('data:image/jpeg;base64,' + connectedUserId.photoProfil) : 'assets/defaultimage.jpg'"
@@ -23,6 +21,7 @@
   <!-- Dropdown menu -->
   <ul class="profile-menu" *ngIf="isMenuOpen">
     <p>{{connectedUserId.nomUser }} {{connectedUserId.prenomUser}}</p>
+    <li><a href="" (click)="onLogout()">Logout</a></li>
     <li><a routerLink="/changePhoto">Change your profile photo</a></li>
     <li><a routerLink="/discussion">Discussion</a></li>
     <li><a  *ngIf="role?.includes('ADMINISTRATEUR')" routerLink="/admin">Admin Dashboard</a></li>

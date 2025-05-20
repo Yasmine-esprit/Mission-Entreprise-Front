@@ -13,7 +13,9 @@
   .user-table-container {
     margin: 20px auto;
     max-width: 1000px;
+    height: 80vh;
     overflow-x: auto;
+   
   }
   
   .user-table {
@@ -65,6 +67,10 @@
   .unlocked {
     color: green;
     font-weight: bold;
+  }
+
+  .add-user-btn{
+    margin: 20cm 10px;
   }
   
   
