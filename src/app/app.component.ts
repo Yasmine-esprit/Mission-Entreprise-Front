@@ -10,3 +10,4 @@ export class AppComponent {
   title = 'Mission-Entreprise';
   maTache: Tache | undefined;
 }
+

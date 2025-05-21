@@ -1,0 +1,14 @@
+<div class="p-4">
+  <h2>Gestion des Niveaux</h2>
+  <form (ngSubmit)="addLevel()">
+    <input [(ngModel)]="newLevel.name" name="name" placeholder="Nom du niveau" required />
+    <button type="submit">Ajouter</button>
+  </form>
+
+  <ul>
+    <li *ngFor="let level of levels">
+      {{ level.name }}
+      <button (click)="deleteLevel(level.id)">Supprimer</button>
+    </li>
+  </ul>
+</div>

@@ -19,16 +19,37 @@
 
   <!-- Main Content -->
   <div class="main">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="project-info">
-        <div class="circle">logo</div>
-        <h2>ProjectName</h2>
-      </div>
-      <div class="dropdown">Phases ▼</div>
-      <div class="dropdown">Levels ▼</div>
-      <div class="dropdown">Teams ▼</div>
-      <button class="create-btn">Create ▼</button>
+  <aside class="sidebar">
+
+  <!-- PHASES -->
+  <div class="dropdown" (click)="isPhasesOpen = !isPhasesOpen">
+    <div class="dropdown-link">Phases ▼</div>
+    <div *ngIf="isPhasesOpen" class="dropdown-content">
+      <div>Phase 1</div>
+      <div>Phase 2</div>
+      <div>Phase 3</div>
+    </div>
+  </div>
+
+  <!-- LEVELS -->
+  <div class="dropdown" (click)="isLevelsOpen = !isLevelsOpen">
+    <div class="dropdown-link">Levels ▼</div>
+    <div *ngIf="isLevelsOpen" class="dropdown-content">
+      <div>Level A</div>
+      <div>Level B</div>
+      <div>Level C</div>
+    </div>
+  </div>
+
+  <!-- TEAMS -->
+  <div class="dropdown" (click)="isTeamsOpen = !isTeamsOpen">
+    <div class="dropdown-link">Teams ▼</div>
+    <div *ngIf="isTeamsOpen" class="dropdown-content">
+      <div>Team X</div>
+      <div>Team Y</div>
+      <div>Team Z</div>
+    </div>
+  </div>
     </aside>
 
     <!-- Dashboard Content -->

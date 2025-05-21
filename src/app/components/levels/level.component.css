@@ -1,0 +1,22 @@
+.level-container {
+  padding: 16px;
+  background-color: #f9f9f9;
+}
+
+.level-form {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.level-list {
+  list-style: none;
+  padding: 0;
+}
+
+.level-item {
+  padding: 8px;
+  background-color: #e3e3e3;
+  margin-bottom: 6px;
+  border-radius: 4px;
+}

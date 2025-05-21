@@ -219,4 +219,10 @@ export class KanbanBoardComponent {
       members: []
     };
   }
+ 
+   isPhasesOpen = false;
+   isLevelsOpen = false;
+   isTeamsOpen = false;
+
+
 }

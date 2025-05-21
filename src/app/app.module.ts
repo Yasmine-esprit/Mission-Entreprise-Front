@@ -21,6 +21,7 @@ import { NoteTindivComponent } from './components/note-tindiv/note-tindiv.compon
 import { GrilleEvaluationComponent } from './components/grille-evaluation/grille-evaluation.component';
 import { KanbanBoardComponent } from './components/kanban-board/kanban-board.component';
 import {TacheComponent} from "./components/tache/tache.component";
+import { LevelComponent } from './components/levels/level.component';
 
 
 
@@ -42,6 +43,7 @@ import {TacheComponent} from "./components/tache/tache.component";
     GrilleEvaluationComponent,
     KanbanBoardComponent,
     TacheComponent,
+    LevelComponent
 
 
   ],
@@ -51,6 +53,7 @@ import {TacheComponent} from "./components/tache/tache.component";
     FormsModule,
     HttpClientModule,
     DragDropModule
+  
 
   ],
   providers: [],
