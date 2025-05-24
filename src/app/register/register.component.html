@@ -149,8 +149,8 @@
     
         <button type="button" (click)="goPreviousStep()">Previous</button>
         <button type="submit" class="register-button">Register</button>
-        <p>{{ message }}</p>
-        <p style="color: red">{{ errorMessage }}</p>
+        <p *ngIf="message">{{ message }}</p>
+        <p *ngIf="errorMessage" style="color: red">{{ errorMessage }}</p>
   
         <div *ngIf="qrCodeUrl">
           <h2>Scan this QR code for 2FA setup:</h2>

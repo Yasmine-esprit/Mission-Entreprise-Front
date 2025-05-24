@@ -33,23 +33,23 @@
       <!-- Zone d’affichage des messages -->
 <div style="height: 90%;" *ngIf="messages && messages.length > 0">
 
-  <div style="max-height: 90%; overflow-y: auto; padding-right: 8px;">
+  <div>
     <div *ngFor="let message of messages"
-         class="message"
-        >
+     class="message"
+     [ngClass]="{'my-message': message.senderId === connectedUserId.idUser}">
+     
+  <img
+    *ngIf="getUserById(message.senderId)?.photoProfil"
+    [src]="'data:image/jpeg;base64,' + getUserById(message.senderId).photoProfil"
+    alt="User Avatar"
+    class="message-avatar"
+  />
 
+  <div class="message-content">
+    <p>{{ message.contenu }}</p>
+  </div>
+</div>
 
-      <img
-        *ngIf="getUserById(message.senderId)?.photoProfil"
-        [src]="'data:image/jpeg;base64,' + getUserById(message.senderId).photoProfil"
-        alt="User Avatar"
-        class="message-avatar"
-      />
-
-      <div class="message-content">
-        <p>{{ message.contenu }}</p>
-      </div>
-    </div>
   </div>
 </div>
 

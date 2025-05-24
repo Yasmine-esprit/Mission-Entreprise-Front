@@ -15,6 +15,8 @@ export class AddUsersComponent {
  excelData: any[] = [];
  mappedData: { firstname: string; lastname: string; role: string; email: string; password: string; photoProfil: any }[] = [];
  role: string | null = null;
+ errorMessage : any;
+ successMessage : any;
 
  constructor(private registerService : RegisterService ,
              private authService : LoginService,
@@ -91,12 +93,18 @@ export class AddUsersComponent {
            form.append('photoProfil', defaultImageBlob, 'defaultimage.jpg'); 
  
            this.registerService.register(form).subscribe({
-             next: (response: any) => console.log('User registered:', response),
+             next: (response: any) => {
+              console.log('User registered:', response)
+              this.successMessage = response
+              this.errorMessage= ''
+            },
              error: (error: HttpErrorResponse) => {
                let errorMsg = 'An unknown error occurred.';
                if (typeof error.error === 'string') errorMsg = error.error;
                else if (error.error?.message) errorMsg = error.error.message;
                console.error('Error registering user:', errorMsg);
+               this.errorMessage = 'Error registering user:'
+               this.successMessage= ''
              }
            });
          });

@@ -31,6 +31,7 @@ export class AdminComponent implements OnInit {
       response=>{
         console.log(response)
         this.users = this.users.filter(user => user.idUser !== id);
+        console.log("After deletion:", this.users);
       },
       error=>{
         console.log(error)

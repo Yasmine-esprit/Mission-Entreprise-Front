@@ -1,0 +1,441 @@
+.reset-password-container {
+  max-width: 450px;
+  margin: 4rem auto;
+  padding: 2.5rem;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.reset-password-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.reset-password-container::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Title styling (if you want to add one) */
+.reset-password-container h2 {
+  text-align: center;
+  margin: 0 0 2rem 0;
+  color: #1f2937;
+  font-size: 1.75rem;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+.reset-password-container h2::after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  margin: 0.75rem auto 0;
+  border-radius: 2px;
+}
+
+/* Form styling */
+.reset-password-container form {
+  position: relative;
+  z-index: 1;
+}
+
+/* Input styling */
+.reset-password-container input[type="password"] {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: #f9fafb;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.reset-password-container input[type="password"]:focus {
+  outline: none;
+  border-color: #ef4444;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+  transform: translateY(-1px);
+}
+
+.reset-password-container input[type="password"]:hover {
+  border-color: #fca5a5;
+  background: #ffffff;
+}
+
+.reset-password-container input[type="password"]::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+/* Password strength indicator */
+.reset-password-container input[type="password"]:valid {
+  border-color: #10b981;
+  background: #f0fdf4;
+}
+
+.reset-password-container input[type="password"]:invalid:not(:placeholder-shown) {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+/* Input focus states with icons */
+.reset-password-container input[type="password"]:focus::after {
+  content: '';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ef4444'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'/%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'/%3E%3C/svg%3E");
+}
+
+/* Button styling */
+.sign {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.sign::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.sign:hover::before {
+  left: 100%;
+}
+
+.sign:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+.sign:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.sign:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.sign:disabled::before {
+  display: none;
+}
+
+/* Success message styling */
+.success {
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #15803d;
+  border: 1px solid #86efac;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 1rem;
+  position: relative;
+  z-index: 1;
+  animation: slideInUp 0.4s ease-out;
+}
+
+.success::before {
+  content: '✓';
+  display: inline-block;
+  margin-right: 0.5rem;
+  font-weight: bold;
+  color: #16a34a;
+  font-size: 1.1em;
+}
+
+/* Error message styling */
+.error {
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #dc2626;
+  border: 1px solid #f87171;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 1rem;
+  position: relative;
+  z-index: 1;
+  animation: slideInUp 0.4s ease-out;
+}
+
+.error::before {
+  content: '⚠';
+  display: inline-block;
+  margin-right: 0.5rem;
+  font-weight: bold;
+  color: #ef4444;
+  font-size: 1.1em;
+}
+
+/* Password match indicator */
+.reset-password-container input[name="confirmPassword"]:valid:not(:placeholder-shown) {
+  border-color: #10b981;
+  background: #f0fdf4;
+}
+
+.reset-password-container input[name="confirmPassword"]:invalid:not(:placeholder-shown) {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+/* Password requirements list (if you want to add one) */
+.password-requirements {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.password-requirements h4 {
+  margin: 0 0 0.5rem 0;
+  color: #374151;
+  font-weight: 600;
+}
+
+.password-requirements ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #6b7280;
+}
+
+.password-requirements li {
+  margin-bottom: 0.25rem;
+}
+
+.password-requirements li.valid {
+  color: #10b981;
+}
+
+.password-requirements li.invalid {
+  color: #ef4444;
+}
+
+/* Animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.reset-password-container {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Loading state for button */
+.sign.loading {
+  position: relative;
+  color: transparent;
+}
+
+.sign.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid transparent;
+  border-top: 2px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .reset-password-container {
+    margin: 2rem 1rem;
+    padding: 2rem 1.5rem;
+  }
+  
+  .reset-password-container h2 {
+    font-size: 1.5rem;
+  }
+  
+  .reset-password-container input[type="password"],
+  .sign {
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .reset-password-container {
+    margin: 1rem 0.5rem;
+    padding: 1.5rem 1rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .reset-password-container {
+    background: #1f2937;
+    color: #f9fafb;
+  }
+  
+  .reset-password-container h2 {
+    color: #f9fafb;
+  }
+  
+  .reset-password-container input[type="password"] {
+    background: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+  
+  .reset-password-container input[type="password"]:focus {
+    background: #4b5563;
+    border-color: #ef4444;
+  }
+  
+  .reset-password-container input[type="password"]:hover {
+    background: #4b5563;
+    border-color: #6b7280;
+  }
+  
+  .reset-password-container input[type="password"]::placeholder {
+    color: #9ca3af;
+  }
+  
+  .password-requirements {
+    background: #374151;
+    border-color: #4b5563;
+    color: #d1d5db;
+  }
+  
+  .password-requirements h4 {
+    color: #f9fafb;
+  }
+}
+
+/* Focus trap for accessibility */
+.reset-password-container:focus-within {
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .reset-password-container {
+    border: 2px solid #000000;
+  }
+  
+  .reset-password-container input[type="password"] {
+    border-width: 3px;
+  }
+  
+  .sign {
+    border: 2px solid #000000;
+  }
+}
+
+/* Password strength meter (optional) */
+.password-strength {
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  margin-top: -1rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.password-strength-bar {
+  height: 100%;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+}
+
+.password-strength-weak {
+  width: 25%;
+  background: #ef4444;
+}
+
+.password-strength-medium {
+  width: 50%;
+  background: #f59e0b;
+}
+
+.password-strength-strong {
+  width: 75%;
+  background: #10b981;
+}
+
+.password-strength-very-strong {
+  width: 100%;
+  background: #059669;
+}

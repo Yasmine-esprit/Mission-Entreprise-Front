@@ -20,19 +20,23 @@ role: string | null = null;
  profilePhoto: string ='';
  
     constructor(  private authService : LoginService,
-    private router: Router , private userService : UserService , private registerService : RegisterService ,
-    private photoService : ProfileServiceService){}
+    private router: Router , private userService : UserService , private registerService : RegisterService )
+{}
          
 
 
-  ngOnInit(): void {
-    this.connectedUser();
-    this.role = this.authService.getUserRole();
-              console.log('User role:', this.role);
-              if (this.role?.includes("ETUDIANT")){
-                console.log("say yes")
-              }
-  }
+ngOnInit(): void {
+  this.userService.currentUser$.subscribe(user => {
+    if (user) {
+      this.connectedUserId = user;
+      this.role = this.authService.getUserRole();
+      console.log('User role in navbar:', this.role);
+    }
+  });
+
+   this.userService.loadCurrentUser();
+}
+
 
  
 
@@ -62,7 +66,7 @@ connectedUser() {
     
   },
   error: (error) => {
-    console.error('Failed loading user:', error);
+    console.error('Failed loading user in navbar: ', error);
   }
 });
 
