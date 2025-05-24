@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../service/user.service';
 
 @Component({
@@ -19,7 +19,8 @@ export class UpdateUserComponent implements OnInit {
   error = '';
   errorMessage = '';
   constructor(private route : ActivatedRoute,
-              private userService : UserService
+              private userService : UserService,
+               private router: Router
   ){}
 
   ngOnInit(): void {
@@ -32,14 +33,35 @@ export class UpdateUserComponent implements OnInit {
       },
       error=>{
         console.log(error)
+        this.errorMessage = 'Failed to load user';
       }
     )
     
   }
 
-  onUpdate(){
-    
+ onUpdate(): void {
+    const updatedUser = {
+      ...this.user,
+      passwordUser: this.password // if password is handled separately
+    };
 
+    console.log(updatedUser)
+    this.userService.UpdateUser(this.userId, updatedUser).subscribe({
+      next: (res) => {
+        this.message = 'User updated successfully';
+        this.errorMessage = '';
+        console.log(res);
+        // Optional redirect
+        setTimeout(() => {
+          this.router.navigate(['/home']);
+        }, 1000);
+      },
+      error: (err) => {
+        console.error(err);
+        this.message = '';
+        this.errorMessage = 'Update failed. Please try again.';
+      }
+    });
   }
 
 }

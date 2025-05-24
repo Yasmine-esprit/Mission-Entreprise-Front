@@ -1,32 +1,430 @@
+.user-table-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.user-table-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.user-table-container::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* File upload styling */
+.user-table-container input[type="file"] {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 2rem;
+  padding: 1.5rem 2rem;
+  border: 3px dashed #d1d5db;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  color: #374151;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  display: block;
+  box-sizing: border-box;
+}
+
+.user-table-container input[type="file"]:hover {
+  border-color: #ef4444;
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.2);
+}
+
+.user-table-container input[type="file"]:focus {
+  outline: none;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+}
+
+/* Custom file input styling */
+.user-table-container input[type="file"]::file-selector-button {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 1rem;
+  transition: all 0.2s ease;
+}
+
+.user-table-container input[type="file"]::file-selector-button:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-1px);
+}
+
+/* Alternative styling for browsers that don't support ::file-selector-button */
+.user-table-container input[type="file"]::-webkit-file-upload-button {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 1rem;
+  transition: all 0.2s ease;
+}
+
+.user-table-container input[type="file"]::-webkit-file-upload-button:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-1px);
+}
+
+/* Upload area with icon */
+.upload-area {
+  position: relative;
+  text-align: center;
+}
+
+.upload-area::before {
+  content: '📊';
+  display: block;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+.upload-area::after {
+  content: 'Click to upload Excel file (.xlsx, .xls)';
+  display: block;
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+/* Table styling */
 .styled-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
+  animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.styled-table thead {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.styled-table th {
+  padding: 1.25rem 1rem;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #b91c1c;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.styled-table tbody tr {
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.styled-table tbody tr:hover {
+  background-color: #fef2f2;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+}
+
+.styled-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.styled-table td {
+  padding: 1rem;
+  vertical-align: middle;
+  color: #374151;
+  font-size: 0.875rem;
+  border-right: 1px solid #f3f4f6;
+}
+
+.styled-table td:last-child {
+  border-right: none;
+}
+
+/* Alternating row colors */
+.styled-table tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.styled-table tbody tr:nth-child(even):hover {
+  background-color: #fef2f2;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6b7280;
+  font-size: 1.125rem;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 2px dashed #d1d5db;
+  margin: 2rem 0;
+}
+
+.empty-state::before {
+  content: '📋';
+  display: block;
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+/* Message styling */
+.user-table-container p {
+  margin: 1rem 0;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  animation: slideInUp 0.4s ease-out;
+}
+
+/* Success message */
+.user-table-container p:not(:empty):not([style*="color"]) {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.user-table-container p:not(:empty):not([style*="color"])::before {
+  content: '✓';
+  display: inline-block;
+  margin-right: 0.5rem;
+  font-weight: bold;
+  color: #16a34a;
+}
+
+/* Error message (assuming errorMessage will have red styling) */
+.user-table-container p[style*="color: red"],
+.user-table-container p.error {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #dc2626 !important;
+  border: 1px solid #f87171;
+}
+
+.user-table-container p[style*="color: red"]::before,
+.user-table-container p.error::before {
+  content: '⚠';
+  display: inline-block;
+  margin-right: 0.5rem;
+  font-weight: bold;
+  color: #ef4444;
+}
+
+/* Loading state */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(2px);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #fee2e2;
+  border-top: 4px solid #ef4444;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .user-table-container {
+    margin: 1rem;
+    padding: 1.5rem;
+    overflow-x: auto;
   }
   
-  .styled-table thead tr {
-    background-color: #343a40;  /* dark background */
-    color: white;
-    text-align: left;
+  .user-table-container input[type="file"] {
+    max-width: 100%;
+    padding: 1rem;
+    font-size: 0.875rem;
   }
   
-  .styled-table th, 
+  .styled-table {
+    font-size: 0.75rem;
+    min-width: 600px;
+  }
+  
+  .styled-table th,
   .styled-table td {
-    padding: 12px 15px;
-    border: 1px solid #ddd;
+    padding: 0.75rem 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-table-container {
+    margin: 0.5rem;
+    padding: 1rem;
   }
   
-  .styled-table tbody tr {
-    border-bottom: 1px solid #ddd;
+  .styled-table th,
+  .styled-table td {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.7rem;
   }
   
-  .styled-table tbody tr:nth-of-type(even) {
-    background-color: #f3f3f3;
+  .upload-area::before {
+    font-size: 2rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .user-table-container {
+    background: #1f2937;
+    color: #f9fafb;
+  }
+  
+  .user-table-container input[type="file"] {
+    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+    border-color: #6b7280;
+    color: #f9fafb;
+  }
+  
+  .user-table-container input[type="file"]:hover {
+    background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
+    border-color: #ef4444;
+  }
+  
+  .styled-table {
+    background: #1f2937;
   }
   
   .styled-table tbody tr:hover {
-    background-color: #f1f1f1;
-    cursor: pointer;
+    background-color: #374151;
   }
   
+  .styled-table tbody tr:nth-child(even) {
+    background-color: #374151;
+  }
+  
+  .styled-table td {
+    color: #f9fafb;
+    border-color: #4b5563;
+  }
+  
+  .empty-state {
+    background: #374151;
+    color: #d1d5db;
+    border-color: #4b5563;
+  }
+}
+
+/* Print styles */
+@media print {
+  .user-table-container input[type="file"] {
+    display: none;
+  }
+  
+  .user-table-container {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+  
+  .styled-table {
+    box-shadow: none;
+  }
+  
+  .styled-table thead {
+    background: #000 !important;
+    color: #fff !important;
+  }
+}
+
+/* Accessibility improvements */
+.user-table-container:focus-within {
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+}
+
+.styled-table th {
+  position: relative;
+}
+
+.styled-table th::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Smooth scrolling for table */
+.user-table-container {
+  scroll-behavior: smooth;
+}
+
+.styled-table {
+  scroll-margin-top: 2rem;
+}

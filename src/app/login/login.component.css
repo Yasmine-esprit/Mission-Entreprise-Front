@@ -15,7 +15,7 @@
   position: absolute;
   height: 100%;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.852); /* stronger black transparency */
+  background-color: rgba(0, 0, 0, 0.781); /* stronger black transparency */
   z-index: 0;
 }
 
