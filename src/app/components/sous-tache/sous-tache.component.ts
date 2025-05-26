@@ -1,39 +1,65 @@
-import { Component, OnInit } from '@angular/core';
-import { sousTacheService } from 'src/app/service/sousTache.service';
-import { sousTache, Statut } from '../../models/sousTache.model';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import { sousTache, Statut } from "../../models/sousTache.model";
 
 @Component({
-  selector: 'app-sous-tache',
-  templateUrl: './sous-tache.component.html'
+  selector: 'app-sub-task',
+  templateUrl: './sous-tache.component.html',
+  styleUrls: ['./sous-tache.component.css']
 })
 export class SousTacheComponent implements OnInit {
-  sousTaches: sousTache[] = [];
-  newSousTache: sousTache = {
-    titreSousTache: '',
-    descriptionSousTache: ''
-  };
-  statutEnum = Object.values(Statut);
+  @Input() sousTache!: sousTache;
+  @Input() sousTaches: sousTache[] = [];
 
-  constructor(private sousTacheService: sousTacheService) {}
+  @Output() closeModal = new EventEmitter<void>();
+  @Output() saveChanges = new EventEmitter<sousTache>();
+  @Output() deleteSousTache = new EventEmitter<number>();
+
+  private alreadySaved = false;
+  titreSousTache: string = '';
+  descriptionSousTache: string = '';
+  dateDebut: string = '';
+  statut?: Statut;
+
+  // Enum keys and values for the select options
+  statutValues = Object.values(Statut);
 
   ngOnInit(): void {
-    this.loadSousTaches();
+    if (this.sousTache) {
+      this.titreSousTache = this.sousTache.titreSousTache;
+      this.descriptionSousTache = this.sousTache.descriptionSousTache || '';
+      this.dateDebut = this.sousTache.dateDebut || new Date().toISOString().slice(0, 10);
+      this.statut = this.sousTache.statut;
+    }
   }
 
-  loadSousTaches(): void {
-    this.sousTacheService.getAll().subscribe(data => {
-      this.sousTaches = data;
-    });
+  save(): void {
+    const updatedSousTache: sousTache = {
+      ...this.sousTache,
+      titreSousTache: this.titreSousTache,
+      descriptionSousTache: this.descriptionSousTache,
+      dateDebut: this.dateDebut,
+      statut: this.statut
+    };
+
+    this.saveChanges.emit(updatedSousTache);
+    this.closeModal.emit();
   }
 
-  addSousTache(): void {
-    this.sousTacheService.create(this.newSousTache).subscribe(() => {
-      this.loadSousTaches();
-      this.newSousTache = { titreSousTache: '', descriptionSousTache: '' };
-    });
+  cancel(): void {
+    this.closeModal.emit();
   }
 
-  deleteSousTache(id: number): void {
-    this.sousTacheService.delete(id).subscribe(() => this.loadSousTaches());
+  close(): void {
+    this.closeModal.emit();
+  }
+
+  delete(): void {
+    if (this.sousTache.idSousTache !== undefined) {
+      if (confirm('Do you confirm deleting this sub-task ?')) {
+        this.deleteSousTache.emit(this.sousTache.idSousTache);
+      }
+    }
   }
 }
+
+

@@ -1,20 +1,33 @@
-<h2>Liste des Groupes</h2>
 
-<ul>
-  <li *ngFor="let g of groupes">
-    {{ g.nomGroupe }} - {{ g.visibilite }}
-    <button (click)="deleteGroupe(g.idGroupe!)">Supprimer groupe</button>
-  </li>
-</ul>
+<div class="container">
+  <h1>Create a new group</h1>
+  <p class="subtitle">Configure your group and invite members to collaborate</p>
 
-<h3>Ajouter un groupe</h3>
-<form (ngSubmit)="addGroupe()">
-  <input type="text" [(ngModel)]="newGroupe.nomGroupe" name="nomGroupe" placeholder="Nom du groupe" required />
-  <select [(ngModel)]="newGroupe.visibilite" name="visibilite">
-    <option value="PUBLIQUE">Publique</option>
-    <option value="PRIVE">Privé</option>
-    <option value="PAR_Invitation">Par invitation</option>
+  <form>
+    <label for="group-name">Group name</label>
+    <input type="text" id="group-name" placeholder="Enter your group name"/>
 
-  </select>
-  <button type="submit">Ajouter groupe</button>
-</form>
+    <label for="members">Initial members</label>
+    <textarea
+      id="members"
+      placeholder="Add members' emails separated by commas&#10;example: user1@email.com, user2@email.com"
+    ></textarea>
+    <p class="hint">You can add more members later</p>
+
+    <label for="creation-date">Creation date</label>
+    <input type="date" id="creation-date"/>
+
+    <label for="visibility">Visibility level</label>
+    <select id="visibility">
+      <option>Choose a visibility level</option>
+      <option>Public</option>
+      <option>Private</option>
+      <option>Invite only</option>
+    </select>
+
+    <div class="buttons">
+      <button type="button" class="cancel">Cancel</button>
+      <button type="submit" class="create">Create group</button>
+    </div>
+  </form>
+</div>

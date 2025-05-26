@@ -22,6 +22,8 @@ import { GrilleEvaluationComponent } from './components/grille-evaluation/grille
 import { KanbanBoardComponent } from './components/kanban-board/kanban-board.component';
 import {TacheComponent} from "./components/tache/tache.component";
 import {FileSizePipe} from "./pipes/file-size.pipe";
+import {SousTacheComponent} from "./components/sous-tache/sous-tache.component";
+import {GroupeComponent} from "./components/groupe/groupe.component";
 
 
 registerLocaleData(localeFr);
@@ -45,6 +47,8 @@ registerLocaleData(localeFr);
     KanbanBoardComponent,
     TacheComponent,
     FileSizePipe,
+    SousTacheComponent,
+    GroupeComponent
 
 
   ],
