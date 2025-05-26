@@ -1,0 +1,137 @@
+<div class="modal-overlay" *ngIf="showTaskDetails" (click)="closeTacheDetails()"></div>
+
+<div class="app-container">
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">UniGit</div>
+    <nav class="nav">
+      <span>Projects ▼</span>
+      <span>Board</span>
+      <span>Levels ▼</span>
+    </nav>
+    <div class="search">
+      <input type="text" placeholder="Search" aria-label="Search tasks" />
+      <button aria-label="Search button">🔍</button>
+    </div>
+    <div class="actions">
+      <button aria-label="Settings">⚙️</button>
+      <div class="avatar">YT</div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="main">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="project-info">
+        <div class="circle">P</div>
+        <h2>Project Tasks</h2>
+      </div>
+      <div class="dropdown">Phases ▼</div>
+      <div class="dropdown">Levels ▼</div>
+      <div class="dropdown">Teams ▼</div>
+      <button class="create-btn">Create ▼</button>
+    </aside>
+
+    <!-- Kanban Board -->
+    <div class="dashboard-container">
+      <div class="board" cdkDropListGroup>
+        <!-- Colonnes existantes -->
+        <div
+          *ngFor="let colonne of colonnes"
+          cdkDropList
+          [id]="colonne.titre"
+          [cdkDropListData]="colonne.taches"
+          [cdkDropListConnectedTo]="connectedColumns"
+          (cdkDropListDropped)="drop($event)"
+          class="column"
+        >
+          <!-- Column Header -->
+          <div class="column-header">
+            <h2>{{ colonne.titre }}</h2>
+            <span class="task-count">{{ colonne.taches.length }}</span>
+          </div>
+
+          <!-- Task Cards -->
+          <div
+            *ngFor="let tache of colonne.taches"
+            cdkDrag
+            (click)="openTacheDetails(tache, $event)"
+            class="task-card"
+          >
+            <div *ngIf="tache.labels && tache.labels.length > 0" class="card-labels">
+              <span *ngFor="let label of tache.labels" class="label label-{{label}}"></span>
+            </div>
+            <h4>{{ tache.titreTache }}</h4>
+            <p class="assigned">Assignée à : {{ tache.assigneA || 'Non assignée' }}</p>
+          </div>
+
+          <!-- Add Task Form -->
+          <div
+            class="add-task-container"
+            *ngIf="isAddingTask && newTache.statut === colonne.titre"
+          >
+            <input
+              type="text"
+              [(ngModel)]="newTache.titreTache"
+              placeholder="Saisir le titre de la tâche"
+              (keyup.enter)="saveTacheForm()"
+              autofocus
+              class="add-task-input"
+            >
+            <div class="add-task-actions">
+              <button
+                (click)="saveTacheForm()"
+                class="add-btn"
+                [disabled]="!newTache.titreTache?.trim()"
+              >
+                Ajouter
+              </button>
+              <button (click)="resetForm()" class="cancel-btn">Annuler</button>
+            </div>
+          </div>
+
+          <!-- Add Task Button -->
+          <button
+            class="add-task-btn"
+            (click)="initNewTask(colonne.titre)"
+            *ngIf="!isAddingTask || newTache.statut !== colonne.titre"
+          >
+            + Add task
+          </button>
+        </div>
+
+        <!-- Ajouter une nouvelle colonne - Intégré directement dans le board -->
+        <div class="add-list-container">
+          <ng-container *ngIf="isAddingList; else showAddListButton">
+            <input
+              type="text"
+              [(ngModel)]="newListTitle"
+              placeholder="Nom de la liste"
+              class="add-list-input"
+            />
+            <div class="list-actions">
+              <button (click)="addNewList()" class="add-list-btn">Ajouter</button>
+              <button (click)="cancelAddingList()" class="cancel-list-btn">Annuler</button>
+            </div>
+          </ng-container>
+          <ng-template #showAddListButton>
+            <button class="btn-add-list" (click)="startAddingList()">
+              + Ajouter une liste
+            </button>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task Detail Popup -->
+  <ng-container *ngIf="showTaskDetails">
+    <app-tache
+      [tache]="selectedTache"
+      (fermer)="closeTacheDetails()"
+      (delete)="deleteTache($event)"
+      (updateDescription)="updateTacheDescription($event)"
+    ></app-tache>
+  </ng-container>
+</div>

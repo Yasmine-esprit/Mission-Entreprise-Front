@@ -10,7 +10,7 @@ import { jwtDecode } from 'jwt-decode';
 })
 export class LoginService {
 
-  private apiUrl = 'http://localhost:8081/auth/authenticate'; // update with your backend endpoint
+  private apiUrl = 'http://localhost:8081/auth/authenticate';
 
   constructor(private http: HttpClient) {}
 
@@ -50,6 +50,12 @@ export class LoginService {
       responseType: 'text' 
     });
   }
+
+  enableUser(email: string): Observable<string> {
+    return this.http.put(`http://localhost:8081/auth/enable/${email}`, {}, { responseType: 'text' });
+  }
+  
+  
 
   resetPassword(token: string, newPassword: string) {
     const resetPasswordRequest = {

@@ -1,15 +1,167 @@
-<form (ngSubmit)="onRegister()" #registerForm="ngForm">
-  <input type="text" [(ngModel)]="firstname" name="firstname" placeholder="First Name" required /><br />
-  <input type="text" [(ngModel)]="lastname" name="lastname" placeholder="Last Name" required /><br />
-  <input type="email" [(ngModel)]="email" name="email" placeholder="Email" required /><br />
-  <input type="password" [(ngModel)]="password" name="password" placeholder="Password" required /><br />
-  <input type="file" (change)="onFileSelected($event)" accept="image/*" /><br />
-  <button type="submit">Register</button>
-  <p>{{message}}</p>
-  <p style="color: red">{{errorMessage}}</p>
+<div class="login-wrapper">
+  
 
-  <div *ngIf="qrCodeUrl">
-    <h2>Scan this QR code for 2FA setup:</h2>
-    <img [src]="qrCodeUrl" alt="QR Code for 2FA" />
+  <!-- Centered registration form -->
+  <div class="login-container">
+    <form (ngSubmit)="onRegister()" #registerForm="ngForm">
+
+      <!-- Step 1: Basic info + role selection -->
+      <div *ngIf="currentStep === 1">
+        <input
+          type="text"
+          [(ngModel)]="firstname"
+          name="firstname"
+          placeholder="First Name"
+          required
+        /><br />
+        <input
+          type="text"
+          [(ngModel)]="lastname"
+          name="lastname"
+          placeholder="Last Name"
+          required
+        /><br />
+        <input
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="Email"
+          required
+        /><br />
+        <input
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="Password"
+          required
+        /><br />
+        <input
+        type="file"
+        (change)="onFileSelected($event)"
+        accept="image/*"
+      /><br />
+    
+        <label>Select Role:</label><br />
+        <div *ngFor="let role of roles">
+          <label>
+            <input
+              type="radio"
+              name="role"
+              [(ngModel)]="roleSelected"
+              [value]="role"
+              required
+            />
+            {{ role }}
+          </label>
+        </div>
+    
+        <button type="button" (click)="goNextStep()">Next</button>
+      </div>
+    
+      <!-- Step 2: Role-specific fields -->
+      <div *ngIf="currentStep === 2">
+        <!-- Etudiant fields -->
+        <div *ngIf="roleSelected === 'ETUDIANT'">
+          <input
+          type="text"
+          name="matricule"
+          [(ngModel)]="matricule"
+          placeholder="Matricule"
+          required
+        /><br />
+      
+        <select
+          name="niveau"
+          [(ngModel)]="niveau"
+          required
+        >
+          <option value="" disabled selected>Select Niveau</option>
+          <option value="L3">L3</option>
+          <option value="M1">M1</option>
+          <option value="M2">M2</option>
+        </select><br />
+      
+        <input
+          type="text"
+          name="specialite"
+          [(ngModel)]="specialite"
+          placeholder="Spécialité (Info, GTR, etc.)"
+          required
+        /><br />
+      
+        <label for="dateNaissance">Date de naissance:</label>
+        <input
+          type="date"
+          id="dateNaissance"
+          name="dateNaissance"
+          [(ngModel)]="dateNaissance"
+          required
+        /><br />
+      
+        </div>
+    
+        <!-- Enseignant fields -->
+        <div *ngIf="roleSelected === 'ENSEIGNANT'">
+          <input
+    type="text"
+    name="grade"
+    [(ngModel)]="grade"
+    placeholder="Grade"
+    required
+  /><br />
+
+  <input
+    type="text"
+    name="domaineRecherche"
+    [(ngModel)]="domaineRecherche"
+    placeholder="Domaine de Recherche"
+    required
+  /><br />
+
+  <input
+    type="text"
+    name="bureau"
+    [(ngModel)]="bureau"
+    placeholder="Bureau"
+    required
+  /><br />
+        </div>
+    
+        <!-- Admin fields -->
+        <div *ngIf="roleSelected === 'COORDINATEUR'">
+          <input
+          type="text"
+          name="departement"
+          [(ngModel)]="departement"
+          placeholder="Département"
+          required
+        /><br />
+      
+        <input
+          type="number"
+          name="anneeExperience"
+          [(ngModel)]="anneeExperience"
+          placeholder="Année d'expérience"
+          min="0"
+          required
+        /><br />
+        </div>
+    
+        <button type="button" (click)="goPreviousStep()">Previous</button>
+        <button type="submit" class="register-button">Register</button>
+        <p *ngIf="message">{{ message }}</p>
+        <p *ngIf="errorMessage" style="color: red">{{ errorMessage }}</p>
+  
+        <div *ngIf="qrCodeUrl">
+          <h2>Scan this QR code for 2FA setup:</h2>
+          <img [src]="qrCodeUrl" alt="QR Code for 2FA" />
+          <button routerLink="/admin">Go to Admin Dashboard</button>
+        </div>
+      </div>
+    
+    </form>
+    
+
+
   </div>
-</form>
+</div>
