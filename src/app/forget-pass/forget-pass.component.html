@@ -1,10 +1,9 @@
 <div class="forgot-password-container">
-    <h2>Forgot Password</h2>
+    
   
-    <label for="email">Email:</label>
     <input id="email" [(ngModel)]="email" type="email" placeholder="Enter your email" required />
     
-    <button (click)="submit()">Send Reset Link</button>
+    <button (click)="submit()" class="sign-in-button">Send Reset Link</button>
   
     <!-- Success or error messages -->
     <div *ngIf="message" class="success">{{ message }}</div>

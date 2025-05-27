@@ -1,0 +1,10 @@
+<div class="photo-container">
+  <h2>Upload Profile Photo</h2>
+
+  <div *ngIf="photoUrl">
+    <img [src]="photoUrl" class="profile-preview" />
+  </div>
+
+  <input type="file" (change)="onFileSelected($event)" />
+  <button (click)="uploadPhoto()">Upload</button>
+</div>

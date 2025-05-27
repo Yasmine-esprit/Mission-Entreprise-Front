@@ -7,7 +7,7 @@ import localeFr from '@angular/common/locales/fr';
 import { registerLocaleData } from '@angular/common';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
-import { FormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RegisterComponent } from './register/register.component';
 import { ForgetPassComponent } from './forget-pass/forget-pass.component';
@@ -24,6 +24,11 @@ import {TacheComponent} from "./components/tache/tache.component";
 import {FileSizePipe} from "./pipes/file-size.pipe";
 import {SousTacheComponent} from "./components/sous-tache/sous-tache.component";
 import {GroupeComponent} from "./components/groupe/groupe.component";
+import { ChangePDFComponent } from './change-pdf/change-pdf.component';
+import {AddUsersComponent} from "./add-users/add-users.component";
+import {UpdateUserComponent} from "./update-user/update-user.component";
+import {AdminComponent} from "./admin/admin.component";
+import {DiscussionComponent} from "./discussion/discussion.component";
 
 
 registerLocaleData(localeFr);
@@ -46,6 +51,11 @@ registerLocaleData(localeFr);
     GrilleEvaluationComponent,
     KanbanBoardComponent,
     TacheComponent,
+    DiscussionComponent,
+    AdminComponent,
+    UpdateUserComponent,
+    AddUsersComponent,
+    ChangePDFComponent,
     FileSizePipe,
     SousTacheComponent,
     GroupeComponent
@@ -57,7 +67,8 @@ registerLocaleData(localeFr);
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    DragDropModule
+    DragDropModule,
+    ReactiveFormsModule,
 
   ],
   providers: [
