@@ -15,11 +15,26 @@ export interface Tache {
   assigneA?: string | null;
   labels?: string[];
   members: string[];
+  piecesJointes?: PieceJointe[];
+  coverColor?: string;
   checklist?: {
     description: string;
     completed: boolean;
   }[];
   projet?: Projet | null;
   sousTaches?: sousTache[];
+
+  // gestion de la sauvegarde automatique
+  lastUpdated?: Date;  // Dernière màj locale
+  lastSynced?: Date;   // Dernière synchronisation avec serveur
+  pendingChanges?: boolean; // modif sont en attente
+}
+export interface PieceJointe {
+  id?: number;
+  nom: string;
+  url: string;
+  type: 'fichier' | 'lien';
+  dateAjout?: Date;
+  taille?: number;
 }
 

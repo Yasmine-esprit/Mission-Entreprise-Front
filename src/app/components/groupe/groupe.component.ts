@@ -5,15 +5,34 @@ import { Groupe } from 'src/app/models/groupe.model';
 @Component({
   selector: 'app-groupe',
   templateUrl: './groupe.component.html',
+  styleUrls: ['./groupe.component.css']
 })
 export class GroupeComponent implements OnInit {
   groupes: Groupe[] = [];
-  newGroupe: Groupe = { nomGroupe: '', visibilite: 'PUBLIQUE' };
+  membersInput: string = '';
+
+
+
+  newGroupe: {
+    nomGroupe: string;
+    membres: string[];
+    dateCreation: string;
+    visibilite: string;
+  } = {
+    nomGroupe: '',
+    membres: [],
+    dateCreation: '',
+    visibilite: '',
+  };
 
   constructor(private groupeService: GroupeService) {}
 
   ngOnInit(): void {
     this.getGroupes();
+  }
+  updateMembers(value: string) {
+    this.membersInput = value;
+    this.newGroupe.membres = value.split(',').map(email => email.trim()).filter(email => email.length > 0);
   }
 
   getGroupes() {
@@ -23,9 +42,29 @@ export class GroupeComponent implements OnInit {
   }
 
   addGroupe() {
-    this.groupeService.add(this.newGroupe).subscribe(() => {
+    if (!this.newGroupe.nomGroupe.trim()) {
+      alert('Enter a group name.');
+      return;
+    }
+
+    if (!this.newGroupe.visibilite) {
+      alert('Choose a visibility level.');
+      return;
+    }
+
+    this.newGroupe.membres = this.newGroupe.membres
+      .map(email => email.trim())
+      .filter(email => email.length > 0);
+
+    this.groupeService.add(this.newGroupe as unknown as Groupe).subscribe(() => {
       this.getGroupes();
-      this.newGroupe = { nomGroupe: '', visibilite: 'PUBLIQUE' };
+      // Reset the form model after submission
+      this.newGroupe = {
+        nomGroupe: '',
+        membres: [],
+        dateCreation: '',
+        visibilite: '',
+      };
     });
   }
 

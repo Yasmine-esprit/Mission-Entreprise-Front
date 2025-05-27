@@ -1,75 +1,180 @@
 <div class="modal-backdrop" *ngIf="tache">
   <div class="task-modal">
+
+    <!-- Couverture colorée -->
+    <div class="cover-header"
+         [class]="'cover-' + selectedCoverColor"
+         [style.display]="selectedCoverColor && selectedCoverColor !== 'none' ? 'block' : 'none'">
+    </div>
+
+    <!-- Bouton de fermeture -->
     <div class="close-btn" (click)="retour()">×</div>
 
-    <div class="task-container">
+    <div class="task-container" [class]="getCoverColorClass()">
       <div class="task-main">
+
+        <!-- En-tête de la tâche -->
         <div class="task-header">
           <h2>{{ tache.titreTache }}</h2>
-          <span class="task-list">
-            In the list <strong>{{ tache.statut }}</strong>
-          </span>
+          <span class="task-list">in list <strong>{{ tache.statut }}</strong></span>
           <div *ngIf="tache.priorite !== null" class="priority-badge" [attr.data-priority]="tache.priorite">
             <span class="priority-badge-color" [attr.data-priority]="tache.priorite"></span>
             <span>{{ getPriorityLabel(tache.priorite) }}</span>
           </div>
         </div>
 
-        <div class="task-section">
+        <!-- Membres assignés -->
+        <div class="task-section members" *ngIf="tache.assigneA">
           <h3>Members</h3>
-          <div *ngIf="tache.assigneA; else noMember">
-            <div class="member-info">
-              <div class="avatar">{{ getInitials(tache.assigneA) }}</div>
-              <p>{{ tache.assigneA }}</p>
-            </div>
+          <div class="member-info">
+            <div class="avatar small-avatar">{{ getInitials(tache.assigneA) }}</div>
+            <p class="member-name">{{ tache.assigneA }}</p>
           </div>
-          <ng-template #noMember><p>No member assigned</p></ng-template>
         </div>
 
+        <!-- Description -->
         <div class="task-section">
           <h3>Description</h3>
           <div *ngIf="!editingDescription">
             <p>{{ tache.descriptionTache || 'Add detailed description...' }}</p>
-            <button class="btn btn-primary" (click)="editDescription()">✏️ Edit</button>
+            <button class="btn btn-primary" (click)="editDescription()">Edit</button>
           </div>
           <div *ngIf="editingDescription">
             <textarea [(ngModel)]="tempDescription" rows="4" class="description-textarea"></textarea>
             <div class="action-buttons">
-              <button class="btn btn-success" (click)="saveDescription()">💾 Save</button>
-              <button class="btn btn-danger" (click)="cancelEditDescription()">❌ Cancel</button>
+              <button class="btn btn-success" (click)="saveDescription()">Save</button>
+              <button class="btn btn-danger" (click)="cancelEditDescription()">Cancel</button>
             </div>
           </div>
         </div>
 
+        <!-- Sous-tâches -->
+        <div class="task-section">
+          <h3>Sous-tâches</h3>
+          <ul class="subtask-list">
+            <li *ngFor="let subtask of sousTaches" class="subtask-item">
+      <span (click)="ouvrirSousTache(subtask)" class="subtask-title">
+        {{ subtask.titreSousTache }}
+      </span>
+              <span class="subtask-date">{{ subtask.dateDebut | date: 'dd/MM/yyyy' }}</span>
+              <button
+                class="delete-subtask-btn"
+                (click)="supprimerSousTache(subtask.idSousTache!)"
+                type="button"
+                *ngIf="subtask.idSousTache">
+                ×
+              </button>
+            </li>
+          </ul>
+
+          <div class="add-subtask">
+            <button class="add-subtask-btn" (click)="ajouterSousTache()" type="button">
+              + Ajouter une sous-tâche
+            </button>
+          </div>
+        </div>
+
+        <!-- Modal pour éditer la sous-tâche (en dehors de la section tâche) -->
+        <app-sub-task
+          *ngIf="showSousTacheModal && selectedSousTache"
+          [sousTache]="selectedSousTache"
+          [sousTaches]="sousTaches"
+          (saveChanges)="sauvegarderSousTache($event)"
+          (deleteSousTache)="supprimerSousTache($event)"
+          (closeModal)="fermerModalSousTache()">
+        </app-sub-task>
+
+        <!-- Dates -->
         <div class="task-section" *ngIf="tache.dateDebut || tache.dateFin">
           <h3>Dates</h3>
           <p *ngIf="tache.dateDebut"><strong>Start:</strong> {{ tache.dateDebut | date: 'longDate' }}</p>
           <p *ngIf="tache.dateFin"><strong>Due:</strong> {{ tache.dateFin | date: 'longDate' }}</p>
         </div>
+
+        <!-- Pièces jointes -->
+        <div class="attachments-list" *ngIf="tache.piecesJointes?.length">
+          <h3>Attachments</h3>
+          <div *ngFor="let attachment of tache.piecesJointes; let i = index" class="attachment-item">
+            <a [href]="attachment.url" target="_blank" class="attachment-link">
+              <span *ngIf="attachment.type === 'lien'">🔗</span>
+              <span *ngIf="attachment.type === 'fichier'">📄</span>
+              {{ attachment.nom }}
+            </a>
+            <button class="remove-attachment" (click)="removeAttachment(i)">×</button>
+          </div>
+        </div>
+
       </div>
 
+      <!-- Sidebar -->
       <div class="task-sidebar">
-        <div>
-          <h3>Details</h3>
-          <button class="sidebar-btn" (click)="toggleDatePicker($event)">📅 Dates</button>
-          <!-- Priority button with new design -->
-          <button class="sidebar-btn priority-btn" (click)="togglePriorityPicker($event)">
-            <span class="priority-color" [attr.data-priority]="tache.priorite"></span>
-            <span class="priority-text">{{ getPriorityLabel(tache.priorite) }}</span>
-          </button>
-          <button class="sidebar-btn">👤 Members</button>
-          <button class="sidebar-btn">🏷️ Labels</button>
+        <div class="sidebar-section">
+          <h3>DETAILS</h3>
+
+          <!-- Date -->
+          <div class="detail-item">
+            <span class="detail-label">Date</span>
+            <button class="sidebar-btn date-btn" (click)="toggleDatePicker($event)">
+              <span class="btn-icon">📅 Date</span>
+              <span>{{ tache.dateFin | date: 'MMM d, yyyy' }}</span>
+            </button>
+          </div>
+
+          <!-- Priorité -->
+          <div class="detail-item">
+            <span class="detail-label">Priority</span>
+            <button class="sidebar-btn priority-btn" (click)="togglePriorityPicker($event)">
+              <span class="priority-color" [attr.data-priority]="tache.priorite"></span>
+              <span class="priority-text">{{ getPriorityLabel(tache.priorite) }}</span>
+            </button>
+          </div>
+
+          <!-- Membres -->
+          <div class="detail-item">
+            <span class="detail-label">Members</span>
+            <button class="sidebar-btn members-btn">
+              <span>Add/Remove Members</span>
+            </button>
+          </div>
+
+          <!-- Pièces jointes -->
+          <div class="detail-item">
+            <span class="detail-label">Attachments</span>
+            <button class="sidebar-btn attachment-btn" (click)="toggleAttachmentModal()">
+              <span class="btn-icon">📎</span>
+              <span>Add Attachment</span>
+            </button>
+          </div>
+
+          <!-- Cover -->
+          <div class="detail-item">
+            <span class="detail-label">Cover</span>
+            <div class="cover-colors">
+              <div class="color-square none"
+                   [class.selected]="!selectedCoverColor || selectedCoverColor === 'none'"
+                   (click)="setCoverColor('none')"
+                   title="No Cover">
+              </div>
+              <div *ngFor="let color of availableCoverColors"
+                   class="color-square {{ color }}"
+                   [class.selected]="selectedCoverColor === color"
+                   (click)="setCoverColor(color)"
+                   [title]="color | titlecase">
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-          <h3>Actions</h3>
-          <button class="sidebar-btn" (click)="editDescription()"> 💾 Save</button>
-          <button class="sidebar-btn delete-btn" (click)="deleteTache()">🗑️ Delete</button>
+
+        <!-- Actions -->
+        <div class="sidebar-section">
+          <h3>ACTIONS</h3>
+          <button class="sidebar-btn delete-btn" (click)="deleteTache()">Delete</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Date Picker Modal -->
+<!-- Date Picker Modal -->
   <div class="date-picker-modal" *ngIf="showDatePicker">
     <div class="date-picker-overlay" (click)="toggleDatePicker()"></div>
     <div class="date-picker-container" #datePickerContainer>
@@ -150,35 +255,105 @@
         <button class="btn btn-danger" (click)="clearDates()">Remove</button>
         <button class="btn btn-primary" (click)="saveDates()">Save</button>
       </div>
+
+      <div *ngIf="dateErrorMessage" class="date-error-message">
+        {{ dateErrorMessage }}
+      </div>
     </div>
   </div>
 
-  <!-- Priority Picker Modal with new design -->
-  <div class="priority-picker-modal" *ngIf="showPriorityPicker">
-    <div class="priority-picker-overlay" (click)="togglePriorityPicker()"></div>
-    <div class="priority-picker-container" #priorityPickerContainer>
-      <div class="priority-picker-header">
-        <h3>Priority</h3>
-        <button class="close-priority-picker" (click)="togglePriorityPicker()">×</button>
+  <!-- Priority Picker -->
+  <div class="priority-picker-overlay" *ngIf="showPriorityPicker" (click)="togglePriorityPicker()"></div>
+  <div class="priority-picker-container" *ngIf="showPriorityPicker" #priorityPickerContainer>
+    <div class="priority-picker-header">Priority</div>
+    <div class="priority-options">
+      <button *ngFor="let priorite of priorites"
+              class="priority-option"
+              [class.selected]="tache.priorite === priorite"
+              [attr.data-priority]="priorite"
+              (click)="setPriority(priorite)">
+        <span class="priority-color-box" [attr.data-priority]="priorite"></span>
+        <span class="priority-label">{{ getPriorityLabel(priorite) }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Attachment Modal -->
+  <div class="attachment-modal" *ngIf="showAttachmentModal">
+    <div class="attachment-overlay" (click)="toggleAttachmentModal()"></div>
+    <div class="attachment-container">
+      <div class="attachment-header">
+        <h3>Add an attachment</h3>
+        <button class="close-attachment" (click)="toggleAttachmentModal()">×</button>
       </div>
 
-      <div class="priority-options">
-        <div *ngFor="let priorite of priorites"
-             class="priority-option"
-             [class.selected]="tache.priorite === priorite"
-             [attr.data-priority]="priorite"
-             (click)="setPriority(priorite)">
-          <span class="priority-color-box" [attr.data-priority]="priorite"></span>
-          <span class="priority-label">{{ getPriorityLabel(priorite) }}</span>
+      <div class="attachment-tabs">
+        <div class="tab" [class.active]="activeTab === 'lien'" (click)="setActiveTab('lien')">Link</div>
+        <div class="tab" [class.active]="activeTab === 'fichier'" (click)="setActiveTab('fichier')">File</div>
+      </div>
+
+      <div class="attachment-content">
+        <!-- Link Tab -->
+        <div class="tab-content" [class.active]="activeTab === 'lien'">
+          <div class="form-group">
+            <label for="attachmentUrl">URL</label>
+            <input type="text"
+                   id="attachmentUrl"
+                   [(ngModel)]="newAttachmentUrl"
+                   placeholder="https://example.com">
+          </div>
+          <div class="form-group">
+            <label for="attachmentName">Title (optional)</label>
+            <input type="text"
+                   id="attachmentName"
+                   [(ngModel)]="attachmentName"
+                   placeholder="Link name">
+          </div>
+          <button class="btn btn-add-link"
+                  (click)="addLinkAttachment()"
+                  [disabled]="!newAttachmentUrl.trim()">
+            Add Link
+          </button>
+        </div>
+
+        <!-- File Tab -->
+        <div class="tab-content" [class.active]="activeTab === 'fichier'">
+          <div class="file-upload-area"
+               (click)="triggerFileInput()"
+               (dragover)="onDragOver($event)"
+               (drop)="onDrop($event)">
+            <div class="upload-icon">⬆️</div>
+            <div class="upload-text">Click to upload a file</div>
+            <div class="upload-subtext">or Drag & Drop here</div>
+          </div>
+          <div class="max-file-size">Maximum size: 10MB</div>
+          <input type="file"
+                 #fileInput
+                 id="fileAttachment"
+                 (change)="onFileSelected($event)"
+                 multiple
+                 style="display: none;">
+          <div *ngIf="attachmentFiles.length" class="file-list">
+            <div *ngFor="let file of attachmentFiles" class="file-item">
+              {{ file.name }} ({{ formatFileSize(file.size) }})
+            </div>
+          </div>
+          <button *ngIf="attachmentFiles.length" class="btn btn-primary"
+                  (click)="addFileAttachments()"
+                  [disabled]="!attachmentFiles.length">
+            Upload {{ attachmentFiles.length }} File{{ attachmentFiles.length > 1 ? 's' : '' }}
+          </button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Error Message for Date Validation -->
-  <div class="date-error-message" *ngIf="dateErrorMessage">
-    <span class="error-icon">⚠️</span>
-    <span class="error-text">{{ dateErrorMessage }}</span>
-    <span class="error-close" (click)="dateErrorMessage = null">×</span>
+  <div *ngIf="dateErrorMessage" class="error-message-overlay">
+    <div class="error-message-container">
+      <div class="error-message-title">Date Error</div>
+      <div class="error-message-content">{{ dateErrorMessage }}</div>
+      <button class="error-message-button" (click)="dateErrorMessage = null">OK</button>
+    </div>
   </div>
 </div>

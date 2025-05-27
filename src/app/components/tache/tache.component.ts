@@ -1,8 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges, ElementRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { Tache } from 'src/app/models/tache.model';
 import { TacheService } from 'src/app/service/tache.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { formatDate } from '@angular/common';
+import { Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
+import {sousTache, Statut} from "../../models/sousTache.model";
 
 type StatutTache = "ToDo" | "EnCours" | "Terminé" | "Test" | "Validé" | "Annulé";
 type PrioriteTache = "Highest" | "High" | "Medium" | "Low" | "Lowest" | null;
@@ -13,17 +16,26 @@ interface CalendarDay {
   otherMonth: boolean;
 }
 
+interface PieceJointe {
+  nom: string;
+  url: string;
+  type: 'fichier' | 'lien';
+  taille?: number;
+  dateAjout: Date;
+}
+
 @Component({
   selector: 'app-tache',
   templateUrl: './tache.component.html',
   styleUrls: ['./tache.component.css']
 })
-export class TacheComponent implements OnInit, OnChanges {
+export class TacheComponent implements OnInit, OnChanges, OnDestroy {
   editingDescription = false;
   tempDescription = '';
   @Output() fermer = new EventEmitter<void>();
   @Output() delete = new EventEmitter<number>();
   @Output() updateDescription = new EventEmitter<string>();
+  @Output() coverColorChanged = new EventEmitter<{id: number, color: string}>();
   @Input() tache!: Tache;
   showDatePicker = false;
   showPriorityPicker = false;
@@ -37,10 +49,28 @@ export class TacheComponent implements OnInit, OnChanges {
   selectedDate: Date | null = null;
   dateErrorMessage: string | null = null;
 
+  showAttachmentModal = false;
+  newAttachmentUrl = '';
+  attachmentName = '';
+  attachmentFiles: File[] = [];
+  activeTab: 'lien' | 'fichier' = 'lien';
+  @ViewChild('fileInput') fileInput!: ElementRef;
+
   priorites: PrioriteTache[] = ["Highest", "High", "Medium", "Low", "Lowest", null];
+  availableCoverColors = ['red', 'green', 'blue', 'purple', 'yellow', 'pink', 'orange', 'teal','white'];
+  selectedCoverColor: string = 'green'; // Valeur par défaut
+
+  sousTaches: sousTache[] = [];
+  sousTacheSelectionnee?: sousTache;
+  showSousTacheModal = false;
+  selectedSousTache?: sousTache;
 
   @ViewChild('datePickerContainer') datePickerContainer!: ElementRef;
   @ViewChild('priorityPickerContainer') priorityPickerContainer!: ElementRef;
+
+  // Sujets pour contrôler la sauvegarde automatique
+  private saveSubject = new Subject<void>();
+  private destroy$ = new Subject<void>();
 
   constructor(
     private tacheService: TacheService,
@@ -49,44 +79,186 @@ export class TacheComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
+    // Configuration du debounce pour les sauvegardes automatiques
+    this.saveSubject.pipe(
+      debounceTime(500), // Attendre 500ms après la dernière action
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.performSave();
+    });
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id && !this.tache) {
       this.chargerTache(+id);
-    }
-    if (this.tache && this.tache.priorite === undefined) {
-      this.tache.priorite = null; //de undefined à null
-    }
-
-    if (this.tache) {
+    } else if (this.tache) {
+      // Si la tâche est déjà fournie, on initialise les valeurs
       this.tempDescription = this.tache.descriptionTache;
       this.initDateValues();
-      // Initialisation sécurisée de la priorité
       if (this.tache.priorite === undefined) {
         this.tache.priorite = null;
       }
+      // Initialiser la couleur de couverture
+      if (this.tache.labels && this.tache.labels.length > 0) {
+        this.selectedCoverColor = this.tache.labels[0];
+      } else {
+        this.tache.labels = [this.selectedCoverColor];
+      }
     }
+
     this.generateCalendarDays();
+
+    // Écouter les changements globaux de tâches (pour synchronisation entre composants)
+    this.tacheService.taches$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(taches => {
+      // Si notre tâche est dans la liste mise à jour, mettre à jour notre copie locale
+      if (this.tache?.idTache) {
+        const updatedTache = taches.find(t => t.idTache === this.tache.idTache);
+        if (updatedTache && updatedTache !== this.tache) {
+          // Ne pas mettre à jour si on est en train d'éditer la description
+          if (!this.editingDescription) {
+            this.tache = updatedTache;
+            this.tempDescription = this.tache.descriptionTache;
+          }
+          // Mise à jour des dates et de la couleur
+          this.initDateValues();
+          if (this.tache.labels && this.tache.labels.length > 0) {
+            this.selectedCoverColor = this.tache.labels[0];
+          }
+        }
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    // Nettoyer les abonnements
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['tache'] && changes['tache'].currentValue) {
       this.tempDescription = this.tache.descriptionTache;
       this.initDateValues();
+      // Mettre à jour la couleur lors des changements
+      if (this.tache.labels && this.tache.labels.length > 0) {
+        this.selectedCoverColor = this.tache.labels[0];
+      }
     }
   }
 
+  triggerAutoSave(): void {
+    this.sauvegarderTacheComplete();
+  }
+
+  private performSave(): void {
+    if (this.tache && this.tache.idTache) {
+
+      this.tacheService.updateTache(this.tache).subscribe({
+        next: (updatedTache) => {
+        },
+        error: (err) => {
+          // this.isSaving = false;
+          console.error('Erreur lors de la sauvegarde automatique', err);
+        }
+      });
+    }
+  }
+
+  setCoverColor(color: string): void {
+    this.selectedCoverColor = color;
+    if (this.tache) {
+      if (!this.tache.labels) {
+        this.tache.labels = [];
+      }
+      this.tache.labels[0] = color;
+
+      // Emit the change to parent components
+      if (this.tache.idTache) {
+        this.coverColorChanged.emit({
+          id: this.tache.idTache,
+          color: color
+        });
+      }
+      if (this.tache && this.tache.idTache) {
+        this.tacheService.updateCoverColor(this.tache.idTache, color).subscribe({
+          next: (updatedTache) => {
+            // Update will happen via BehaviorSubject
+          },
+          error: (err) => {
+            console.error('Erreur lors de la mise à jour de la couleur', err);
+          }
+        });
+      } else if (this.tache) {
+        if (!this.tache.labels) {
+          this.tache.labels = [];
+        }
+        if (this.tache.labels.length > 0) {
+          this.tache.labels[0] = color;
+        } else {
+          this.tache.labels.push(color);
+        }
+        this.triggerAutoSave();
+      }
+    }
+  }
+
+
+  getCoverColorClass(): string {
+    return this.selectedCoverColor;
+  }
+
+  editDescription(): void {
+    this.editingDescription = true;
+    this.tempDescription = this.tache?.descriptionTache || '';
+  }
+
+  saveDescription(): void {
+    if (this.tache && this.tache.idTache) {
+      this.editingDescription = false;
+
+      // Utiliser la méthode spécifique pour mettre à jour la description
+      this.tacheService.updateDescription(this.tache.idTache, this.tempDescription).subscribe({
+        next: () => {
+          this.updateDescription.emit(this.tempDescription);
+        },
+        error: (err) => {
+          console.error('Erreur lors de la mise à jour de la description', err);
+        }
+      });
+    } else if (this.tache) {
+      // Tâche locale seulement
+      this.editingDescription = false;
+      this.tache.descriptionTache = this.tempDescription;
+      this.updateDescription.emit(this.tache.descriptionTache);
+      this.triggerAutoSave();
+    }
+  }
+
+  cancelEditDescription(): void {
+    this.editingDescription = false;
+  }
+
   chargerTache(id: number): void {
-    this.tacheService.getTacheById(id).subscribe(t => {
-      if (t) {
-        this.tache = {
-          ...t,
-          members: t.assigneA ? [t.assigneA] : [],
-          checklist: t.checklist || [],
-          labels: t.labels || ['green'],
-          statut: this.validateStatut(t.statut),
-          priorite: this.validatePriorite(t.priorite)
-        };
-        this.tempDescription = this.tache.descriptionTache;
+    this.tacheService.getTacheById(id).subscribe({
+      next: (t) => {
+        if (t) {
+          this.tache = {
+            ...t,
+            members: t.members || (t.assigneA ? [t.assigneA] : []),
+            checklist: t.checklist || [],
+            labels: t.labels || [this.selectedCoverColor],
+            statut: this.validateStatut(t.statut)
+          };
+          this.tempDescription = this.tache.descriptionTache;
+          if (this.tache.labels && this.tache.labels.length > 0) {
+            this.selectedCoverColor = this.tache.labels[0];
+          }
+          this.initDateValues();
+        }
+      },
+      error: (err) => {
+        console.error("Erreur lors du chargement de la tâche:", err);
       }
     });
   }
@@ -96,38 +268,9 @@ export class TacheComponent implements OnInit, OnChanges {
     return prioritesValides.includes(priorite) ? priorite : null;
   }
 
-
-
-  editDescription(): void {
-    this.editingDescription = true;
-    this.tempDescription = this.tache?.descriptionTache || '';
-  }
-
-  saveDescription(): void {
-    if (this.tache) {
-      this.editingDescription = false;
-      this.tache.descriptionTache = this.tempDescription;
-      this.updateDescription.emit(this.tache.descriptionTache);
-      this.saveTache();
-    }
-  }
-
-  cancelEditDescription(): void {
-    this.editingDescription = false;
-  }
-
+  // Méthode de sauvegarde remplacée par triggerAutoSave et performSave
   private saveTache(): void {
-    if (this.tache) {
-      this.tacheService.updateTache(this.tache).subscribe({
-        next: (updatedTache) => {
-          this.tache = updatedTache;
-          this.tempDescription = this.tache.descriptionTache;
-        },
-        error: (err) => {
-          console.error('Erreur lors de la mise à jour', err);
-        }
-      });
-    }
+    this.triggerAutoSave();
   }
 
   deleteTache(): void {
@@ -459,47 +602,34 @@ export class TacheComponent implements OnInit, OnChanges {
   updateTacheDates(): void {
     if (!this.tache) return;
 
-    if (this.hasStartDate && this.startDateValue) {
-      this.tache.dateDebut = new Date(this.startDateValue);
-    } else {
-      this.tache.dateDebut = null;
-    }
+    const startDate = this.hasStartDate && this.startDateValue ? new Date(this.startDateValue) : null;
+    const dueDate = this.hasDueDate && this.dueDateValue ? new Date(this.dueDateValue) : null;
 
-    if (this.hasDueDate && this.dueDateValue) {
+    // Si la date de fin est définie, ajouter l'heure
+    if (dueDate) {
       const [hours, minutes] = this.dueTimeValue.split(':').map(Number);
-      const dueDate = new Date(this.dueDateValue);
       dueDate.setHours(hours, minutes);
-      this.tache.dateFin = dueDate;
+    }
+
+    if (this.tache.idTache) {
+      // Utiliser la méthode spécifique pour mettre à jour les dates
+      if (this.validateDates()) {
+        this.tacheService.updateTacheDates(this.tache.idTache, startDate, dueDate).subscribe({
+          error: (err) => {
+            console.error('Erreur lors de la mise à jour des dates', err);
+          }
+        });
+      }
     } else {
-      this.tache.dateFin = null;
-    }
-    this.validateDates();
-    this.saveTache();
-  }
+      // Mise à jour locale
+      this.tache.dateDebut = startDate;
+      this.tache.dateFin = dueDate;
 
-  /*getPriorityColor(priorite: PrioriteTache): string {
-    if (!priorite) return '#EBECF0';
-    switch (priorite) {
-      case 'Highest': return '#FF5630';
-      case 'High': return '#FF8B00';
-      case 'Medium': return '#FFAB00';
-      case 'Low': return '#51c26c';
-      case 'Lowest': return '#366ab8';
-      default: return '#EBECF0';
+      if (this.validateDates()) {
+        this.triggerAutoSave();
+      }
     }
   }
-
-   getPriorityIcon(priorite: PrioriteTache): string {
-    if (!priorite) return '🏷️';
-    switch (priorite) {
-      case 'Highest': return '⬆️⬆️';
-      case 'High': return '⬆️';
-      case 'Medium': return '➖';
-      case 'Low': return '⬇️';
-      case 'Lowest': return '⬇️⬇️';
-      default: return '🏷️';
-    }
-  } */
 
   getPriorityLabel(priorite: PrioriteTache): string {
     if (!priorite) return 'No Priority';
@@ -508,9 +638,18 @@ export class TacheComponent implements OnInit, OnChanges {
   }
 
   setPriority(priorite: PrioriteTache): void {
-    if (this.tache) {
+    if (this.tache && this.tache.idTache) {
+      this.tacheService.updateTachePriority(this.tache.idTache, priorite).subscribe({
+        next: () => {
+          this.showPriorityPicker = false;
+        },
+        error: (err) => {
+          console.error('Erreur lors de la mise à jour de la priorité', err);
+        }
+      });
+    } else if (this.tache) {
       this.tache.priorite = priorite;
-      this.saveTache();
+      this.triggerAutoSave();
       this.showPriorityPicker = false;
     }
   }
@@ -521,11 +660,6 @@ export class TacheComponent implements OnInit, OnChanges {
     }
 
     this.updateTacheDates();
-
-    if (this.route.snapshot.paramMap.get('id')) {
-      this.tacheService.updateTache(this.tache).subscribe();
-    }
-
     this.toggleDatePicker();
   }
 
@@ -537,19 +671,15 @@ export class TacheComponent implements OnInit, OnChanges {
     this.dueTimeValue = '20:00';
     this.tache.dateDebut = null;
     this.tache.dateFin = null;
-    this.saveTache();
+    // Déclencher la sauvegarde automatique
+    this.triggerAutoSave();
     this.dateErrorMessage = null;
-
-    if (this.route.snapshot.paramMap.get('id')) {
-      this.tacheService.updateTache(this.tache).subscribe();
-    }
-
     this.toggleDatePicker();
-
   }
 
   retour(): void {
-    this.saveTache();
+    // S'assurer que toutes les modifications sont sauvegardées avant de quitter
+    this.performSave();
 
     if (this.route.snapshot.paramMap.get('id')) {
       this.router.navigate(['/']);
@@ -561,5 +691,194 @@ export class TacheComponent implements OnInit, OnChanges {
   formatDate(date: Date | null): string {
     if (!date) return '';
     return formatDate(date, 'dd MMMM yyyy', 'fr');
+  }
+
+  //Attachement
+  toggleAttachmentModal(): void {
+    this.showAttachmentModal = !this.showAttachmentModal;
+    if (this.showAttachmentModal) {
+      this.activeTab = 'lien';
+      this.newAttachmentUrl = '';
+      this.attachmentName = '';
+      this.attachmentFiles = [];
+    }
+  }
+
+  setActiveTab(tab: 'lien' | 'fichier'): void {
+    this.activeTab = tab;
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      this.attachmentFiles = Array.from(input.files);
+    }
+  }
+
+  triggerFileInput(): void {
+    if (this.fileInput) {
+      this.fileInput.nativeElement.click();
+    }
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'copy';
+    }
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (event.dataTransfer?.files) {
+      this.attachmentFiles = Array.from(event.dataTransfer.files);
+    }
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  addLinkAttachment(): void {
+    if (this.newAttachmentUrl.trim()) {
+      const nom = this.attachmentName.trim() || this.getDomainFromUrl(this.newAttachmentUrl);
+
+      const newAttachment: PieceJointe = {
+        nom: nom,
+        url: this.newAttachmentUrl,
+        type: 'lien',
+        dateAjout: new Date()
+      };
+
+      if (this.tache && this.tache.idTache) {
+        this.tacheService.addAttachment(this.tache.idTache, newAttachment).subscribe({
+          next: () => {
+            this.newAttachmentUrl = '';
+            this.attachmentName = '';
+            this.showAttachmentModal = false;
+          }
+        });
+      } else if (this.tache) {
+        if (!this.tache.piecesJointes) {
+          this.tache.piecesJointes = [];
+        }
+        this.tache.piecesJointes.push(newAttachment);
+        this.triggerAutoSave();
+        this.newAttachmentUrl = '';
+        this.attachmentName = '';
+        this.showAttachmentModal = false;
+      }
+    }
+  }
+
+  addFileAttachments(): void {
+    if (this.attachmentFiles.length > 0) {
+      if (!this.tache.piecesJointes) {
+        this.tache.piecesJointes = [];
+      }
+
+      this.attachmentFiles.forEach(file => {
+        const newAttachment: PieceJointe = {
+          nom: file.name,
+          url: URL.createObjectURL(file),
+          type: 'fichier',
+          taille: file.size,
+          dateAjout: new Date()
+        };
+        this.tache.piecesJointes!.push(newAttachment);
+      });
+
+      this.triggerAutoSave();
+      this.attachmentFiles = [];
+      this.showAttachmentModal = false;
+    }
+  }
+
+  removeAttachment(index: number): void {
+    if (this.tache && this.tache.idTache) {
+      this.tacheService.removeAttachment(this.tache.idTache, index).subscribe();
+    } else if (this.tache && this.tache.piecesJointes) {
+      this.tache.piecesJointes.splice(index, 1);
+      this.triggerAutoSave();
+    }
+  }
+
+  private getDomainFromUrl(url: string): string {
+    try {
+      const domain = new URL(url).hostname;
+      return domain.startsWith('www.') ? domain.substring(4) : domain;
+    } catch {
+      return url.length > 30 ? url.substring(0, 30) + '...' : url;
+    }
+  }
+
+  // Updated subtask methods
+  genererIdUnique(): number {
+    return this.sousTaches.length > 0
+      ? Math.max(...this.sousTaches.map(s => s.idSousTache || 0)) + 1
+      : 1;
+  }
+
+  ajouterSousTache(): void {
+    const nouvelleSousTache: sousTache = {
+      idSousTache: this.genererIdUnique(),
+      titreSousTache: 'New sub-task',
+      descriptionSousTache: '',
+      dateDebut: new Date().toISOString().slice(0,10),
+      statut: Statut.ToDo
+    };
+
+    this.sousTaches.push(nouvelleSousTache);
+    this.selectedSousTache = nouvelleSousTache;
+    this.showSousTacheModal = true;
+  }
+  //open existant sub-task
+  ouvrirSousTache(s: sousTache): void {
+    this.selectedSousTache = {...s};
+    this.showSousTacheModal = true;
+  }
+
+// Méthode pour sauvegarder
+  sauvegarderSousTache(updatedSousTache: sousTache): void {
+    const index = this.sousTaches.findIndex(t => t.idSousTache === updatedSousTache.idSousTache);
+
+    if (index !== -1) {
+      // Màj de la sous-tâche existante
+      this.sousTaches[index] = updatedSousTache;
+    } else {
+      this.sousTaches.push(updatedSousTache);
+    }
+
+    this.fermerModalSousTache();
+    this.triggerAutoSave();
+  }
+
+  supprimerSousTache(idSousTache: number): void {
+    this.sousTaches = this.sousTaches.filter(s => s.idSousTache !== idSousTache);
+    this.fermerModalSousTache();
+    this.triggerAutoSave();
+  }
+
+  fermerModalSousTache(): void {
+    this.showSousTacheModal = false;
+    this.selectedSousTache = undefined;
+  }
+
+  private sauvegarderTacheComplete(): void {
+    this.tacheService.updateTache({
+      ...this.tache,
+      sousTaches: this.sousTaches
+    }).subscribe(() => {
+      console.log('Tâche et sous-tâches sauvegardées avec succès');
+    });
   }
 }
