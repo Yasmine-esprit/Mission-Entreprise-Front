@@ -5,6 +5,7 @@ import { Groupe } from 'src/app/models/groupe.model';
 @Component({
   selector: 'app-groupe',
   templateUrl: './groupe.component.html',
+  styleUrls: ['./groupe.component.css']
 })
 export class GroupeComponent implements OnInit {
   groupes: Groupe[] = [];
