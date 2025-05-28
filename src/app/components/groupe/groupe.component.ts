@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import { GroupeService } from 'src/app/service/groupe.service';
 import { Groupe } from 'src/app/models/groupe.model';
 
@@ -10,8 +10,8 @@ import { Groupe } from 'src/app/models/groupe.model';
 export class GroupeComponent implements OnInit {
   groupes: Groupe[] = [];
   membersInput: string = '';
-
-
+  @Output() groupSaved = new EventEmitter<any>();
+  @Output() closePopup = new EventEmitter<void>();
 
   newGroupe: {
     nomGroupe: string;
@@ -30,6 +30,7 @@ export class GroupeComponent implements OnInit {
   ngOnInit(): void {
     this.getGroupes();
   }
+
   updateMembers(value: string) {
     this.membersInput = value;
     this.newGroupe.membres = value.split(',').map(email => email.trim()).filter(email => email.length > 0);
@@ -58,13 +59,17 @@ export class GroupeComponent implements OnInit {
 
     this.groupeService.add(this.newGroupe as unknown as Groupe).subscribe(() => {
       this.getGroupes();
-      // Reset the form model after submission
+
+      this.groupSaved.emit(this.newGroupe);
+      this.closePopup.emit();
+
       this.newGroupe = {
         nomGroupe: '',
         membres: [],
         dateCreation: '',
         visibilite: '',
       };
+      this.membersInput = '';
     });
   }
 

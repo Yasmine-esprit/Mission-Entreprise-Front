@@ -3,10 +3,8 @@
 <div class="app-container">
   <!-- Header -->
   <header class="header">
-    <!-- Left side - Project name -->
     <div class="project-name">{{ currentProjectName }}</div>
 
-    <!-- Right side - Search and Share -->
     <div class="header-right">
       <div class="search">
         <input type="text" placeholder="Search" aria-label="Search tasks" />
@@ -145,6 +143,15 @@
               </div>
               <span class="menu-item-text">Add Group</span>
             </button>
+          </div>
+        </div>
+        <!-- Group Popup Modal -->
+        <div class="modal-overlay" *ngIf="showGroupPopup" (click)="closeGroupPopup()">
+          <div class="group-popup-content" (click)="$event.stopPropagation()">
+
+            <div class="popup-body">
+              <app-groupe (groupSaved)="onGroupSaved($event)" (closePopup)="closeGroupPopup()"></app-groupe>
+            </div>
           </div>
         </div>
 
