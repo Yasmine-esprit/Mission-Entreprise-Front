@@ -478,21 +478,21 @@ export class KanbanBoardComponent implements OnInit {
     this.showGroupPopup = false;
   }
 
-  onGroupSaved(group: Group): void {
-    if (group.id === 0) {
-      // New group
-      const newId = Math.max(...this.groups.map(g => g.id)) + 1;
-      group.id = newId;
-      this.groups.push(group);
-    } else {
-      // Update existing group
-      const index = this.groups.findIndex(g => g.id === group.id);
-      if (index !== -1) {
-        this.groups[index] = group;
-      }
-    }
-    this.closeGroupPopup();
+  onGroupSaved(group: any): void {
+    // Convert the group data to match your Group interface
+    const newGroup: Group = {
+      id: Math.max(...this.groups.map(g => g.id), 0) + 1,
+      name: group.nomGroupe,
+      description: group.visibilite || 'No description', // Use visibility as description
+      members: group.membres || [],
+      isActive: true,
+      createdDate: new Date()
+    };
+    this.groups.push(newGroup);
+
+    //to force the change detection
     this.cdRef.detectChanges();
+
   }
 
   editGroup(group: Group): void {
