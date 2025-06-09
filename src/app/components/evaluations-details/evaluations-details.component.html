@@ -1,0 +1,44 @@
+<p>evaluations-details works!</p>
+<div class="evaluations-page">
+  <div class="header">
+    <h1>Evaluations</h1>
+    <button class="btn dark" (click)="goToNewEvaluation()">
+      <i class="fa fa-plus"></i> New Evaluation
+    </button>
+  </div>
+
+  <div class="search-row">
+    <input type="text" placeholder="Search evaluations..." class="search-input" />
+    <button class="icon-btn">
+      <i class="fa fa-filter"></i>
+    </button>
+    <button class="icon-btn">
+      <i class="fa fa-sort"></i>
+    </button>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Group/Student</th>
+          <th>Project</th>
+          <th>Criteria</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let eval of evaluations">
+          <td>{{ eval.group }}</td>
+          <td>{{ eval.project }}</td>
+          <td>{{ eval.criteria }}</td>
+          <td>{{ eval.date }}</td>
+          <td>
+            <button class="view-btn" (click)="viewEvaluation(eval)">View</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -15,6 +15,9 @@ import { DiscussionComponent } from './discussion/discussion.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
 import { ChangepassComponent } from './changepass/changepass.component';
 import { ChangePDFComponent } from './change-pdf/change-pdf.component';
+import { EvaluationComponent } from './components/evaluation/evaluation.component';
+import { CritereComponent } from './components/critere/critere.component';
+import { EvaluationsDetailsComponent } from './components/evaluations-details/evaluations-details.component';
 
 
 
@@ -36,7 +39,10 @@ const routes: Routes = [
   {path: 'reset-password',component: ResetPassComponent},
   {path: 'addUsers' , component:AddUsersComponent},
   {path: 'changePass', component: ChangepassComponent },
-  {path:'changePhoto', component: ChangePDFComponent}
+  {path:'changePhoto', component: ChangePDFComponent},
+  {path:'evaluation', component: EvaluationComponent},
+  {path:'criteres', component:CritereComponent},
+  {path: 'evalDetails', component:EvaluationsDetailsComponent}
 
 ];
 

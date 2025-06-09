@@ -1,0 +1,37 @@
+<div class="dashboard">
+  <div class="card recent-evaluations">
+    <h2>Recent Evaluations</h2>
+    <p class="subtitle">View and manage recent student evaluations</p>
+
+    <div *ngFor="let eval of evaluations" class="evaluation-item">
+      <div class="info">
+        <strong>{{ eval.title }}</strong>
+        <p>{{ eval.subtitle }}</p>
+      </div>
+      <button class="view-btn">View</button>
+    </div>
+  </div>
+
+  <div class="card quick-actions">
+    <h2>Quick Actions</h2>
+    <p class="subtitle">Common tasks and actions</p>
+
+    <div class="top-buttons">
+      <button class="action-btn dark" (click)="goToCreateCriteria()">
+        <i class="fa fa-clipboard-check"></i> Create Criteria
+      </button>
+      <button class="action-btn dark" (click)="goToNewEvaluation()">
+        <i class="fa fa-users"></i> New Evaluation
+      </button>
+    </div>
+
+    <div class="bottom-buttons">
+      <button class="action-btn light" (click)="goToEvaluations()">
+        <i class="fa fa-history"></i> Evaluations
+      </button>
+      <button class="action-btn light" (click)="goToCriteria()">
+        <i class="fa fa-clipboard-list"></i> Criteria
+      </button>
+    </div>
+  </div>
+</div>
