@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-critere',
@@ -6,6 +7,10 @@ import { Component } from '@angular/core';
   styleUrls: ['./critere.component.css']
 })
 export class CritereComponent {
+  constructor(private router: Router) {}
+goToCreateCriteria() {
+    this.router.navigate(['/createCritere']);
+}
 
 
   searchText = '';

@@ -17,7 +17,7 @@ export class EvaluationComponent {
 
   goToCreateCriteria() {
     // Replace with actual route
-    this.router.navigate(['/create-criteria']);
+    this.router.navigate(['/createCritere']);
   }
 
   goToNewEvaluation() {
