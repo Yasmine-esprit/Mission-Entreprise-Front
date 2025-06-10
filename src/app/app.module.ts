@@ -30,6 +30,7 @@ import {UpdateUserComponent} from "./update-user/update-user.component";
 import {AdminComponent} from "./admin/admin.component";
 import {DiscussionComponent} from "./discussion/discussion.component";
 import { EvaluationsDetailsComponent } from './components/evaluations-details/evaluations-details.component';
+import { CreateCritereComponent } from './components/create-critere/create-critere.component';
 
 
 registerLocaleData(localeFr);
@@ -60,7 +61,8 @@ registerLocaleData(localeFr);
     FileSizePipe,
     SousTacheComponent,
     GroupeComponent,
-    EvaluationsDetailsComponent
+    EvaluationsDetailsComponent,
+    CreateCritereComponent
 
 
   ],

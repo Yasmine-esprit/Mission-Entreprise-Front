@@ -18,6 +18,7 @@ import { ChangePDFComponent } from './change-pdf/change-pdf.component';
 import { EvaluationComponent } from './components/evaluation/evaluation.component';
 import { CritereComponent } from './components/critere/critere.component';
 import { EvaluationsDetailsComponent } from './components/evaluations-details/evaluations-details.component';
+import { CreateCritereComponent } from './components/create-critere/create-critere.component';
 
 
 
@@ -42,7 +43,8 @@ const routes: Routes = [
   {path:'changePhoto', component: ChangePDFComponent},
   {path:'evaluation', component: EvaluationComponent},
   {path:'criteres', component:CritereComponent},
-  {path: 'evalDetails', component:EvaluationsDetailsComponent}
+  {path: 'evalDetails', component:EvaluationsDetailsComponent},
+  {path: 'createCritere', component:CreateCritereComponent}
 
 ];
 
