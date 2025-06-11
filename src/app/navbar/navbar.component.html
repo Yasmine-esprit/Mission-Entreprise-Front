@@ -5,6 +5,7 @@
       <ul class="nav-links">
         <li><a routerLink="/home">Home</a></li>
         <li><a routerLink="/changePass">Reset password</a></li>
+        <li><a routerLink="/changePass" *ngIf="role?.includes('ADMINISTRATEUR')"> evaluation</a></li>
         <li><button (click)="goToDashboard()" class="btn-dashboard">Dashboard</button></li>
       </ul>
    
@@ -24,6 +25,7 @@
     <li><a href="" (click)="onLogout()">Logout</a></li>
     <li><a routerLink="/changePhoto">Change your profile photo</a></li>
     <li><a routerLink="/discussion">Discussion</a></li>
+    
     <li><a  *ngIf="role?.includes('ADMINISTRATEUR')" routerLink="/admin">Admin Dashboard</a></li>
 
     <!-- Add more items as needed -->
