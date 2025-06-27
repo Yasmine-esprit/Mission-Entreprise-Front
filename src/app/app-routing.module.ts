@@ -19,6 +19,7 @@ import { EvaluationComponent } from './components/evaluation/evaluation.componen
 import { CritereComponent } from './components/critere/critere.component';
 import { EvaluationsDetailsComponent } from './components/evaluations-details/evaluations-details.component';
 import { CreateCritereComponent } from './components/create-critere/create-critere.component';
+import { CreateEvaluationComponent } from './components/create-evaluation/create-evaluation.component';
 
 
 
@@ -44,7 +45,8 @@ const routes: Routes = [
   {path:'evaluation', component: EvaluationComponent},
   {path:'criteres', component:CritereComponent},
   {path: 'evalDetails', component:EvaluationsDetailsComponent},
-  {path: 'createCritere', component:CreateCritereComponent}
+  {path: 'createCritere', component:CreateCritereComponent},
+  {path: 'createEvaluation', component:CreateEvaluationComponent}
 
 ];
 

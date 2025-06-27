@@ -22,7 +22,7 @@ export class EvaluationComponent {
 
   goToNewEvaluation() {
     // Replace with actual route
-    this.router.navigate(['/new-evaluation']);
+    this.router.navigate(['/createEvaluation']);
   }
 
   goToEvaluations() {
