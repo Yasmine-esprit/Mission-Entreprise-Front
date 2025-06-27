@@ -31,6 +31,7 @@ import {AdminComponent} from "./admin/admin.component";
 import {DiscussionComponent} from "./discussion/discussion.component";
 import { EvaluationsDetailsComponent } from './components/evaluations-details/evaluations-details.component';
 import { CreateCritereComponent } from './components/create-critere/create-critere.component';
+import { CreateEvaluationComponent } from './components/create-evaluation/create-evaluation.component';
 
 
 registerLocaleData(localeFr);
@@ -62,7 +63,8 @@ registerLocaleData(localeFr);
     SousTacheComponent,
     GroupeComponent,
     EvaluationsDetailsComponent,
-    CreateCritereComponent
+    CreateCritereComponent,
+    CreateEvaluationComponent
 
 
   ],
