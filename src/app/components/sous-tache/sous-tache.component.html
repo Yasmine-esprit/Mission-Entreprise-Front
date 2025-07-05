@@ -1,0 +1,59 @@
+<div class="modal-container">
+  <div class="modal-header">
+    <h2>Détails de la sous-tâche</h2>
+    <span class="close-btn" (click)="close()">&times;</span>
+  </div>
+
+  <div class="modal-content">
+    <p class="created-date">Créée le {{ dateDebut | date: 'dd/MM/yyyy' }}</p>
+
+    <!-- Titre -->
+    <div class="form-group">
+      <label for="titre">Titre</label>
+      <input
+        id="titre"
+        type="text"
+        [(ngModel)]="titreSousTache"
+        class="title-input"
+        [class.line-through]="statut === 'Terminé'"
+        placeholder="Titre de la sous-tâche" />
+    </div>
+
+    <!-- Statut -->
+    <div class="form-group" *ngIf="statut != null">
+      <label for="statut">Statut</label>
+      <select id="statut" [(ngModel)]="statut" class="status-select">
+        <option *ngFor="let s of statutValues" [value]="s">{{ s }}</option>
+      </select>
+    </div>
+
+    <!-- Date -->
+    <div class="form-group">
+      <label for="dateDebut">Date de début</label>
+      <input
+        id="dateDebut"
+        type="date"
+        [(ngModel)]="dateDebut"
+        class="date-input" />
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <label for="description" class="desc-label">Description</label>
+      <textarea
+        id="description"
+        [(ngModel)]="descriptionSousTache"
+        class="desc-textarea"
+        placeholder="Description de la sous-tâche"
+        rows="4">
+      </textarea>
+    </div>
+
+    <!-- Actions -->
+    <div class="modal-actions">
+      <button class="delete-btn" (click)="delete()" type="button">Supprimer</button>
+      <button class="cancel-btn" (click)="cancel()" type="button">Annuler</button>
+      <button class="save-btn" (click)="save()" type="button">Sauvegarder</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,468 @@
+<div class="modal-overlay" *ngIf="showTaskDetails" (click)="closeTacheDetails()"></div>
+
+<div class="app-container">
+  <!-- Header -->
+  <header class="header">
+    <div class="project-name">{{ currentProjectName }}</div>
+
+    <div class="header-right">
+      <div class="search">
+        <input type="text" placeholder="Search" aria-label="Search tasks" />
+        <button aria-label="Search button">🔍</button>
+      </div>
+      <button class="share-btn" aria-label="Share project">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+          <polyline points="16 6 12 2 8 6"></polyline>
+          <line x1="12" y1="2" x2="12" y2="15"></line>
+        </svg>
+        Share
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="main">
+    <!-- Trello-style Collapsible Sidebar -->
+    <aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
+      <div class="sidebar-toggle" (click)="toggleSidebar()">
+        <svg width="16" height="16" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+        </svg>
+      </div>
+
+      <div class="sidebar-content">
+        <!-- Workspace Header -->
+        <div class="workspace-title">
+          <div class="workspace-icon">U</div>
+          <span class="workspace-name">UniGit Workspace</span>
+        </div>
+
+        <!-- Main Menu Section -->
+        <div class="menu-section">
+          <div class="menu-title">Menu</div>
+          <div class="menu-items">
+            <a class="menu-item"
+               [class.active]="activeSection === 'Phases'"
+               (click)="setActiveSection('Phases')">
+              <div class="menu-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v4H7V7zm0 6h10v4H7v-4z"/>
+                </svg>
+              </div>
+              <span class="menu-item-text">Phases</span>
+              <span class="menu-item-tooltip">Phases</span>
+            </a>
+            <a class="menu-item"
+               [class.active]="activeSection === 'Levels'"
+               (click)="setActiveSection('Levels')">
+              <div class="menu-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M12 2L4 7v10l8 5 8-5V7l-8-5zm0 2.5L18 9v6l-6 3.5-6-3.5V9l6-4.5zM12 16l6-3.5V9l-6 3.5L6 9v3.5l6 3.5z"/>
+                </svg>
+              </div>
+              <span class="menu-item-text">Levels</span>
+              <span class="menu-item-tooltip">Levels</span>
+            </a>
+            <a class="menu-item"
+   [class.active]="activeSection === 'Themes'"
+   (click)="setActiveSection('Themes')">
+  <div class="menu-item-icon">
+    <!-- petit picto empilé -->
+    <svg width="20" height="20" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M3 5h18v4H3V5zm0 5h18v4H3v-4zm0 5h18v4H3v-4z"/>
+    </svg>
+  </div>
+  <span class="menu-item-text">Themes</span>
+</a>
+
+            <a class="menu-item"
+               [class.active]="activeSection === 'Groups'"
+               (click)="setActiveSection('Groups')">
+              <div class="menu-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                </svg>
+              </div>
+              <span class="menu-item-text">Groups</span>
+              <span class="menu-item-tooltip">Groups</span>
+            </a>
+            <a class="menu-item"
+               [class.active]="activeSection === 'Projects'"
+               (click)="setActiveSection('Projects')">
+              <div class="menu-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/>
+                </svg>
+              </div>
+              <span class="menu-item-text">Projects</span>
+              <span class="menu-item-tooltip">Projects</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Groups Section -->
+        <div class="menu-section groups-section" *ngIf="showGroupsSection">
+          <div class="menu-title">Active Groups</div>
+          <div class="menu-items">
+            <a class="menu-item group-item"
+               *ngFor="let group of activeGroups"
+               (click)="editGroup(group)">
+              <div class="menu-item-icon group-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A3.02 3.02 0 0 0 17.12 7H16.5c-.8 0-1.54.37-2.01.99l-2.98 3.67A2.99 2.99 0 0 0 14 15h2.5v7h3.5zM12.5 11.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5S11 9.17 11 10s.67 1.5 1.5 1.5zm1.5 1h-3C9.67 12.5 9 13.17 9 14v8h6v-8c0-.83-.67-1.5-1.5-1.5zM5.5 6c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2zm2 16v-7H9v-2.5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2V15h1.5v7h4z"/>
+                </svg>
+              </div>
+              <div class="group-info">
+                <span class="menu-item-text">{{group.name}}</span>
+                <span class="group-members">{{group.members.length}} members</span>
+              </div>
+              <div class="group-status active-status">
+                <svg width="12" height="12" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" fill="#10b981"/>
+                </svg>
+              </div>
+            </a>
+          </div>
+
+          <div class="menu-title" style="margin-top: 20px;">All Groups</div>
+          <div class="menu-items">
+            <a class="menu-item group-item"
+               *ngFor="let group of allGroups"
+               (click)="editGroup(group)">
+              <div class="menu-item-icon group-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A3.02 3.02 0 0 0 17.12 7H16.5c-.8 0-1.54.37-2.01.99l-2.98 3.67A2.99 2.99 0 0 0 14 15h2.5v7h3.5zM12.5 11.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5S11 9.17 11 10s.67 1.5 1.5 1.5zm1.5 1h-3C9.67 12.5 9 13.17 9 14v8h6v-8c0-.83-.67-1.5-1.5-1.5zM5.5 6c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2zm2 16v-7H9v-2.5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2V15h1.5v7h4z"/>
+                </svg>
+              </div>
+              <div class="group-info">
+                <span class="menu-item-text">{{group.name}}</span>
+                <span class="group-members">{{group.members.length}} members</span>
+              </div>
+              <div class="group-status" [class.active-status]="group.isActive" [class.inactive-status]="!group.isActive">
+                <svg width="12" height="12" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" [attr.fill]="group.isActive ? '#10b981' : '#6b7280'"/>
+                </svg>
+              </div>
+            </a>
+
+            <!-- Add Group Button -->
+            <button class="menu-item add-group-btn" (click)="openGroupPopup()">
+              <div class="menu-item-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+              </div>
+              <span class="menu-item-text">Add Group</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Classes Section -->
+        <div class="menu-section classes-section" *ngIf="showClassesSection">
+          <div class="menu-title">Classes</div>
+          <div class="menu-items">
+            <button class="menu-item add-class-btn" (click)="startAddingClasse()">
+              <div class="menu-item-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+              </div>
+              <span class="menu-item-text">Ajouter une classe</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Group Popup Modal -->
+        <div class="modal-overlay" *ngIf="showGroupPopup" (click)="closeGroupPopup()">
+          <div class="group-popup-content" (click)="$event.stopPropagation()">
+            <div class="popup-body">
+              <app-groupe (groupSaved)="onGroupSaved($event)" (closePopup)="closeGroupPopup()"></app-groupe>
+            </div>
+          </div>
+        </div>
+
+        <!-- Boards Section -->
+        <div class="menu-section boards-section">
+          <div class="menu-title">Your Boards</div>
+          <div class="menu-items">
+            <a class="menu-item"
+               *ngFor="let board of boards"
+               [class.active]="activeBoard === board.id"
+               (click)="setActiveBoard(board.id)">
+              <div class="menu-item-icon" [style.background]="board.color"></div>
+              <span class="menu-item-text">{{board.name}}</span>
+              <span class="menu-item-tooltip">{{board.name}}</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="dashboard-container" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <!-- Classes Section Content -->
+      <div class="classes-content" *ngIf="showClassesSection">
+        <div class="classes-header">
+          <h2>Gestion des Classes</h2>
+          <div class="loading-spinner" *ngIf="isLoading">Chargement...</div>
+        </div>
+        
+        <!-- Classes Table -->
+        <table class="classes-table" *ngIf="!isLoading && classes.length > 0">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nom</th>
+              <th>Niveau</th>
+              <th>Département</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let classe of classes">
+              <td>{{classe.idCLasse}}</td>
+              <td>{{classe.nomClasse}}</td>
+              <td>{{classe.niveau?.nomNiveau || 'Non défini'}}</td>
+              <td>{{classe.departement?.nomDepartement || 'Non défini'}}</td>
+              <td class="actions-cell">
+                <button class="edit-btn" (click)="editClasse(classe)">
+                  <svg width="16" height="16" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                  </svg>
+                </button>
+                <button class="delete-btn" (click)="deleteClasse(classe.idCLasse)">
+                  <svg width="16" height="16" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div class="no-classes" *ngIf="!isLoading && classes.length === 0">
+          Aucune classe trouvée. Cliquez sur "Ajouter une classe" pour commencer.
+        </div>
+        
+        <!-- Add Class Form -->
+        <div class="modal-overlay" *ngIf="isAddingClasse" (click)="cancelAddingClasse()">
+          <div class="modal-content" (click)="$event.stopPropagation()">
+            <h3>Ajouter une nouvelle classe</h3>
+            <form>
+              <div class="form-group">
+                <label for="nomClasse">Nom de la classe</label>
+                <input type="text" id="nomClasse" [(ngModel)]="newClasse.nomClasse" name="nomClasse" required>
+              </div>
+              
+              <div class="modal-actions">
+                <button type="button" class="cancel-btn" (click)="cancelAddingClasse()">Annuler</button>
+                <button type="button" class="save-btn" (click)="saveNewClasse()" [disabled]="!newClasse.nomClasse">Enregistrer</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <!-- Edit Class Modal -->
+        <div class="modal-overlay" *ngIf="isEditingClasse" (click)="cancelEditClasse()">
+          <div class="modal-content" (click)="$event.stopPropagation()">
+            <h3>Modifier la classe</h3>
+            <form *ngIf="selectedClasse">
+              <div class="form-group">
+                <label for="editNomClasse">Nom de la classe</label>
+                <input type="text" id="editNomClasse" [(ngModel)]="selectedClasse.nomClasse" name="nomClasse" required>
+              </div>
+              
+              <div class="modal-actions">
+                <button type="button" class="cancel-btn" (click)="cancelEditClasse()">Annuler</button>
+                <button type="button" class="save-btn" (click)="saveClasse()" [disabled]="!selectedClasse.nomClasse">Enregistrer</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- THEMES SECTION -->
+<div class="themes-content" *ngIf="showThemesSection">
+
+  <h2>Gestion des Thèmes</h2>
+  <button class="add-btn" (click)="isAddingTheme = true">+ Ajouter</button>
+
+  <div class="loading-spinner" *ngIf="isLoading">Chargement...</div>
+
+  <!-- tableau -->
+ <!-- … tableau des thèmes … -->
+<table class="themes-table" *ngIf="!isLoading && themes.length">
+  <thead>
+    <tr>
+      <th>#</th><th>Titre</th><th>Description</th><th>Disp.</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let th of themes">
+      <td>{{th.idTheme}}</td>
+      <td>{{th.titreTheme}}</td>
+      <td>{{th.description}}</td>
+      <td>{{th.disponible ? '✅' : '❌'}}</td>
+      <td class="actions">
+        <button class="edit-btn"  (click)="startEditTheme(th)">✏️</button>
+        <button class="del-btn"   (click)="deleteTheme(th.idTheme!)">🗑️</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+  <p *ngIf="!isLoading && !themes.length">Aucun thème.</p>
+</div>
+
+<div class="modal-overlay" *ngIf="isEditingTheme" (click)="cancelEditTheme()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3>Modifier thème</h3>
+
+    <label>Titre *</label>
+    <input [(ngModel)]="selectedTheme!.titreTheme">
+
+    <label>Description *</label>
+    <textarea rows="3" [(ngModel)]="selectedTheme!.description"></textarea>
+
+    <label>
+      <input type="checkbox" [(ngModel)]="selectedTheme!.disponible">
+      Disponible
+    </label>
+
+    <div class="modal-actions">
+      <button (click)="cancelEditTheme()">Annuler</button>
+      <button [disabled]="!selectedTheme!.titreTheme || !selectedTheme!.description"
+              (click)="updateTheme()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+
+      <!-- Kanban Board (only visible when Phases section is active) -->
+      <div class="board" cdkDropListGroup *ngIf="activeSection === 'Phases'">
+        <!-- Columns -->
+        <div
+          *ngFor="let colonne of colonnes"
+          cdkDropList
+          [id]="colonne.titre"
+          [cdkDropListData]="colonne.taches"
+          [cdkDropListConnectedTo]="connectedColumns"
+          (cdkDropListDropped)="drop($event)"
+          class="column"
+        >
+          <!-- Column Header -->
+          <div class="column-header">
+            <h2>{{ colonne.titre }}</h2>
+            <span class="task-count">{{ colonne.taches.length }}</span>
+          </div>
+
+          <!-- Tasks -->
+          <div *ngFor="let tache of colonne.taches"
+               class="task-card"
+               [class]="'border-top-' + (tache.labels?.[0] || 'white')"
+               (click)="openTacheDetails(tache, $event)"
+               cdkDrag
+               [cdkDragData]="tache">
+
+            <div *ngIf="tache.labels && tache.labels.length > 0" class="card-labels">
+              <span *ngFor="let label of tache.labels" class="label label-{{label}}"></span>
+            </div>
+            <h4>{{ tache.titreTache }}</h4>
+            <p class="assigned">Assignée à : {{ tache.assigneA || 'Non assignée' }}</p>
+          </div>
+
+          <!-- Add Task Form -->
+          <div
+            class="add-task-container"
+            *ngIf="isAddingTask && newTache.statut === colonne.titre"
+          >
+            <input
+              type="text"
+              [(ngModel)]="newTache.titreTache"
+              placeholder="Saisir le titre de la tâche"
+              (keyup.enter)="saveTacheForm()"
+              autofocus
+              class="add-task-input"
+            >
+            <div class="add-task-actions">
+              <button
+                (click)="saveTacheForm()"
+                class="add-btn"
+                [disabled]="!newTache.titreTache?.trim()"
+              >
+                Ajouter
+              </button>
+              <button (click)="resetForm()" class="cancel-btn">Annuler</button>
+            </div>
+          </div>
+
+          <!-- Add Task Button -->
+          <button
+            class="add-task-btn"
+            (click)="initNewTask(colonne.titre)"
+            *ngIf="!isAddingTask || newTache.statut !== colonne.titre"
+          >
+            + Add task
+          </button>
+        </div>
+
+        <!-- Add New Column -->
+        <div class="add-list-container">
+          <ng-container *ngIf="isAddingList; else showAddListButton">
+            <input
+              type="text"
+              [(ngModel)]="newListTitle"
+              placeholder="Nom de la liste"
+              class="add-list-input"
+            />
+            <div class="list-actions">
+              <button (click)="addNewList()" class="add-list-btn">Ajouter</button>
+              <button (click)="cancelAddingList()" class="cancel-list-btn">Annuler</button>
+            </div>
+          </ng-container>
+          <ng-template #showAddListButton>
+            <button class="btn-add-list" (click)="startAddingList()">
+              + Ajouter une liste
+            </button>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task Detail Popup -->
+  <ng-container *ngIf="showTaskDetails">
+    <app-tache
+      [tache]="selectedTache"
+      (fermer)="closeTacheDetails()"
+      (delete)="deleteTache($event)"
+      (updateDescription)="updateTacheDescription($event)"
+      (coverColorChanged)="updateTaskColor($event)"
+    ></app-tache>
+  </ng-container>
+  <!-- MODAL AJOUT THEME -->
+<div class="modal-overlay" *ngIf="isAddingTheme" (click)="isAddingTheme = false">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3>Nouveau thème</h3>
+
+    <label>Titre *</label>
+    <input [(ngModel)]="newTheme.titreTheme">
+
+    <label>Description *</label>
+    <textarea rows="3" [(ngModel)]="newTheme.description"></textarea>
+
+    <label>
+      <input type="checkbox" [(ngModel)]="newTheme.disponible">
+      Disponible
+    </label>
+
+    <div class="modal-actions">
+      <button (click)="isAddingTheme = false">Annuler</button>
+      <button [disabled]="!newTheme.titreTheme || !newTheme.description"
+              (click)="saveTheme()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+</div>

@@ -1,0 +1,180 @@
+<div class="institution-management-container">
+  <div class="header">
+    <h2>Gestion de l'Organisation Pédagogique</h2>
+    <button class="btn btn-primary" (click)="openInstitutionForm()">
+      <i class="fas fa-plus"></i> Nouvelle Institution
+    </button>
+  </div>
+
+  <!-- Ajout d'un message d'erreur et indicateur de chargement -->
+  <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+  <div class="text-center" *ngIf="loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Chargement...</span>
+    </div>
+  </div>
+
+  <div class="content-layout">
+    <!-- Liste des Institutions -->
+    <div class="institutions-panel">
+      <h3>Institutions</h3>
+      <div class="institutions-list">
+        <div *ngIf="institutions.length === 0 && !loading">
+          <p class="text-muted">Aucune institution trouvée.</p>
+        </div>
+        <div 
+          *ngFor="let institution of institutions" 
+          class="institution-card"
+          [class.selected]="selectedInstitution?.idInstitution === institution.idInstitution"
+          (click)="selectInstitution(institution)">
+          <div class="institution-info">
+            <h4>{{ institution.nomInstitution }}</h4>
+            <p>{{ institution.description }}</p>
+            <small>{{ institution.adresse }}</small>
+          </div>
+          <div class="institution-actions">
+            <button class="btn btn-sm btn-outline-primary" (click)="openInstitutionForm(institution); $event.stopPropagation()">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" (click)="deleteInstitution(institution.idInstitution!); $event.stopPropagation()">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Départements de l'institution sélectionnée -->
+    <div class="departements-panel" *ngIf="selectedInstitution">
+      <div class="panel-header">
+        <h3>Départements - {{ selectedInstitution.nomInstitution }}</h3>
+        <button class="btn btn-secondary" (click)="openDepartementForm()">
+          <i class="fas fa-plus"></i> Nouveau Département
+        </button>
+      </div>
+      
+      <div class="departements-list">
+        <div *ngIf="departements.length === 0 && !loading">
+          <p class="text-muted">Aucun département trouvé pour cette institution.</p>
+        </div>
+        <div *ngFor="let departement of departements" class="departement-card">
+          <div class="departement-info">
+            <h4>{{ departement.nomDepartement }}</h4>
+            <p>{{ departement.description }}</p>
+          </div>
+          <div class="departement-actions">
+            <button class="btn btn-sm btn-outline-primary" (click)="openDepartementForm(departement)">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" (click)="deleteDepartement(departement.idDepartement!)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Formulaire Institution -->
+  <div class="modal" [style.display]="showInstitutionForm ? 'block' : 'none'" *ngIf="showInstitutionForm">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            {{ currentInstitution.idInstitution ? 'Modifier' : 'Ajouter' }} Institution
+          </h5>
+          <button type="button" class="close" (click)="cancelForm()">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+          <form>
+            <div class="form-group">
+              <label for="nomInstitution">Nom de l'Institution *</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="nomInstitution"
+                [(ngModel)]="currentInstitution.nomInstitution"
+                name="nomInstitution"
+                required>
+            </div>
+            <div class="form-group">
+              <label for="adresse">Adresse</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="adresse"
+                [(ngModel)]="currentInstitution.adresse"
+                name="adresse">
+            </div>
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea 
+                class="form-control" 
+                id="description"
+                [(ngModel)]="currentInstitution.description"
+                name="description"
+                rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cancelForm()">Annuler</button>
+          <button type="button" class="btn btn-primary" [disabled]="loading" (click)="saveInstitution()">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+            {{ currentInstitution.idInstitution ? 'Modifier' : 'Ajouter' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Formulaire Département -->
+  <div class="modal" [style.display]="showDepartementForm ? 'block' : 'none'" *ngIf="showDepartementForm">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            {{ currentDepartement.idDepartement ? 'Modifier' : 'Ajouter' }} Département
+          </h5>
+          <button type="button" class="close" (click)="cancelForm()">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+          <form>
+            <div class="form-group">
+              <label for="nomDepartement">Nom du Département *</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="nomDepartement"
+                [(ngModel)]="currentDepartement.nomDepartement"
+                name="nomDepartement"
+                required>
+            </div>
+            <div class="form-group">
+              <label for="descriptionDept">Description</label>
+              <textarea 
+                class="form-control" 
+                id="descriptionDept"
+                [(ngModel)]="currentDepartement.description"
+                name="descriptionDept"
+                rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cancelForm()">Annuler</button>
+          <button type="button" class="btn btn-primary" [disabled]="loading" (click)="saveDepartement()">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+            {{ currentDepartement.idDepartement ? 'Modifier' : 'Ajouter' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

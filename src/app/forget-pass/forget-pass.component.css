@@ -1,0 +1,321 @@
+.forgot-password-container {
+  max-width: 400px;
+  margin: 4rem auto;
+  padding: 2.5rem;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.forgot-password-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.forgot-password-container::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Title styling (if you want to add one) */
+.forgot-password-container h2 {
+  text-align: center;
+  margin: 0 0 2rem 0;
+  color: #1f2937;
+  font-size: 1.75rem;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+.forgot-password-container h2::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  margin: 0.75rem auto 0;
+  border-radius: 2px;
+}
+
+/* Email input styling */
+.forgot-password-container input[type="email"] {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: #f9fafb;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+.forgot-password-container input[type="email"]:focus {
+  outline: none;
+  border-color: #ef4444;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+  transform: translateY(-1px);
+}
+
+.forgot-password-container input[type="email"]:hover {
+  border-color: #fca5a5;
+  background: #ffffff;
+}
+
+.forgot-password-container input[type="email"]::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+/* Button styling */
+.sign-in-button {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.sign-in-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.sign-in-button:hover::before {
+  left: 100%;
+}
+
+.sign-in-button:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+.sign-in-button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.sign-in-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.sign-in-button:disabled::before {
+  display: none;
+}
+
+/* Success message styling */
+.success {
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #15803d;
+  border: 1px solid #86efac;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 1rem;
+  position: relative;
+  z-index: 1;
+  animation: slideInUp 0.4s ease-out;
+}
+
+.success::before {
+  content: '✓';
+  display: inline-block;
+  margin-right: 0.5rem;
+  font-weight: bold;
+  color: #16a34a;
+}
+
+/* Error message styling */
+.error {
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #dc2626;
+  border: 1px solid #f87171;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 1rem;
+  position: relative;
+  z-index: 1;
+  animation: slideInUp 0.4s ease-out;
+}
+
+.error::before {
+  content: '⚠';
+  display: inline-block;
+  margin-right: 0.5rem;
+  font-weight: bold;
+  color: #ef4444;
+}
+
+/* Animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.forgot-password-container {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Loading state for button */
+.sign-in-button.loading {
+  position: relative;
+  color: transparent;
+}
+
+.sign-in-button.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid transparent;
+  border-top: 2px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .forgot-password-container {
+    margin: 2rem 1rem;
+    padding: 2rem 1.5rem;
+  }
+  
+  .forgot-password-container h2 {
+    font-size: 1.5rem;
+  }
+  
+  .forgot-password-container input[type="email"],
+  .sign-in-button {
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .forgot-password-container {
+    margin: 1rem 0.5rem;
+    padding: 1.5rem 1rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .forgot-password-container {
+    background: #1f2937;
+    color: #f9fafb;
+  }
+  
+  .forgot-password-container h2 {
+    color: #f9fafb;
+  }
+  
+  .forgot-password-container input[type="email"] {
+    background: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+  
+  .forgot-password-container input[type="email"]:focus {
+    background: #4b5563;
+    border-color: #ef4444;
+  }
+  
+  .forgot-password-container input[type="email"]:hover {
+    background: #4b5563;
+    border-color: #6b7280;
+  }
+  
+  .forgot-password-container input[type="email"]::placeholder {
+    color: #9ca3af;
+  }
+}
+
+/* Focus trap for accessibility */
+.forgot-password-container:focus-within {
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .forgot-password-container {
+    border: 2px solid #000000;
+  }
+  
+  .forgot-password-container input[type="email"] {
+    border-width: 3px;
+  }
+  
+  .sign-in-button {
+    border: 2px solid #000000;
+  }
+}

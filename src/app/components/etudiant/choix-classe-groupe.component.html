@@ -1,0 +1,67 @@
+<div class="choix-container">
+  <!-- ───── HEADER + PROGRESSION ───── -->
+  <div class="header">
+    <h2>Choix de votre Organisation Académique</h2>
+    <div class="progress-bar">
+      <div class="step" [class.active]="etapeActuelle >= 1" [class.completed]="etapeActuelle > 1">1. Institution</div>
+      <div class="step" [class.active]="etapeActuelle >= 2" [class.completed]="etapeActuelle > 2">2. Département</div>
+      <div class="step" [class.active]="etapeActuelle >= 3" [class.completed]="etapeActuelle > 3">3. Classe</div>
+      <div class="step" [class.active]="etapeActuelle >= 4" [class.completed]="etapeActuelle > 4">4. Groupe</div>
+      <div class="step" [class.active]="etapeActuelle >= 5" [class.completed]="etapeActuelle > 5">5. Thème</div>
+    </div>
+  </div>
+
+  <!-- ───── CONTENU : visible tant que le choix n'est pas confirmé ───── -->
+  <div class="content" *ngIf="!choixEffectue">
+    <!-- Étapes 1 → 4 (inchangées) --------------------------------------------------------------------------------->
+    <!-- … (Institution, Département, Classe, Groupe) … -->
+
+    <!-- Étape 5 : Thème ----------------------------------------------------->
+    <div class="etape-container" *ngIf="etapeActuelle === 5">
+      <h3>Choisissez votre Thème de Projet</h3>
+
+      <div class="themes-grid">
+        <div
+          *ngFor="let theme of themes"
+          class="theme-card"
+          [class.selected]="selectedTheme?.idTheme === theme.idTheme"
+          [class.disabled]="choixEffectue"
+          (click)="selectTheme(theme)">
+          <h4>{{ theme.titreTheme }}</h4>
+          <p>{{ theme.description }}</p>
+        </div>
+      </div>
+
+      <!-- Récapitulatif + bouton ------------------------------------------>
+      <div class="confirmation-section" *ngIf="selectedTheme">
+        <h4>Récapitulatif :</h4>
+        <ul>
+          <li><strong>Institution :</strong> {{ selectedInstitution?.nomInstitution || '—' }}</li>
+          <li><strong>Département :</strong> {{ selectedDepartement?.nomDepartement || '—' }}</li>
+          <li><strong>Classe :</strong> {{ selectedClasse?.nomClasse || '—' }}</li>
+          <li><strong>Groupe :</strong> {{ selectedGroupe?.nomGroupe || '—' }}</li>
+          <li><strong>Thème :</strong> {{ selectedTheme?.titreTheme }}</li>
+        </ul>
+        <div class="alert alert-warning">
+          <strong>Attention :</strong> Une fois confirmé, ce choix est définitif.
+        </div>
+        <button class="btn btn-success btn-lg" (click)="confirmerChoix()">
+          <i class="fas fa-check"></i> Confirmer mon choix
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───── MESSAGE DE SUCCÈS ───── -->
+  <div class="success-message" *ngIf="choixEffectue">
+    <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+    <h3>Choix enregistré avec succès !</h3>
+    <p>L’administration va vous contacter prochainement.</p>
+    <button class="btn btn-primary" routerLink="/home">Accéder à mon espace</button>
+  </div>
+
+  <!-- ───── MESSAGE ERREUR (pas d’institutions) ───── -->
+  <div class="error-message" *ngIf="!institutions.length && !choixEffectue">
+    <p>Aucune institution disponible pour le moment.</p>
+  </div>
+</div>
