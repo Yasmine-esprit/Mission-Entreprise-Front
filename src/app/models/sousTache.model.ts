@@ -1,11 +1,12 @@
 export enum Statut {
   ToDo = 'ToDo',
-  EnCours = 'EnCours',
-  Terminé = 'Terminé',
+  INPROGRESS = 'INPROGRESS',
+  DONE = 'DONE',
   Test = 'Test',
-  Validé = 'Validé',
-  Annulé = 'Annulé'
+  VALIDATED = 'VALIDATED',
+  CANCELED = 'CANCELED'
 }
+
 
 export interface sousTache {
   idSousTache?: number;
@@ -14,5 +15,7 @@ export interface sousTache {
   dateDebut?: string;
   dateFin?: string;
   statut?: Statut;
-  tacheId?: number;
+  tache: {
+    idTache: number;
+  };
 }

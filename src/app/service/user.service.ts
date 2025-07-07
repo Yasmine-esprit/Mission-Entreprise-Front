@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { LoginService } from './login.service';
 import { UserDTO } from '../models/user-dto';
-import { BehaviorSubject } from 'rxjs';
+import {BehaviorSubject, throwError} from 'rxjs';
+import {catchError, map, tap} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -13,14 +14,14 @@ export class UserService {
   currentUser$ = this.currentUserSubject.asObservable();
 
  constructor(private http: HttpClient , private loginService : LoginService) {}
- private apiUrl = 'http://localhost:8081/users/'; 
- 
+ private apiUrl = 'http://localhost:8081/users/';
+
  getAllUsers() : Observable<any>{
-   const token = localStorage.getItem('jwtToken');  
+   const token = localStorage.getItem('jwtToken');
       const headers = new HttpHeaders({
         'Authorization': `Bearer ${token}`
       });
-  
+
       return this.http.get<any>(`${this.apiUrl}list`, { headers });
 
 
@@ -31,7 +32,7 @@ DeleteUser(id: number): Observable<any> {
 
 
 const headers = new HttpHeaders({
-  'Authorization': `Bearer ${token}` 
+  'Authorization': `Bearer ${token}`
 });
 
   return this.http.delete<any>(`${this.apiUrl}${id}`, { headers ,  responseType: 'text' as 'json' });
@@ -52,12 +53,12 @@ getUserById(id : number): Observable<any> {
 
 
 const headers = new HttpHeaders({
-  'Authorization': `Bearer ${token}` 
+  'Authorization': `Bearer ${token}`
 });
 
   return this.http.get<any>(`${this.apiUrl}${id}`, { headers });
 }
-// user.service.ts  
+// user.service.ts
 
 getCurrentUser(): Observable<UserDTO> {
     const token = this.loginService.getToken() || '';
@@ -72,7 +73,7 @@ getUsersGroupId(id : any): Observable<any> {
 
 
 const headers = new HttpHeaders({
-  'Authorization': `Bearer ${token}` 
+  'Authorization': `Bearer ${token}`
 });
 
   return this.http.get<any>(`${this.apiUrl}by-group/${id}`, { headers });
@@ -123,11 +124,33 @@ getUserPhoto(userId: number): Observable<Blob> {
     this.loadCurrentUser();
   }
 
+  private getHeaders(): HttpHeaders {
+    const token = this.loginService.getToken() || '';
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+  }
 
+  //ajoutées par YassminT
+  getEtudiants(): Observable<UserDTO[]> {
+    return this.http.get<UserDTO[]>(`${this.apiUrl}list/etudiants`, {
+      headers: this.getHeaders()
+    }).pipe(
+      tap(data => console.log('Received data:', data)),
+      catchError(error => {
+        console.error('Error fetching students:', error);
+        return throwError(error);
+      })
+    );
+  }
 
-
-
-
-
+  searchEtudiantsByName(searchTerm: string): Observable<UserDTO[]> {
+    return this.http.get<UserDTO[]>(`${this.apiUrl}/EtudiantByName`,
+      {
+        params: { searchTerm },
+        headers: this.getHeaders()
+      }
+    );
+  }
 
 }
