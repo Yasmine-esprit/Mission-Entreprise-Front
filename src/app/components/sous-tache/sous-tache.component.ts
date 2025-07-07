@@ -20,7 +20,6 @@ export class SousTacheComponent implements OnInit {
   dateDebut: string = '';
   statut?: Statut;
 
-  // Enum keys and values for the select options
   statutValues = Object.values(Statut);
 
   ngOnInit(): void {

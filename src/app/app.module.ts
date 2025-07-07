@@ -8,7 +8,7 @@ import { registerLocaleData } from '@angular/common';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
 import { RegisterComponent } from './register/register.component';
 import { ForgetPassComponent } from './forget-pass/forget-pass.component';
 import { ResetPassComponent } from './reset-pass/reset-pass.component';
@@ -29,6 +29,7 @@ import {AddUsersComponent} from "./add-users/add-users.component";
 import {UpdateUserComponent} from "./update-user/update-user.component";
 import {AdminComponent} from "./admin/admin.component";
 import {DiscussionComponent} from "./discussion/discussion.component";
+//import {AuthInterceptor} from "./service/auth.interceptor";
 
 
 registerLocaleData(localeFr);
@@ -69,10 +70,23 @@ registerLocaleData(localeFr);
     HttpClientModule,
     DragDropModule,
     ReactiveFormsModule,
+    //CSRF protection
+    HttpClientXsrfModule.withOptions({
+      cookieName: 'XSRF-TOKEN',
+      headerName: 'X-XSRF-TOKEN'
+    })
 
   ],
   providers: [
-    { provide: LOCALE_ID, useValue: 'fr' }
+    {
+      provide: LOCALE_ID,
+      useValue: 'fr'
+    },
+    /*{
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }*/
   ],
   bootstrap: [AppComponent]
 })

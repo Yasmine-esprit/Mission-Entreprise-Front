@@ -42,47 +42,51 @@
           <div *ngIf="editingDescription">
             <textarea [(ngModel)]="tempDescription" rows="4" class="description-textarea"></textarea>
             <div class="action-buttons">
-              <button class="btn btn-success" (click)="saveDescription()">Save</button>
+              <button class="btn btn-success" (click)="saveDescription(); saveTask()">Save</button>
               <button class="btn btn-danger" (click)="cancelEditDescription()">Cancel</button>
             </div>
           </div>
         </div>
 
-        <!-- Sous-tâches -->
-        <div class="task-section">
-          <h3>Sous-tâches</h3>
-          <ul class="subtask-list">
-            <li *ngFor="let subtask of sousTaches" class="subtask-item">
-      <span (click)="ouvrirSousTache(subtask)" class="subtask-title">
-        {{ subtask.titreSousTache }}
-      </span>
-              <span class="subtask-date">{{ subtask.dateDebut | date: 'dd/MM/yyyy' }}</span>
-              <button
-                class="delete-subtask-btn"
-                (click)="supprimerSousTache(subtask.idSousTache!)"
-                type="button"
-                *ngIf="subtask.idSousTache">
-                ×
-              </button>
-            </li>
-          </ul>
+        <!-- sous-tâches -->
+        <div class="subtasks-section">
+          <div class="subtasks-header">
+            <h4>Sub-tasks</h4>
+            <span class="subtasks-count" *ngIf="sousTaches.length > 0">
+              {{ getCompletedSubtasksCount() }} / {{ sousTaches.length }}
+            </span>
+          </div>
 
-          <div class="add-subtask">
-            <button class="add-subtask-btn" (click)="ajouterSousTache()" type="button">
-              + Ajouter une sous-tâche
-            </button>
+          <!-- Bouton pour ajouter une sous-tâche -->
+          <button class="add-subtask-btn" (click)="ajouterSousTache()">
+            <i class="fas fa-plus"></i> Add sub-task
+          </button>
+
+          <!-- Liste des sous-tâches -->
+          <div class="subtasks-list" *ngIf="sousTaches.length > 0">
+            <div class="subtask-item"
+                 *ngFor="let sousTache of sousTaches"
+                 (click)="ouvrirSousTache(sousTache)"
+                 [class.completed]="sousTache.statut === getStatutTermine()">
+              <i class="fas fa-check-circle" *ngIf="sousTache.statut === getStatutTermine()"></i>
+              <i class="far fa-circle" *ngIf="sousTache.statut !== getStatutTermine()"></i>
+              <span class="subtask-title">{{ sousTache.titreSousTache }}</span>
+            </div>
           </div>
         </div>
 
-        <!-- Modal pour éditer la sous-tâche (en dehors de la section tâche) -->
-        <app-sub-task
-          *ngIf="showSousTacheModal && selectedSousTache"
-          [sousTache]="selectedSousTache"
-          [sousTaches]="sousTaches"
-          (saveChanges)="sauvegarderSousTache($event)"
-          (deleteSousTache)="supprimerSousTache($event)"
-          (closeModal)="fermerModalSousTache()">
-        </app-sub-task>
+        <!-- Modal pour les sous-tâches -->
+        <div class="modal-overlay" *ngIf="showSousTacheModal" (click)="fermerModalSousTache()">
+          <div class="modal-wrapper" (click)="$event.stopPropagation()">
+            <app-sub-task
+              [sousTache]="selectedSousTache!"
+              [sousTaches]="sousTaches"
+              (closeModal)="fermerModalSousTache()"
+              (saveChanges)="sauvegarderSousTache($event); saveTask()"
+              (deleteSousTache)="supprimerSousTache($event); saveTask()">
+            </app-sub-task>
+          </div>
+        </div>
 
         <!-- Dates -->
         <div class="task-section" *ngIf="tache.dateDebut || tache.dateFin">
@@ -91,17 +95,23 @@
           <p *ngIf="tache.dateFin"><strong>Due:</strong> {{ tache.dateFin | date: 'longDate' }}</p>
         </div>
 
-        <!-- Pièces jointes -->
+        <!-- Pièces jointes (liste sous la description dans task-main) -->
         <div class="attachments-list" *ngIf="tache.piecesJointes?.length">
           <h3>Attachments</h3>
-          <div *ngFor="let attachment of tache.piecesJointes; let i = index" class="attachment-item">
+          <div *ngFor="let attachment of tache.piecesJointes" class="attachment-item">
             <a [href]="attachment.url" target="_blank" class="attachment-link">
-              <span *ngIf="attachment.type === 'lien'">🔗</span>
-              <span *ngIf="attachment.type === 'fichier'">📄</span>
+              <span *ngIf="attachment.type === 'LIEN'">🔗</span>
+              <span *ngIf="attachment.type === 'FICHIER'">📄</span>
               {{ attachment.nom }}
             </a>
-            <button class="remove-attachment" (click)="removeAttachment(i)">×</button>
+            <button
+              class="remove-attachment"
+              *ngIf="attachment?.idPieceJointe"
+              (click)="removeAttachmentWithRefresh(tache.idTache, attachment.idPieceJointe)">
+              ×
+            </button>
           </div>
+
         </div>
 
       </div>
@@ -132,12 +142,19 @@
           <!-- Membres -->
           <div class="detail-item">
             <span class="detail-label">Members</span>
-            <button class="sidebar-btn members-btn">
+            <button class="sidebar-btn members-btn" (click)="toggleMembersModal()">
               <span>Add/Remove Members</span>
             </button>
+
+            <div class="current-members" *ngIf="tache.members && tache.members.length > 0">
+              <div class="member-chip" *ngFor="let member of tache.members">
+                <div class="avatar mini-avatar">{{ getInitials(member) }}</div>
+                <span class="member-name">{{ member }}</span>
+              </div>
+            </div>
           </div>
 
-          <!-- Pièces jointes -->
+          <!-- Ajout du bouton Attachment juste sous Members -->
           <div class="detail-item">
             <span class="detail-label">Attachments</span>
             <button class="sidebar-btn attachment-btn" (click)="toggleAttachmentModal()">
@@ -152,13 +169,13 @@
             <div class="cover-colors">
               <div class="color-square none"
                    [class.selected]="!selectedCoverColor || selectedCoverColor === 'none'"
-                   (click)="setCoverColor('none')"
+                   (click)="setCoverColor('none'); saveTask()"
                    title="No Cover">
               </div>
               <div *ngFor="let color of availableCoverColors"
                    class="color-square {{ color }}"
                    [class.selected]="selectedCoverColor === color"
-                   (click)="setCoverColor(color)"
+                   (click)="setCoverColor(color); saveTask()"
                    [title]="color | titlecase">
               </div>
             </div>
@@ -168,96 +185,114 @@
         <!-- Actions -->
         <div class="sidebar-section">
           <h3>ACTIONS</h3>
+          <button class="sidebar-btn commit-btn" >
+            <i class="fas fa-code-branch"></i> Commit Branch
+          </button>
           <button class="sidebar-btn delete-btn" (click)="deleteTache()">Delete</button>
+        </div>
+        <div class="task-actions">
+          <button type="button" class="btn btn-secondary" (click)="cancel()">
+            Cancel
+          </button>
+          <button type="button" class="btn btn-primary" (click)="saveTask()" [disabled]="isSaving">
+            <span *ngIf="!isSaving">Save</span>
+            <span *ngIf="isSaving">
+              <i class="fa fa-spinner fa-spin"></i> Saving...
+            </span>
+          </button>
         </div>
       </div>
     </div>
+
+    <div class="attachment-modal" *ngIf="showAttachmentModal">
+      <div class="attachment-container">
+
+        <!-- Header -->
+        <div class="attachment-header">
+          <h3>Add Attachment</h3>
+          <button class="close-attachment" (click)="toggleAttachmentModal()">×</button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="attachment-tabs">
+          <button [class.active]="activeTab === 'lien'" (click)="activeTab = 'lien'">Link</button>
+          <button [class.active]="activeTab === 'fichier'" (click)="activeTab = 'fichier'">File</button>
+        </div>
+
+        <div class="attachment-content">
+          <!-- Link Tab -->
+          <div class="tab-content" [class.active]="activeTab === 'lien'">
+            <div class="form-group">
+              <label for="attachmentUrlInput">URL</label>
+              <input type="text" id="attachmentUrlInput" [(ngModel)]="newAttachmentUrl" placeholder="https://example.com">
+            </div>
+            <div class="form-group">
+              <label for="attachmentNameInput">Title </label>
+              <input type="text" id="attachmentNameInput" [(ngModel)]="attachmentName" placeholder="Link name" required>
+            </div>
+            <button class="btn btn-add-link"
+                    (click)="addLinkAttachment(); saveTask()"
+                    [disabled]="!newAttachmentUrl.trim()">
+              Add Link
+            </button>
+          </div>
+
+          <!-- File Tab -->
+          <div class="tab-content" [class.active]="activeTab === 'fichier'">
+            <div class="file-upload-area"
+                 (click)="triggerFileInput()"
+                 (dragover)="onDragOver($event)"
+                 (drop)="onDrop($event)">
+              <div class="upload-icon">⬆️</div>
+              <div class="upload-text">Click to upload a file</div>
+              <div class="upload-subtext">or Drag & Drop here</div>
+            </div>
+            <div class="max-file-size">Maximum size: 10MB</div>
+            <input type="file" #fileInput id="fileInputUnique" (change)="onFileSelected($event)" multiple style="display: none;">
+            <div *ngIf="attachmentFiles.length" class="file-list">
+              <div *ngFor="let file of attachmentFiles" class="file-item">
+                {{ file.name }} ({{ formatFileSize(file.size) }})
+              </div>
+            </div>
+            <button *ngIf="attachmentFiles.length" class="btn btn-primary"
+                    (click)="addFileAttachments(); saveTask()"
+                    [disabled]="!attachmentFiles.length">
+              Upload {{ attachmentFiles.length }} File{{ attachmentFiles.length > 1 ? 's' : '' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-<!-- Date Picker Modal -->
+  <!-- Date Picker Modal -->
   <div class="date-picker-modal" *ngIf="showDatePicker">
     <div class="date-picker-overlay" (click)="toggleDatePicker()"></div>
     <div class="date-picker-container" #datePickerContainer>
+
+      <!-- Header -->
       <div class="date-picker-header">
-        <h3>Dates</h3>
+        <h3>Select Task Dates</h3>
         <button class="close-date-picker" (click)="toggleDatePicker()">×</button>
       </div>
 
-      <div class="calendar-navigation">
-        <button class="nav-btn start" (click)="moveCalendarYear(-1)">«</button>
-        <button class="nav-btn" (click)="moveCalendarMonth(-1)">‹</button>
-        <span class="current-month">
-          {{ currentMonth | date: 'MMMM yyyy' }}
-        </span>
-        <button class="nav-btn" (click)="moveCalendarMonth(1)">›</button>
-        <button class="nav-btn end" (click)="moveCalendarYear(1)">»</button>
-      </div>
-
-      <div class="calendar">
-        <div class="weekdays">
-          <div class="weekday">Sun</div>
-          <div class="weekday">Mon</div>
-          <div class="weekday">Tue</div>
-          <div class="weekday">Wed</div>
-          <div class="weekday">Thu</div>
-          <div class="weekday">Fri</div>
-          <div class="weekday">Sat</div>
-        </div>
-
-        <div class="days">
-          <div
-            *ngFor="let day of calendarDays"
-            class="day"
-            [class.other-month]="day.otherMonth"
-            [class.selected]="isSelectedDate(day.date)"
-            [class.today]="isToday(day.date)"
-            (click)="selectDate(day.date)">
-            {{ day.dayNumber }}
-          </div>
-        </div>
-      </div>
-
+      <!-- Date Selection Inputs -->
       <div class="date-selection">
         <div class="date-field">
-          <label>
-            <input type="checkbox"
-                   [(ngModel)]="hasStartDate"
-                   (change)="updateStartDate()">
-            Start date
-          </label>
-          <input type="date"
-                 [disabled]="!hasStartDate"
-                 [(ngModel)]="startDateValue"
-                 (change)="updateTacheDates()">
+          <label for="startDate">Start Date</label>
+          <input id="startDate" type="date" [(ngModel)]="startDateValue" />
         </div>
-
         <div class="date-field">
-          <label>
-            <input type="checkbox"
-                   [(ngModel)]="hasDueDate"
-                   (change)="updateDueDate()">
-            Due date
-          </label>
-          <div class="due-date-inputs">
-            <input type="date"
-                   [disabled]="!hasDueDate"
-                   [(ngModel)]="dueDateValue"
-                   (change)="updateTacheDates()">
-            <input type="time"
-                   [disabled]="!hasDueDate"
-                   [(ngModel)]="dueTimeValue"
-                   (change)="updateTacheDates()">
-          </div>
+          <label for="endDate">End Date</label>
+          <input id="endDate" type="date" [(ngModel)]="dueDateValue" />
         </div>
       </div>
 
+      <!-- Actions -->
       <div class="date-picker-actions">
-        <button class="btn btn-danger" (click)="clearDates()">Remove</button>
-        <button class="btn btn-primary" (click)="saveDates()">Save</button>
-      </div>
-
-      <div *ngIf="dateErrorMessage" class="date-error-message">
-        {{ dateErrorMessage }}
+        <button class="btn btn-danger" (click)="clearDates(); saveTask()">Remove</button>
+        <button class="btn btn-primary" (click)="saveDates(); saveTask()">Save</button>
       </div>
     </div>
   </div>
@@ -271,83 +306,24 @@
               class="priority-option"
               [class.selected]="tache.priorite === priorite"
               [attr.data-priority]="priorite"
-              (click)="setPriority(priorite)">
+              (click)="setPriority(priorite); saveTask()">
         <span class="priority-color-box" [attr.data-priority]="priorite"></span>
         <span class="priority-label">{{ getPriorityLabel(priorite) }}</span>
       </button>
     </div>
   </div>
 
-  <!-- Attachment Modal -->
-  <div class="attachment-modal" *ngIf="showAttachmentModal">
-    <div class="attachment-overlay" (click)="toggleAttachmentModal()"></div>
-    <div class="attachment-container">
-      <div class="attachment-header">
-        <h3>Add an attachment</h3>
-        <button class="close-attachment" (click)="toggleAttachmentModal()">×</button>
-      </div>
-
-      <div class="attachment-tabs">
-        <div class="tab" [class.active]="activeTab === 'lien'" (click)="setActiveTab('lien')">Link</div>
-        <div class="tab" [class.active]="activeTab === 'fichier'" (click)="setActiveTab('fichier')">File</div>
-      </div>
-
-      <div class="attachment-content">
-        <!-- Link Tab -->
-        <div class="tab-content" [class.active]="activeTab === 'lien'">
-          <div class="form-group">
-            <label for="attachmentUrl">URL</label>
-            <input type="text"
-                   id="attachmentUrl"
-                   [(ngModel)]="newAttachmentUrl"
-                   placeholder="https://example.com">
-          </div>
-          <div class="form-group">
-            <label for="attachmentName">Title (optional)</label>
-            <input type="text"
-                   id="attachmentName"
-                   [(ngModel)]="attachmentName"
-                   placeholder="Link name">
-          </div>
-          <button class="btn btn-add-link"
-                  (click)="addLinkAttachment()"
-                  [disabled]="!newAttachmentUrl.trim()">
-            Add Link
-          </button>
-        </div>
-
-        <!-- File Tab -->
-        <div class="tab-content" [class.active]="activeTab === 'fichier'">
-          <div class="file-upload-area"
-               (click)="triggerFileInput()"
-               (dragover)="onDragOver($event)"
-               (drop)="onDrop($event)">
-            <div class="upload-icon">⬆️</div>
-            <div class="upload-text">Click to upload a file</div>
-            <div class="upload-subtext">or Drag & Drop here</div>
-          </div>
-          <div class="max-file-size">Maximum size: 10MB</div>
-          <input type="file"
-                 #fileInput
-                 id="fileAttachment"
-                 (change)="onFileSelected($event)"
-                 multiple
-                 style="display: none;">
-          <div *ngIf="attachmentFiles.length" class="file-list">
-            <div *ngFor="let file of attachmentFiles" class="file-item">
-              {{ file.name }} ({{ formatFileSize(file.size) }})
-            </div>
-          </div>
-          <button *ngIf="attachmentFiles.length" class="btn btn-primary"
-                  (click)="addFileAttachments()"
-                  [disabled]="!attachmentFiles.length">
-            Upload {{ attachmentFiles.length }} File{{ attachmentFiles.length > 1 ? 's' : '' }}
-          </button>
-        </div>
-      </div>
+  <!-- Members Modal -->
+  <div class="members-modal" *ngIf="showMembersModal">
+    <!-- ... existing members modal content ... -->
+    <div class="members-actions">
+      <button class="btn btn-secondary" (click)="cancelMemberSelection()">Cancel</button>
+      <button class="btn btn-primary" (click)="saveMembers(); saveTask()">
+        Assign {{ selectedMembers.length }} Member{{ selectedMembers.length !== 1 ? 's' : '' }}
+      </button>
     </div>
   </div>
-
+</div>
   <!-- Error Message for Date Validation -->
   <div *ngIf="dateErrorMessage" class="error-message-overlay">
     <div class="error-message-container">
@@ -356,4 +332,5 @@
       <button class="error-message-button" (click)="dateErrorMessage = null">OK</button>
     </div>
   </div>
-</div>
+
+

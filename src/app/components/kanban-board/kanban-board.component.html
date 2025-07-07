@@ -21,9 +21,9 @@
     </div>
   </header>
 
-  <!-- Main Content -->
+
   <div class="main">
-    <!-- Trello-style Collapsible Sidebar -->
+
     <aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
       <div class="sidebar-toggle" (click)="toggleSidebar()">
         <svg width="16" height="16" viewBox="0 0 24 24">
@@ -32,7 +32,7 @@
       </div>
 
       <div class="sidebar-content">
-        <!-- Workspace Header -->
+
         <div class="workspace-title">
           <div class="workspace-icon">U</div>
           <span class="workspace-name">UniGit Workspace</span>
@@ -94,16 +94,15 @@
           <div class="menu-title">Active Groups</div>
           <div class="menu-items">
             <a class="menu-item group-item"
-               *ngFor="let group of activeGroups"
-               (click)="editGroup(group)">
+               *ngFor="let group of activeGroups">
               <div class="menu-item-icon group-icon">
                 <svg width="16" height="16" viewBox="0 0 24 24">
                   <path fill="currentColor" d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A3.02 3.02 0 0 0 17.12 7H16.5c-.8 0-1.54.37-2.01.99l-2.98 3.67A2.99 2.99 0 0 0 14 15h2.5v7h3.5zM12.5 11.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5S11 9.17 11 10s.67 1.5 1.5 1.5zm1.5 1h-3C9.67 12.5 9 13.17 9 14v8h6v-8c0-.83-.67-1.5-1.5-1.5zM5.5 6c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2zm2 16v-7H9v-2.5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2V15h1.5v7h4z"/>
                 </svg>
               </div>
               <div class="group-info">
-                <span class="menu-item-text">{{group.name}}</span>
-                <span class="group-members">{{group.members.length}} members</span>
+                <span class="menu-item-text">{{group.nomGroupe}}</span>
+                <span class="group-members">{{group.etudiants}} members</span>
               </div>
               <div class="group-status active-status">
                 <svg width="12" height="12" viewBox="0 0 24 24">
@@ -116,22 +115,17 @@
           <div class="menu-title" style="margin-top: 20px;">All Groups</div>
           <div class="menu-items">
             <a class="menu-item group-item"
-               *ngFor="let group of allGroups"
-               (click)="editGroup(group)">
+               *ngFor="let group of allGroups">
               <div class="menu-item-icon group-icon">
                 <svg width="16" height="16" viewBox="0 0 24 24">
                   <path fill="currentColor" d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A3.02 3.02 0 0 0 17.12 7H16.5c-.8 0-1.54.37-2.01.99l-2.98 3.67A2.99 2.99 0 0 0 14 15h2.5v7h3.5zM12.5 11.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5S11 9.17 11 10s.67 1.5 1.5 1.5zm1.5 1h-3C9.67 12.5 9 13.17 9 14v8h6v-8c0-.83-.67-1.5-1.5-1.5zM5.5 6c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2zm2 16v-7H9v-2.5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2V15h1.5v7h4z"/>
                 </svg>
               </div>
               <div class="group-info">
-                <span class="menu-item-text">{{group.name}}</span>
-                <span class="group-members">{{group.members.length}} members</span>
+                <span class="menu-item-text">{{group.nomGroupe}}</span>
+                <span class="group-members">{{group.etudiants}} members</span>
               </div>
-              <div class="group-status" [class.active-status]="group.isActive" [class.inactive-status]="!group.isActive">
-                <svg width="12" height="12" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="10" [attr.fill]="group.isActive ? '#10b981' : '#6b7280'"/>
-                </svg>
-              </div>
+
             </a>
 
             <!-- Add Group Button -->
@@ -174,8 +168,9 @@
 
     <!-- Kanban Board -->
     <div class="dashboard-container" [class.sidebar-collapsed]="isSidebarCollapsed">
-      <div class="board" cdkDropListGroup>
-        <!-- Columns -->
+      <div class="board" cdkDropListGroup style="display: flex; align-items: flex-start; gap: 16px;">
+
+        <!-- Colonnes -->
         <div
           *ngFor="let colonne of colonnes"
           cdkDropList
@@ -184,14 +179,15 @@
           [cdkDropListConnectedTo]="connectedColumns"
           (cdkDropListDropped)="drop($event)"
           class="column"
+          style="min-width: 250px;"
         >
-          <!-- Column Header -->
+          <!-- Header de la colonne -->
           <div class="column-header">
             <h2>{{ colonne.titre }}</h2>
             <span class="task-count">{{ colonne.taches.length }}</span>
           </div>
 
-          <!-- Tasks -->
+          <!-- Tâches -->
           <div *ngFor="let tache of colonne.taches"
                class="task-card"
                [class]="'border-top-' + (tache.labels?.[0] || 'white')"
@@ -206,11 +202,8 @@
             <p class="assigned">Assignée à : {{ tache.assigneA || 'Non assignée' }}</p>
           </div>
 
-          <!-- Add Task Form -->
-          <div
-            class="add-task-container"
-            *ngIf="isAddingTask && newTache.statut === colonne.titre"
-          >
+          <!-- Formulaire d'ajout de tâche -->
+          <div class="add-task-container" *ngIf="isAddingTask && newTache.statut === colonne.titre">
             <input
               type="text"
               [(ngModel)]="newTache.titreTache"
@@ -231,18 +224,18 @@
             </div>
           </div>
 
-          <!-- Add Task Button -->
+          <!-- Bouton Ajouter une tâche -->
           <button
             class="add-task-btn"
-            (click)="initNewTask(colonne.titre)"
+            (click)="startAddingTask(colonne.titre)"
             *ngIf="!isAddingTask || newTache.statut !== colonne.titre"
           >
             + Add task
           </button>
         </div>
 
-        <!-- Add New Column -->
-        <div class="add-list-container">
+        <!-- Bouton Ajouter une liste, uniquement après la dernière colonne -->
+        <div class="add-list-container" style="min-width: 250px;">
           <ng-container *ngIf="isAddingList; else showAddListButton">
             <input
               type="text"
@@ -252,7 +245,6 @@
             />
             <div class="list-actions">
               <button (click)="addNewList()" class="add-list-btn">Ajouter</button>
-              <button (click)="cancelAddingList()" class="cancel-list-btn">Annuler</button>
             </div>
           </ng-container>
           <ng-template #showAddListButton>
@@ -261,18 +253,21 @@
             </button>
           </ng-template>
         </div>
+
       </div>
     </div>
-  </div>
 
-  <!-- Task Detail Popup -->
-  <ng-container *ngIf="showTaskDetails">
-    <app-tache
-      [tache]="selectedTache"
-      (fermer)="closeTacheDetails()"
-      (delete)="deleteTache($event)"
-      (updateDescription)="updateTacheDescription($event)"
-      (coverColorChanged)="updateTaskColor($event)"
-    ></app-tache>
+
+    <!-- Task Detail Popup -->
+  <ng-container *ngIf="showTaskDetails"><app-tache
+    [tache]="selectedTache"
+    (fermer)="closeTacheDetails()"
+    (delete)="deleteTache($event)"
+    (updateDescription)="saveTask(selectedTache)"
+    (coverColorChanged)="updateTaskColor($event)"
+    (taskSaved)="onTaskSaved($event)"
+    (taskUpdated)="loadTaches()">
+  </app-tache>
   </ng-container>
+</div>
 </div>

@@ -1,32 +1,223 @@
-<div class="container">
-  <h1>Create a new group</h1>
-  <p class="subtitle">Configure your group and invite members to collaborate</p>
+<!-- Group Creation Modal -->
+<div *ngIf="showGroupCreationModal" class="modal-overlay" (click)="closeCreationModal()">
+  <div class="modal-container group-creation-container" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="closeCreationModal()">&times;</button>
+    <h1 class="group-title">Create a new group</h1>
+    <p class="group-subtitle">Configure your group and invite members to collaborate</p>
 
-  <form>
-    <label for="group-name">Group name</label>
-    <input type="text" id="group-name" placeholder="Enter your group name"/>
+    <form class="group-form" (ngSubmit)="addGroupe()">
+      <!-- Group Name -->
+      <label class="form-label" for="group-name">Group name</label>
+      <input
+        class="form-input"
+        type="text"
+        id="group-name"
+        [(ngModel)]="newGroupe.nomGroupe"
+        name="nomGroupe"
+        placeholder="Enter your group name"
+        required
+      />
 
-    <label for="members">Initial members</label>
-    <textarea
-      id="members"
-      placeholder="Add members' emails separated by commas&#10;example: user1@email.com, user2@email.com"
-    ></textarea>
-    <p class="hint">You can add more members later</p>
+      <!-- Visibility -->
+      <label class="form-label" for="visibility">Visibility level</label>
+      <select
+        class="form-select"
+        id="visibility"
+        [(ngModel)]="newGroupe.visibilite"
+        name="visibilite"
+        required
+      >
+        <option value="" disabled selected>Choose a visibility level</option>
+        <option *ngFor="let option of visibiliteOptions" [value]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
 
-    <label for="creation-date">Creation date</label>
-    <input type="date" id="creation-date"/>
+      <!-- Members Selection -->
+      <label class="form-label">Initial members</label>
+      <div class="member-selection-container">
+        <!-- Search and selection area -->
+        <div class="search-selection-wrapper">
+          <input
+            type="text"
+            class="form-input search-input"
+            placeholder="Search students..."
+            [(ngModel)]="searchTerm"
+            name="searchTerm"
+            (input)="onSearchChange(searchTerm)"
+            (focus)="showEtudiantDropdown = true"
+          />
+          <i class="fas fa-search search-icon"></i>
 
-    <label for="visibility">Visibility level</label>
-    <select id="visibility">
-      <option>Choose a visibility level</option>
-      <option>Public</option>
-      <option>Private</option>
-      <option>Invite only</option>
-    </select>
+          <!-- Dropdown list of students -->
+          <div class="student-dropdown" *ngIf="showEtudiantDropdown">
+            <div class="student-list">
+              <div
+                *ngFor="let etudiant of filteredEtudiants"
+                class="student-item"
+                (click)="selectEtudiant(etudiant)"
+              >
+                <div class="student-info">
+                  <span class="student-name">{{ etudiant.prenomUser }} {{ etudiant.nomUser }}</span>
+                  <span class="student-email">{{ etudiant.emailUser }}</span>
+                </div>
+                <i class="fas fa-plus add-icon"></i>
+              </div>
 
-    <div class="buttons">
-      <button type="button" class="cancel">Cancel</button>
-      <button type="submit" class="create">Create group</button>
+              <div *ngIf="filteredEtudiants.length === 0" class="no-results">
+                <i class="fas fa-info-circle"></i> No students found
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Selected students chips -->
+        <div class="selected-students-chips" *ngIf="selectedEtudiants.length > 0">
+          <div
+            *ngFor="let etudiant of selectedEtudiants"
+            class="student-chip"
+          >
+            <span class="chip-name">{{ etudiant.prenomUser }} {{ etudiant.nomUser }}</span>
+            <button
+              type="button"
+              class="chip-remove-btn"
+              (click)="removeEtudiant(etudiant)"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <p class="form-hint">You can add more members later</p>
+
+      <!-- Buttons -->
+      <div class="form-buttons">
+        <button type="button" (click)="closeCreationModal()" class="cancel-btn">Cancel</button>
+        <button type="submit" class="create-btn">Create Group</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Group List Modal -->
+<div *ngIf="showGroupListModal" class="modal-overlay" (click)="closeGroupListModal()">
+  <div class="modal-container group-list-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Your Groups</h2>
+      <button class="close-btn" (click)="closeGroupListModal()">&times;</button>
     </div>
-  </form>
+
+    <div class="modal-body">
+      <div *ngFor="let group of groupes" class="group-card" (click)="selectGroup(group)">
+        <div class="group-header">
+          <h3>{{ group.nomGroupe }}</h3>
+          <span class="visibility-badge">{{ getVisibilityLabel(group.visibilite!) }}</span>
+        </div>
+        <p class="group-meta">
+          Created: {{ group.dateCreation | date:'mediumDate' }} •
+          Members: {{ group.etudiants?.length || 0 }}
+        </p>
+      </div>
+
+      <div *ngIf="groupes.length === 0" class="empty-state">
+        <i class="fas fa-users empty-icon"></i>
+        <p>You haven't created any groups yet</p>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="secondary-btn" (click)="closeGroupListModal()">
+        Close
+      </button>
+      <button class="primary-btn" (click)="showGroupCreationModal = true; closeGroupListModal()">
+        <i class="fas fa-plus"></i> New Group
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content Section -->
+<div class="group-list-section">
+  <div class="header-row">
+    <h2>Your Groups</h2>
+    <button class="create-group-btn" (click)="showGroupListModal = true">
+      <i class="fas fa-plus"></i> Manage Groups
+    </button>
+  </div>
+
+  <div class="group-list">
+    <div *ngFor="let group of groupes" class="group-card" (click)="openGroupDetails(group)">
+      <div class="group-header">
+        <h3>{{ group.nomGroupe }}</h3>
+        <span class="visibility-badge">{{ getVisibilityLabel(group.visibilite!) }}</span>
+      </div>
+      <p class="group-meta">
+        Created: {{ group.dateCreation | date:'mediumDate' }} •
+        Members: {{ group.etudiants?.length || 0 }}
+      </p>
+    </div>
+
+    <div *ngIf="groupes.length === 0" class="empty-state">
+      <i class="fas fa-users empty-icon"></i>
+      <p>You haven't created any groups yet</p>
+      <button class="create-btn" (click)="showGroupCreationModal = true">
+        Create Your First Group
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Group Details Modal -->
+<div *ngIf="showGroupDetailsModal && selectedGroup" class="modal-overlay" (click)="closeDetailsModal()">
+  <div class="modal-container group-details-container" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="closeDetailsModal()">&times;</button>
+
+    <div class="modal-header">
+      <h2>{{ selectedGroup.nomGroupe }}</h2>
+      <div class="group-meta">
+        <span class="visibility-badge">{{ getVisibilityLabel(selectedGroup.visibilite!) }}</span>
+        <span><i class="far fa-calendar-alt"></i> {{ selectedGroup.dateCreation | date:'mediumDate' }}</span>
+      </div>
+    </div>
+
+    <div class="modal-body">
+      <div class="members-section">
+        <h3><i class="fas fa-users"></i> Members ({{ selectedGroup.etudiants?.length || 0 }})</h3>
+        <div *ngIf="selectedGroup.etudiants && selectedGroup.etudiants.length > 0" class="member-list">
+          <div *ngFor="let member of selectedGroup.etudiants" class="member-item">
+            <img src="assets/default-avatar.png" alt="Member" class="member-avatar">
+            <div class="member-info">
+              <span class="member-name">{{ member.prenomUser }} {{ member.nomUser }}</span>
+              <span class="member-email">{{ member.emailUser }}</span>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="!selectedGroup.etudiants || selectedGroup.etudiants.length === 0" class="no-members">
+          <i class="fas fa-user-friends"></i>
+          <p>No members in this group</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="danger-btn" (click)="deleteGroupe(selectedGroup.idGroupe)">
+        <i class="fas fa-trash"></i> Delete Group
+      </button>
+      <button class="secondary-btn" (click)="closeDetailsModal()">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Success Notification -->
+<div *ngIf="showSuccessPopup" class="success-popup">
+  <div class="success-content">
+    <i class="fas fa-check-circle"></i>
+    <span>{{ successMessage }}</span>
+  </div>
+  <button class="close-notification" (click)="showSuccessPopup = false">
+    <i class="fas fa-times"></i>
+  </button>
 </div>

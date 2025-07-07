@@ -28,8 +28,7 @@ const routes: Routes = [
   { path: 'registerUser', component: RegisterComponent }, //,canActivate:[authOnlyGuardGuard]
   {path: 'reset-password',component: ResetPassComponent},
   { path: 'kanban', component: KanbanBoardComponent }, //j'ajoute prochainement canActivate: [authOnlyGuardGuard],
-  { path: 'tache/:id', component: TacheComponent }, //j'ajoute prochainement canActivate: [authOnlyGuardGuard],
-  { path: 'registerUser', component: RegisterComponent }, 
+  { path: 'task/:id', component: TacheComponent }, //j'ajoute prochainement canActivate: [authOnlyGuardGuard],
   { path: 'discussion', canActivate:[authOnlyGuardGuard] , component: DiscussionComponent },
   { path: 'admin', component: AdminComponent },
   { path: 'updateUser/:id', component: UpdateUserComponent },
