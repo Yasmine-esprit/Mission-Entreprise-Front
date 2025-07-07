@@ -1,0 +1,222 @@
+<div class="container">
+  <div class="header">
+    <h1>Create Evaluation Criteria</h1>
+  </div>
+
+  <!-- Criteria Information Card -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Criteria Information</h2>
+      <p class="card-subtitle">Basic information about this evaluation criteria set</p>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input 
+          type="text" 
+          id="title" 
+          [(ngModel)]="evaluationCriteria.title"
+          placeholder="e.g., PIDEV-SE Sprint Evaluation">
+      </div>
+      <div class="form-group">
+        <label for="code">Code/Reference</label>
+        <input 
+          type="text" 
+          id="code" 
+          [(ngModel)]="evaluationCriteria.code"
+          placeholder="e.g., PIDEV-S1-2">
+      </div>
+    </div>
+
+    <div class="form-group full-width">
+      <label for="description">Description</label>
+      <textarea 
+        id="description" 
+        [(ngModel)]="evaluationCriteria.description"
+        placeholder="Describe the purpose and scope of these evaluation criteria"></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="evaluationType">Evaluation Type</label>
+        <select id="evaluationType" [(ngModel)]="evaluationCriteria.evaluationType">
+          <option *ngFor="let type of evaluationTypes" [value]="type.value">
+            {{ type.label }}
+          </option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="totalPoints">Total Points</label>
+        <input 
+          type="number" 
+          id="totalPoints" 
+          [(ngModel)]="evaluationCriteria.totalPoints"
+          min="1">
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Criteria Card -->
+  <div class="card">
+    <div class="criteria-section">
+      <div class="criteria-header">
+        <div>
+          <h2 class="card-title">Main Criteria</h2>
+          <p class="card-subtitle">Define the main evaluation criteria</p>
+        </div>
+        <button class="btn btn-primary" (click)="addCriteria()">
+          <span>+</span> Add Criteria
+        </button>
+      </div>
+
+      <div class="empty-state" *ngIf="!hasCriteria">
+        No criteria added yet. Click "Add Criteria" to get started.
+      </div>
+
+      <div class="scrollable-content" *ngIf="hasCriteria">
+        <div class="criteria-list">
+          <div 
+            class="criteria-item" 
+            *ngFor="let criteria of evaluationCriteria.criteria; trackBy: trackByCriteriaId">
+            
+            <div class="criteria-item-header">
+              <span class="criteria-title">{{ criteria.title }}</span>
+              <button 
+                class="delete-btn" 
+                (click)="deleteCriteria(criteria.id)" 
+                title="Delete Criteria">🗑️</button>
+            </div>
+            
+            <div class="form-group">
+              <label>Description</label>
+              <textarea 
+                [(ngModel)]="criteria.description"
+                placeholder="Describe this criterion"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label>Maximum Points</label>
+              <input 
+                type="number" 
+                [(ngModel)]="criteria.maxPoints"
+                min="1">
+            </div>
+            
+            <div class="sub-criteria-section">
+              <div class="sub-criteria-header">
+                <span class="sub-criteria-title">Sub-criteria</span>
+                <button 
+                  class="btn btn-secondary" 
+                  (click)="openSubCriteriaModal(criteria.id)">
+                  <span>+</span> Add Sub-criteria
+                </button>
+              </div>
+              
+              <div class="sub-criteria-list">
+                <div 
+                  class="criteria-item sub-criteria-item" 
+                  *ngFor="let subCriteria of criteria.subCriteria; trackBy: trackBySubCriteriaId">
+                  
+                  <div class="criteria-item-header">
+                    <span class="criteria-title">{{ subCriteria.name }}</span>
+                    <button 
+                      class="delete-btn" 
+                      (click)="deleteSubCriteria(criteria.id, subCriteria.id)" 
+                      title="Delete Sub-criteria">🗑️</button>
+                  </div>
+                  
+                  <p class="sub-criteria-description" *ngIf="subCriteria.description">
+                    {{ subCriteria.description }}
+                  </p>
+                  
+                  <div class="sub-criteria-details">
+                    <div><strong>Max Points:</strong> {{ subCriteria.maxPoints }}</div>
+                    <div><strong>Level {{ subCriteria.selectedLevel }}:</strong> {{ subCriteria.pointRange }}</div>
+                    <div><strong>Grade:</strong> {{ subCriteria.levelDescription }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn btn-primary" (click)="saveCriteria()">
+        <span>💾</span> Save Criteria
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Sub-criteria Modal -->
+<div class="modal-overlay" [class.show]="isModalOpen" (click)="closeModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">Add Sub-criteria</h3>
+      <button class="close-btn" (click)="closeModal()">&times;</button>
+    </div>
+
+    <div class="form-group">
+      <label for="subCriteriaName">Name</label>
+      <input 
+        type="text" 
+        id="subCriteriaName" 
+        [(ngModel)]="subCriteriaForm.name"
+        placeholder="e.g., Technical Implementation">
+    </div>
+
+    <div class="form-group">
+      <label for="subCriteriaDescription">Description (Optional)</label>
+      <textarea 
+        id="subCriteriaDescription" 
+        [(ngModel)]="subCriteriaForm.description"
+        placeholder="Describe this sub-criterion"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="maxPoints">Maximum Points</label>
+      <input 
+        type="number" 
+        id="maxPoints" 
+        [(ngModel)]="subCriteriaForm.maxPoints"
+        min="1">
+    </div>
+
+    <div class="form-group">
+      <label>Grading Levels</label>
+      <div class="grading-levels">
+        <button 
+          *ngFor="let level of gradingLevels"
+          class="level-btn" 
+          [class.active]="subCriteriaForm.selectedLevel === level"
+          (click)="selectLevel(level)">
+          Level {{ level }}
+        </button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="pointRange">Point Range</label>
+      <input 
+        type="text" 
+        id="pointRange" 
+        [value]="subCriteriaForm.pointRange"
+        readonly>
+    </div>
+
+    <div class="form-group">
+      <label for="levelDescription">Description</label>
+      <textarea 
+        id="levelDescription" 
+        [(ngModel)]="subCriteriaForm.levelDescription"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+      <button class="btn btn-primary" (click)="addSubCriteria()">Add Sub-criteria</button>
+    </div>
+  </div>
+</div>

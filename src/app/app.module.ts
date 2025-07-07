@@ -18,7 +18,7 @@ import { CritereComponent } from './components/critere/critere.component';
 import { SousCritereComponent } from './components/sous-critere/sous-critere.component';
 import { NoteTgrpComponent } from './components/note-tgrp/note-tgrp.component';
 import { NoteTindivComponent } from './components/note-tindiv/note-tindiv.component';
-import { GrilleEvaluationComponent } from './components/grille-evaluation/grille-evaluation.component';
+import { EvaluationComponent } from './components/evaluation/evaluation.component';
 import { KanbanBoardComponent } from './components/kanban-board/kanban-board.component';
 import {TacheComponent} from "./components/tache/tache.component";
 import {FileSizePipe} from "./pipes/file-size.pipe";
@@ -29,6 +29,9 @@ import {AddUsersComponent} from "./add-users/add-users.component";
 import {UpdateUserComponent} from "./update-user/update-user.component";
 import {AdminComponent} from "./admin/admin.component";
 import {DiscussionComponent} from "./discussion/discussion.component";
+import { EvaluationsDetailsComponent } from './components/evaluations-details/evaluations-details.component';
+import { CreateCritereComponent } from './components/create-critere/create-critere.component';
+import { CreateEvaluationComponent } from './components/create-evaluation/create-evaluation.component';
 //import {AuthInterceptor} from "./service/auth.interceptor";
 
 
@@ -49,7 +52,7 @@ registerLocaleData(localeFr);
     SousCritereComponent,
     NoteTgrpComponent,
     NoteTindivComponent,
-    GrilleEvaluationComponent,
+    EvaluationComponent,
     KanbanBoardComponent,
     TacheComponent,
     DiscussionComponent,
@@ -59,7 +62,10 @@ registerLocaleData(localeFr);
     ChangePDFComponent,
     FileSizePipe,
     SousTacheComponent,
-    GroupeComponent
+    GroupeComponent,
+    EvaluationsDetailsComponent,
+    CreateCritereComponent,
+    CreateEvaluationComponent
 
 
   ],

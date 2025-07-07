@@ -46,6 +46,11 @@ ngOnInit(): void {
     this.router.navigate(['/kanban']);
   }
 
+  goToEvaluation(): void {
+    this.router.navigate(['/evaluation']);
+  }
+
+
 
   onLogout(): void {
     this.authService.logout();
