@@ -36,15 +36,21 @@ const headers = new HttpHeaders({
 
   return this.http.delete<any>(`${this.apiUrl}${id}`, { headers ,  responseType: 'text' as 'json' });
 }
+
 UpdateUser(id: number, updateUser: any): Observable<any> {
   const token = this.loginService.getToken() || '';
 
   const headers = new HttpHeaders({
     'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json',
   });
 
-  return this.http.put<any>(`${this.apiUrl}${id}`, updateUser, { headers });
+  // Since apiUrl ends with '/', no need to add extra '/'
+  const url = `${this.apiUrl}${id}`;
+
+  return this.http.put<any>(url, updateUser,{ headers ,  responseType: 'text' as 'json' });
 }
+
 
 
 getUserById(id : number): Observable<any> {

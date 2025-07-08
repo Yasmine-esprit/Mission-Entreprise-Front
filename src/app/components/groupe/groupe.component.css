@@ -13,6 +13,14 @@ body {
   width: 480px;
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  margin: 20px;
+  max-width: calc(100% - 40px);
 }
 
 h1 {

@@ -1,17 +1,18 @@
 <nav class="navbar" *ngIf="isUserLoggedIn">
     <div class="container">
+        <img src="./assets/logo.png" alt="Logo" class="logo-img">
       <a class="logo" routerLink="/">UniGit</a>
-  
+
       <ul class="nav-links">
         <li><a routerLink="/home">Home</a></li>
         <li><a routerLink="/changePass">Reset password</a></li>
-        <li><a routerLink="/changePass" *ngIf="role?.includes('ADMINISTRATEUR')"> evaluation</a></li>
+         <li button (click)="goToEvaluation()" class="btn-dashboard">Evaluation</li> 
         <li><button (click)="goToDashboard()" class="btn-dashboard">Dashboard</button></li>
       </ul>
-   
+
 
     <div class="navbar-right">
-      
+
     <div class="profile-container" (click)="toggleMenu()">
   <img
     [src]="connectedUserId?.photoProfil ? ('data:image/jpeg;base64,' + connectedUserId.photoProfil) : 'assets/defaultimage.jpg'"
@@ -21,10 +22,11 @@
 
   <!-- Dropdown menu -->
   <ul class="profile-menu" *ngIf="isMenuOpen">
-    <p>{{connectedUserId.nomUser }} {{connectedUserId.prenomUser}}</p>
+    
     <li><a href="" (click)="onLogout()">Logout</a></li>
     <li><a routerLink="/changePhoto">Change your profile photo</a></li>
     <li><a routerLink="/discussion">Discussion</a></li>
+     <li><a [routerLink]="['/updateUser', connectedUserId.idUser]">Change your Information</a></li>
     
     <li><a  *ngIf="role?.includes('ADMINISTRATEUR')" routerLink="/admin">Admin Dashboard</a></li>
 
@@ -33,7 +35,6 @@
 </div>
 
 
-      </div>  
-    </div>  
+      </div>
+    </div>
   </nav>
-  

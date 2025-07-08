@@ -150,13 +150,13 @@
         <button type="button" (click)="goPreviousStep()">Previous</button>
         <button type="submit" class="register-button">Register</button>
         <p *ngIf="message">{{ message }}</p>
+        <div *ngIf="message">
+          hr
+    
+          <a routerLink="/admin" class="sign-in-button"> Go To AdminDashboard</a>
+        </div>
         <p *ngIf="errorMessage" style="color: red">{{ errorMessage }}</p>
   
-        <div *ngIf="qrCodeUrl">
-          <h2>Scan this QR code for 2FA setup:</h2>
-          <img [src]="qrCodeUrl" alt="QR Code for 2FA" />
-          <button routerLink="/admin">Go to Admin Dashboard</button>
-        </div>
       </div>
     
     </form>

@@ -1,121 +1,232 @@
 * {
-
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  .navbar {
-    background: linear-gradient(90deg, #393939, #101010);
-    color: white;
-    padding: 1rem 2rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: visible;
+}
+
+body.login-page .navbar,
+.login-page .navbar {
+  display: none !important;
 }
 
 .navbar {
   background-color: #ffffff;
- 
-
-  height: 56px;
-  padding: 0 16px;
+  height: 60px;
   border-bottom: 1px solid #e5e7eb;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  z-index: 5;
+  position: relative;
+  z-index: 10000;
+  width: 100vw;
 }
 
 .container {
-  width: 100%;
+  width: 95%;
   height: 100%;
-  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: #ffffff;
 }
 
 .logo {
-  font-size: 18px;
-  font-weight: 600;
-  
+  font-size: 24px;
+  font-weight: 700;
+  color: #e53935;
   text-decoration: none;
+  letter-spacing: -0.5px;
+  margin-right: auto;
 }
 
 .nav-links {
   list-style: none;
   display: flex;
-  gap: 24px;
+  gap: 32px;
   align-items: center;
+  margin: 0 auto;
 }
 
-.nav-links li a,
-.btn-dashboard {
-  font-size: 14px;
+.nav-links li a {
+  font-size: 15px;
   font-weight: 500;
-  color: #4b5563;
+  color: #6b7280;
   text-decoration: none;
-  padding: 8px 12px;
-  border-radius: 6px;
+  padding: 8px 0;
   transition: color 0.2s ease;
+  position: relative;
 }
 
 .nav-links li a:hover {
-  color: #E11D48;
-  background-color: transparent;
+  color: #374151;
+}
+
+.nav-links li a.active {
+  color: #374151;
+  font-weight: 600;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-left: auto;
 }
 
 .btn-dashboard {
-  background-color:#E11D48;
+  background-color: #e53935;
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
+  border-radius: 8px;
+  padding: 10px 20px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 16px;
 }
 
 .btn-dashboard:hover {
-  background-color: #eb2532;
+  background-color: #d32f2f;
+}
+
+.btn-evaluation {
+  background-color: #e53935;
   color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 16px;
+}
+
+.btn-evaluation:hover {
+  background-color: #d32f2f;
+}
+
+.profile-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  margin-left: 0;
+}
+
+.profile-image {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+  background-color: #f3f4f6;
+}
+
+.profile-menu {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  list-style-type: none;
+  padding: 8px 0;
+  margin: 0;
+  width: 180px;
+  z-index: 10001;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+}
+
+.profile-container:hover .profile-menu,
+.profile-menu:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.profile-menu li {
+  padding: 0;
+  cursor: pointer;
+}
+
+.profile-menu li a {
+  display: block;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.15s ease;
+}
+
+.profile-menu li:hover {
+  background-color: #f9fafb;
+}
+
+.profile-menu li a:hover {
+  color: #111827;
 }
 
 .menu-toggle {
   display: none;
   flex-direction: column;
   cursor: pointer;
+  padding: 4px;
 }
 
 .menu-toggle span {
-  width: 25px;
-  height: 3px;
-  background: #4b5563;
+  width: 24px;
+  height: 2px;
+  background: #6b7280;
   margin-bottom: 4px;
-  border-radius: 3px;
+  border-radius: 2px;
+  transition: all 0.3s ease;
 }
 
-/* Responsive */
+.menu-toggle span:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
+  .navbar {
+    padding: 0 16px;
+  }
+
   .nav-links {
     position: absolute;
     right: 0;
-    top: 56px;
+    top: 60px;
     background: #ffffff;
     flex-direction: column;
     width: 100%;
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease-in;
+    transition: max-height 0.3s ease;
     border-bottom: 1px solid #e5e7eb;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    gap: 0;
   }
 
   .nav-links.open {
-    max-height: 300px;
-    padding: 16px;
+    max-height: 400px;
+    padding: 16px 0;
   }
 
   .nav-links li {
@@ -124,165 +235,45 @@
 
   .nav-links li a {
     display: block;
-    padding: 12px;
+    padding: 12px 24px;
+    border-bottom: 1px solid #f3f4f6;
+  }
 
+  .nav-links li:last-child a {
+    border-bottom: none;
   }
-  
-  .container {
-    max-width: 1200px;
-    margin: auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    
-  
-  }
-  
-  .logo {
-    font-weight: 700;
-    font-size: 1.8rem;
-    color: white;
-    text-decoration: none;
-    letter-spacing: 2px;
-  }
-  
-  .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
-  }
-  
-  .nav-links li a,
-  .btn-dashboard {
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-    cursor: pointer;
-    border: none;
-    background: transparent;
-  }
-  
-  .nav-links li a:hover,
-  .btn-dashboard:hover {
-    background-color: #040404;
-  }
-  
-  .btn-dashboard {
-    background: #E11D48;
-    color: white;
-    border-radius: 25px;
-    padding: 0.5rem 1.3rem;
-    font-weight: 700;
-    border: none;
-  }
-  
+
   .menu-toggle {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-  }
-  
-  .menu-toggle span {
-    width: 25px;
-    height: 3px;
-    background: white;
-    margin-bottom: 4px;
-    border-radius: 3px;
-  }
-  
-  /* Responsive */
-  @media (max-width: 768px) {
-    .nav-links {
-      position: absolute;
-      right: 0;
-      top: 70px;
-      background: #182848;
-      flex-direction: column;
-      width: 100%;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease-in;
-    }
-  
-    .nav-links.open {
-      max-height: 300px;
-    }
-  
-    .menu-toggle {
-      display: flex;
-    }
-  }
-  .navbar-right {
     display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-  
-  .logout-button {
-    background-color: transparent !important;
-    border: 1px solid white ;
-    color: white;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 4px;
-  }
-  
-  .logout-button:hover {
-    background-color: white;
-    color: black;
-  }
-}
-  .profile-image {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid white;
   }
 
-  .profile-container {
-  position: relative;
-  display: inline-block;
-  cursor: pointer;
+  .navbar-right {
+    gap: 12px;
+  }
+
+  .btn-dashboard,
+  .btn-evaluation {
+    padding: 8px 16px;
+    font-size: 13px;
+    margin-right: 8px;
+  }
 }
 
-.profile-image {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+/* Updated logo styles */
+.logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: #e53935;
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.profile-menu {
-  position: absolute;
-  top: 45px;
-  right: 0;
-  background-color: white;
-
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  list-style-type: none;
-  padding: 8px 0;
-  margin: 0;
-  width: 150px;
-  z-index: 1000;
-  height: 250px !important;
-}
-
-.profile-menu li {
-  padding: 8px 16px;
-  cursor: pointer;
-
- 
-}
-.profile-menu li a{
-   text-decoration: none;
-  color: black;
-}
-
-.profile-menu li:hover {
-  background-color: #f0f0f0;
+.logo-img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
 }
