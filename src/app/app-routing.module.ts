@@ -20,6 +20,7 @@ import { CritereComponent } from './components/critere/critere.component';
 import { EvaluationsDetailsComponent } from './components/evaluations-details/evaluations-details.component';
 import { CreateCritereComponent } from './components/create-critere/create-critere.component';
 import { QrCodeComponent } from './qr-code/qr-code.component';
+import { CreateEvaluationComponent } from './components/create-evaluation/create-evaluation.component';
 
 
 
@@ -46,7 +47,7 @@ const routes: Routes = [
   {path: 'evalDetails', component:EvaluationsDetailsComponent},
   {path: 'createCritere', component:CreateCritereComponent},
   {path: 'qrCode', component:QrCodeComponent},
-  {path: 'createEvaluation', component:CreateCritereComponent}
+  {path: 'createEvaluation', component:CreateEvaluationComponent}
 
 ];
 
