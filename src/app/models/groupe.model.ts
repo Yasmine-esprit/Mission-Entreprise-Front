@@ -1,6 +1,5 @@
 import { Projet } from './projet.model';
 //import { Etudiant } from './etudiant.model';
-import { NoteTGrp } from './note-tgrp.model';
 import {UserDTO} from "./user-dto";
 //import { Repo } from './repo.model';
 
@@ -17,6 +16,5 @@ export interface Groupe {
   visibilite?: Visibilite;
   projet?: Projet;
  etudiants?: UserDTO[];
-  noteTGrps?: NoteTGrp[];
   //repo?: Repo;
 }

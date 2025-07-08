@@ -66,7 +66,8 @@ registerLocaleData(localeFr);
     GroupeComponent,
     EvaluationsDetailsComponent,
     CreateCritereComponent,
-    CreateEvaluationComponent
+    CreateEvaluationComponent,
+    QrCodeComponent
 
   ],
   imports: [

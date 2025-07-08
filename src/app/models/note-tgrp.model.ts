@@ -1,11 +1,11 @@
-import { GrilleEvaluation } from "./grille-evaluation.model";
-import { Groupe } from "./groupe.model";
+import { Critere } from './critere.model';
+import { GrilleEvaluation } from './grille-evaluation.model';
 
-export interface NoteTGrp {
-    noteGrpId?: number;
-    noteTGrp: number;
-    grilleEvaluation?: GrilleEvaluation | number;
-    groupe?: Groupe | number;
-    //enseignant?: Enseignant | number;
-    //etudiant?: Etudiant | number;
-  }
+export interface GroupEval {
+  noteGrpId?: number;
+  critere?: Critere;
+  noteGrp: number;
+  grilleEvaluation?: GrilleEvaluation;
+  comments?: string;
+  generalComments?: string;
+}

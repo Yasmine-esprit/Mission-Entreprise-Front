@@ -1,19 +1,11 @@
-import { Critere } from "./critere.model";
-import { NoteTGrp } from "./note-tgrp.model";
-import { NoteTIndiv } from "./note-tindiv.model";
+import { Critere } from './critere.model';
 
-export enum TypeGrilleEval {
-  INDIVIDUAL = 'INDIVIDUAL',
-  GROUP = 'GROUP'
-}
 
 export interface GrilleEvaluation {
   idEvaluation?: number;
+  teacher: string;
   nomEvaluation: string;
-  dateEvaluation: string; // ISO format (YYYY-MM-DD)
-  typeEval: TypeGrilleEval;
+  dateEvaluation: Date; 
+  typeEval: string;
   criteres?: Critere[];
-  noteIndiv?: NoteTIndiv[];
-  noteGrp?: NoteTGrp[];
-  //phase?: Phase | number;
 }

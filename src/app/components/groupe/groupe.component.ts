@@ -38,7 +38,7 @@ export class GroupeComponent implements OnInit {
     dateCreation: new Date().toISOString(),
     visibilite: Visibilite.PRIVE,
     etudiants: [],
-    noteTGrps: [],
+    //noteTGrps: [],
   };
 
   visibiliteOptions = [
@@ -210,7 +210,6 @@ export class GroupeComponent implements OnInit {
       dateCreation: new Date().toISOString(),
       visibilite: Visibilite.PUBLIC,
       etudiants: [],
-      noteTGrps: [],
     };
     this.selectedEtudiants = [];
     this.searchTerm = '';
