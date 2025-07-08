@@ -16,22 +16,18 @@ export class EvaluationComponent {
   ];
 
   goToCreateCriteria() {
-    // Replace with actual route
     this.router.navigate(['/createCritere']);
   }
 
   goToNewEvaluation() {
-    // Replace with actual route
     this.router.navigate(['/createEvaluation']);
   }
 
   goToEvaluations() {
-    // Replace with actual route
     this.router.navigate(['/evalDetails']);
   }
 
   goToCriteria() {
-    // Replace with actual route
     this.router.navigate(['/criteres']);
   }
 }

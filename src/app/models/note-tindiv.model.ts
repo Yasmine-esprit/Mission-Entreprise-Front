@@ -1,9 +1,10 @@
-import { GrilleEvaluation } from "./grille-evaluation.model";
+import { Critere } from './critere.model';
+import { GrilleEvaluation } from './grille-evaluation.model';
 
-export interface NoteTIndiv {
-    noteIndivId?: number;
-    noteTIndiv: number;
-    grilleEvaluation?: GrilleEvaluation | number;
-    //enseignant?: Enseignant | number;
-    //etudiant?: Etudiant | number;
-  }
+export interface IndivEval {
+  indivEvalId?: number;
+  critere?: Critere;
+  noteIndiv: number;
+  grilleEvaluation?: GrilleEvaluation;
+  generalComments?: string;
+}
