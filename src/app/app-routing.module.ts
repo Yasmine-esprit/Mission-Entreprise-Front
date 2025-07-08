@@ -15,12 +15,18 @@ import { DiscussionComponent } from './discussion/discussion.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
 import { ChangepassComponent } from './changepass/changepass.component';
 import { ChangePDFComponent } from './change-pdf/change-pdf.component';
+
+import { RepositoryComponent } from './repository/repository.component';
+import { PostComponent } from './post/post.component';
+import { PostDetailComponent } from './post-detail/post-detail.component';
+
 import { EvaluationComponent } from './components/evaluation/evaluation.component';
 import { CritereComponent } from './components/critere/critere.component';
 import { EvaluationsDetailsComponent } from './components/evaluations-details/evaluations-details.component';
 import { CreateCritereComponent } from './components/create-critere/create-critere.component';
 import { QrCodeComponent } from './qr-code/qr-code.component';
 import { CreateEvaluationComponent } from './components/create-evaluation/create-evaluation.component';
+
 
 
 
@@ -42,6 +48,10 @@ const routes: Routes = [
   {path: 'addUsers' , component:AddUsersComponent},
   {path: 'changePass', component: ChangepassComponent },
   {path:'changePhoto', component: ChangePDFComponent},
+  {path:'repo', component: RepositoryComponent},
+  {path:'repository', component: RepositoryComponent},
+  { path: 'post', component: PostComponent },
+  { path: 'post/:id', component: PostDetailComponent },
   {path:'evaluation', component: EvaluationComponent},
   {path:'criteres', component:CritereComponent},
   {path: 'evalDetails', component:EvaluationsDetailsComponent},

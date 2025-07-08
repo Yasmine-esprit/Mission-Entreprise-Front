@@ -1,0 +1,138 @@
+<div class="gitmanager-header">
+  <div class="logo-title">
+    <span class="logo">⎇</span>
+    <span class="title">GitManager</span>
+  </div>
+  <input class="search-bar" type="text" placeholder="Search repositories..." [(ngModel)]="searchTerm">
+  <div class="header-actions">
+    <button class="new-repo-btn" (click)="openCreateGroup()">Create Group</button>
+    <button class="close-btn">Close</button>
+  </div>
+</div>
+
+<div class="repositories-section">
+  <h2>Repositories</h2>
+  <p>Manage your Git repositories with JGit integration</p>
+  <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+    <button class="create-repo-btn" (click)="openCreateRepo()">+ Create Repository</button>
+    <button class="create-repo-btn" (click)="openCloneRepo()">+ Clone Repository</button>
+  </div>
+
+<div class="repo-list">
+    <div class="repo-card" *ngFor="let repo of filteredRepositories">
+      <h3>
+        <span class="repo-name">{{ repo.name }}</span>
+        <span class="tag" [ngClass]="repo.isPrivate ? 'private' : 'public'">
+          {{ repo.isPrivate ? 'Private' : 'Public' }}
+      </span>
+    </h3>
+      <p class="repo-desc">{{ repo.description }}</p>
+    <div class="details">
+        <!-- You can add language and updated info here if available -->
+    </div>
+    <div class="buttons">
+      <button>Permissions</button>
+      <button (click)="showBranches(repo.name)">Branches</button>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Repository Modal -->
+<div class="modal-overlay" *ngIf="showCreateModal">
+  <div class="modal">
+    <h2>Create Repository</h2>
+    <form (submit)="$event.preventDefault(); createRepository();">
+      <label for="repoName">Name</label>
+      <input id="repoName" type="text" [(ngModel)]="newRepoName" name="repoName" required autocomplete="off" />
+      <div class="input-error" *ngIf="createAttempted && (!newRepoName || !newRepoName.trim())">
+        Name is required.
+      </div>
+
+      <label for="repoDesc">Description</label>
+      <textarea id="repoDesc" [(ngModel)]="newRepoDescription" name="repoDesc" rows="2"></textarea>
+
+      <div class="visibility-group">
+        <label>Visibility</label>
+        <div class="visibility-options">
+          <label class="vis-radio">
+            <input type="radio" [(ngModel)]="newRepoVisibility" name="repoVisibility" value="Public" />
+            <span class="tag public">Public</span>
+          </label>
+          <label class="vis-radio">
+            <input type="radio" [(ngModel)]="newRepoVisibility" name="repoVisibility" value="Private" />
+            <span class="tag private">Private</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" (click)="closeCreateModal()">Cancel</button>
+        <button type="submit" class="create-btn" [disabled]="!newRepoName || !newRepoName.trim()">Create</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Clone Repository Modal -->
+<div class="modal-overlay" *ngIf="showCloneModal">
+  <div class="modal">
+    <h2>Clone Repository</h2>
+    <form (submit)="$event.preventDefault(); cloneRepositoryModal();">
+      <label for="cloneUrl">GitHub Repository URL</label>
+      <input id="cloneUrl" type="text" [(ngModel)]="cloneUrl" name="cloneUrl" required autocomplete="off" />
+
+      <label for="cloneName">Local Name</label>
+      <input id="cloneName" type="text" [(ngModel)]="cloneName" name="cloneName" required autocomplete="off" />
+
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" (click)="closeCloneModal()">Cancel</button>
+        <button type="submit" class="create-btn" [disabled]="!cloneUrl.trim() || !cloneName.trim()">Clone</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Branches Modal -->
+<div class="modal-overlay" *ngIf="showBranchesModal">
+  <div class="modal">
+    <h2>Branches for {{ branchesRepoName }}</h2>
+    <ul style="margin-bottom: 18px;" *ngIf="branchesList.length > 0">
+      <li *ngFor="let branch of branchesList" style="font-size:1.08rem; margin-bottom: 6px;">
+        {{ branch }}
+      </li>
+    </ul>
+    <div *ngIf="branchesList.length === 0" style="margin-bottom: 18px; color: #888; font-size: 1.08rem;">
+      No branches found.
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="cancel-btn" (click)="closeBranchesModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Group Modal -->
+<div class="modal-overlay" *ngIf="showCreateGroupModal">
+  <div class="modal">
+    <h2>Create Group</h2>
+    <form (submit)="$event.preventDefault(); createGroup();">
+      <label for="groupName">Group Name</label>
+      <input id="groupName" type="text" [(ngModel)]="groupName" name="groupName" required autocomplete="off" />
+
+      <label for="groupVisibility">Visibility</label>
+      <select id="groupVisibility" [(ngModel)]="groupVisibility" name="groupVisibility">
+        <option value="Prive">Private</option>
+        <option value="Publique">Public</option>
+        <option value="Par_invitation">By Invitation</option>
+      </select>
+
+      <label for="groupStudents">Students (comma-separated emails or names)</label>
+      <textarea id="groupStudents" [(ngModel)]="groupStudents" name="groupStudents" rows="2" placeholder="student1@email.com, student2@email.com"></textarea>
+
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" (click)="closeCreateGroupModal()">Cancel</button>
+        <button type="submit" class="create-btn" [disabled]="!groupName.trim()">Create</button>
+      </div>
+    </form>
+  </div>
+</div>

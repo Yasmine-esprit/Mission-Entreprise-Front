@@ -29,11 +29,16 @@ import {AddUsersComponent} from "./add-users/add-users.component";
 import {UpdateUserComponent} from "./update-user/update-user.component";
 import {AdminComponent} from "./admin/admin.component";
 import {DiscussionComponent} from "./discussion/discussion.component";
+
+import { RepositoryComponent } from './repository/repository.component';
+import { PostComponent } from './post/post.component';
+import { PostDetailComponent } from './post-detail/post-detail.component';
+
 import { EvaluationsDetailsComponent } from './components/evaluations-details/evaluations-details.component';
 import { CreateCritereComponent } from './components/create-critere/create-critere.component';
 import { QrCodeComponent } from './qr-code/qr-code.component';
 import { CreateEvaluationComponent } from './components/create-evaluation/create-evaluation.component';
-//import {AuthInterceptor} from "./service/auth.interceptor";
+
 
 
 registerLocaleData(localeFr);
@@ -64,6 +69,11 @@ registerLocaleData(localeFr);
     FileSizePipe,
     SousTacheComponent,
     GroupeComponent,
+
+    RepositoryComponent,
+    PostComponent,
+    PostDetailComponent
+
     EvaluationsDetailsComponent,
     CreateCritereComponent,
     CreateEvaluationComponent,

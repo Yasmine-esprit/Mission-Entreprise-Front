@@ -64,4 +64,8 @@ export class GroupeService {
   deleteAll(): Observable<any> {
     return this.http.delete<any>(`${this.baseUrl}/Deletegroupes`, this.getHttpOptions())
   }
+
+  createGroupe(request: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/create`, request);
+  }
 }
