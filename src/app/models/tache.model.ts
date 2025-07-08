@@ -1,8 +1,8 @@
 import { Projet } from './projet.model';
 import { sousTache } from './sousTache.model';
 
-export type StatutTache = 'ToDo' | 'EnCours' | 'Terminé' | 'Test' | 'Validé' | 'Annulé';
-export type PrioriteTache = "Highest" | "High" | "Medium" | "Low" | "Lowest" | null;
+export type StatutTache = "ToDo"|"INPROGRESS" | "DONE" | "Test" | "VALIDATED" | "CANCELED";
+export type PrioriteTache = "HIGHEST" | "HIGH" | "MEDIUM" | "LOW" | "LOWEST" | null;
 
 export interface Tache {
   idTache?: number;
@@ -15,6 +15,7 @@ export interface Tache {
   assigneA?: string | null;
   labels?: string[];
   members: string[];
+  isLocal?: boolean;
   piecesJointes?: PieceJointe[];
   coverColor?: string;
   checklist?: {
@@ -24,17 +25,17 @@ export interface Tache {
   projet?: Projet | null;
   sousTaches?: sousTache[];
 
-  // gestion de la sauvegarde automatique
-  lastUpdated?: Date;  // Dernière màj locale
-  lastSynced?: Date;   // Dernière synchronisation avec serveur
-  pendingChanges?: boolean; // modif sont en attente
+  lastUpdated?: Date;
+  lastSynced?: Date;
+  pendingChanges?: boolean;
 }
+
 export interface PieceJointe {
-  id?: number;
-  nom: string;
+  idPieceJointe?: number;
+  nom?: string;
   url: string;
-  type: 'fichier' | 'lien';
-  dateAjout?: Date;
-  taille?: number;
+  type: 'FICHIER' | 'LIEN';
+  dateAjout: Date;
+  tache?: Tache;
 }
 

@@ -29,6 +29,7 @@ ngOnInit(): void {
   this.userService.currentUser$.subscribe(user => {
     if (user) {
       this.connectedUserId = user;
+      console.log("connected in navbar ", this.connectedUserId)
       this.role = this.authService.getUserRole();
       console.log('User role in navbar:', this.role);
     }
@@ -45,6 +46,11 @@ ngOnInit(): void {
   goToDashboard(): void {
     this.router.navigate(['/kanban']);
   }
+
+  goToEvaluation(): void {
+    this.router.navigate(['/evaluation']);
+  }
+
 
 
   onLogout(): void {

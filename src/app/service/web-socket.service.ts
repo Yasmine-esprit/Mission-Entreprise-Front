@@ -22,8 +22,19 @@ export class WebSocketService {
   public messages$ = this.messagesSubject.asObservable();
 
   connect(groupId: number): void {
-    const socket = new SockJS('http://localhost:8081/ws'); // adapte à ton URL
+    const socket = new SockJS('http://localhost:8081/ws');
     this.stompClient = Stomp.over(socket);
+
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+      console.error('No JWT token found');
+      return;
+    }
+
+    const headers: StompHeaders = {
+      'Authorization': `Bearer ${token}`
+    };
+
 
     this.stompClient.connect({}, () => {
       console.log('✅ STOMP connecté');
@@ -33,6 +44,8 @@ export class WebSocketService {
         console.log('📩 Message reçu:', msg);
         this.messagesSubject.next(msg);
       });
+    }, (error) => {
+      console.error('WebSocket connection error:', error);
     });
   }
 

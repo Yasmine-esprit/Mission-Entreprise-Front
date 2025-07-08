@@ -1,0 +1,11 @@
+<div class="qr-container">
+  <h2>Configuration de votre authentification à deux facteurs</h2>
+  <div *ngIf="qrCodeUrl; else notFound">
+    <img [src]="qrCodeUrl" alt="QR Code à scanner" />
+  </div>
+  <ng-template #notFound>
+    <p>QR Code introuvable ou invalide.</p>
+  </ng-template>
+
+  <button class="sign-in-button "  routerLink="/login">Login</button>
+</div>

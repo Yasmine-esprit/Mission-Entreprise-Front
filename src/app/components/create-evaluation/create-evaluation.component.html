@@ -1,0 +1,127 @@
+<div class="container">
+  <!-- Evaluation Information Card -->
+  <div class="card mb-4 p-4 shadow rounded-4">
+    <h4 class="fw-bold mb-3">Evaluation Information</h4>
+    <div class="card-body">
+    <form>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label>Teacher</label>
+        <input type="text" class="form-control" [(ngModel)]="evaluation.teacher" required />
+      </div>
+      <div class="col-md-4">
+        <label>Class</label>
+        <select class="form-select" [(ngModel)]="evaluation.class" required>
+          <option *ngFor="let cls of classes" [value]="cls">{{ cls }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label>Date</label>
+        <input type="date" class="form-control" [(ngModel)]="evaluation.date" required />
+      </div>
+      </div>
+      <div class="row g-3">
+      <div class="col-md-4">
+        <label>Group Number</label>
+        <input type="number" class="form-control" [(ngModel)]="evaluation.groupNumber" min="1" required />
+      </div>
+      <div class="col-md-4">
+        <label>Group Name</label>
+        <select class="form-select" [(ngModel)]="evaluation.groupName" required>
+          <option *ngFor="let group of groupNames" [value]="group">{{ group }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label>Evaluation Criteria</label>
+        <select class="form-select" [(ngModel)]="evaluation.criteria" required>
+          <option *ngFor="let crit of criteria" [value]="crit">{{ crit }}</option>
+        </select>
+      </div>
+      </div>
+    
+
+    <!-- Evaluation Type Switch -->
+    <div class="toggle mt-4">
+      <button [class.active]="isGroup" (click)="isGroup = true">👥 Group Evaluation</button>
+      <button [class.active]="!isGroup" (click)="isGroup = false">👤 Individual Evaluation</button>
+    </div>
+    
+    </form>
+  </div>
+  </div>
+
+  <!-- Group Evaluation Card -->
+<div *ngIf="isGroup" class="card p-4 shadow rounded-4 mb-4">
+  <h5 class="fw-bold mb-3">Group Evaluation Grid</h5>
+  
+  <table class="table align-middle w-100">
+    <thead class="table-light">
+      <tr>
+        <th style="width: 40%;">Criteria</th>
+        <th style="width: 15%;" class="text-center">Max Points</th>
+        <th style="width: 20%;" class="text-center">Awarded Points</th>
+        <th style="width: 25%;">Comments</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of groupCriteria; let i = index">
+        <td><strong>{{ row.label }}</strong></td>
+        <td class="text-center">{{ row.max }}</td>
+        <td class="text-center">
+          <input type="number" 
+                 [(ngModel)]="row.score" 
+                 [max]="row.max" 
+                 min="0" 
+                 step="0.1" 
+                 class="form-control text-center" />
+        </td>
+        <td>
+          <input type="text" 
+                 [(ngModel)]="row.comment" 
+                 class="form-control" 
+                 placeholder="Comment" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div class="form-group mt-3">
+    <label>General Comments</label>
+    <textarea class="form-control" [(ngModel)]="groupComment"></textarea>
+  </div>
+</div>
+
+<!-- Individual Evaluation Card -->
+<div *ngIf="!isGroup" class="card p-4 shadow rounded-4 mb-4">
+  <h5 class="fw-bold mb-3">Individual Evaluation Grid</h5>
+  <div class="table-responsive">
+    <table class="table table-bordered align-middle text-center">
+      <thead class="table-light">
+        <tr>
+          <th>Name</th>
+          <th *ngFor="let crit of individualCriteria">{{ crit.label }}</th>
+          <th>Final Grade</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let student of students">
+          <td>{{ student.name }}</td>
+          <td *ngFor="let crit of individualCriteria; let j = index">
+            <input type="number" [(ngModel)]="student.scores[j]" (ngModelChange)="updateFinalGrade(student)" [max]="crit.max" min="0" step="0.1" class="form-control" />
+          </td>
+          <td>{{ student.finalGrade }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="form-group mt-3">
+    <label>General Comments</label>
+    <textarea class="form-control" [(ngModel)]="individualComment"></textarea>
+  </div>
+</div>
+
+  <!-- Save Button -->
+  <div class="text-end">
+    <button class="btn btn-success" (click)="saveEvaluation()">Save Evaluation</button>
+  </div>
+</div>

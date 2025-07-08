@@ -1,9 +1,24 @@
-import { Critere } from "./critere.model";
+import { MainCriteria } from './mainCriteria.model';
+
+export enum GradingLevels {
+  BEGINNER = 'BEGINNER',
+  INTERMEDIATE = 'INTERMEDIATE',
+  ADVANCED = 'ADVANCED'
+}
+
+export enum PoinRangesSubCrit {
+  LOW = 0,
+  MEDIUM = 1,
+  HIGH = 2
+}
 
 export interface SousCritere {
-    idSousCritere?: number;
-    descriptionSousCritere: string;
-    noteMax: number;
-    noteMin: number;
-    critere?: Critere | number; // Reference to parent Critere
-  }
+  idSousCritere?: number;
+  nameSousCritere: string;
+  maxPoints: number;
+  gradingLevels: GradingLevels;
+  poinRangesSubCrit: PoinRangesSubCrit;
+  descriptionSousCritere: string;
+  noteMax: number;
+  mainCritere?: MainCriteria;
+}

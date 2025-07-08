@@ -1,1 +1,35 @@
-<p>critere works!</p>
+<div class="container">
+  <h1 class="title">Evaluation Criteria</h1>
+
+  <div class="top-bar">
+    <input
+      type="text"
+      [(ngModel)]="searchText"
+      class="search-input"
+      placeholder="Search criteria..."
+    />
+
+    <div class="actions">
+      <button class="icon-button">
+        <i class="fa fa-filter"></i>
+      </button>
+      <button class="icon-button">
+        <i class="fa fa-sort"></i>
+      </button>
+      <button class="create-btn" (click)="goToCreateCriteria()">
+        <i class="fa fa-plus"></i> Create Criteria
+      </button>
+    </div>
+  </div>
+
+  <div class="card-grid">
+    <div class="card" *ngFor="let criteria of filteredCriteria()">
+      <h2>{{ criteria.title }}</h2>
+      <p class="subtitle">{{ criteria.type }}</p>
+      <p><strong>Main Criteria:</strong> {{ criteria.main }}</p>
+      <p><strong>Sub-criteria:</strong> {{ criteria.sub }}</p>
+      <p><strong>Last Updated:</strong> {{ criteria.updated }}</p>
+      <button class="details-btn">View Details</button>
+    </div>
+  </div>
+</div>

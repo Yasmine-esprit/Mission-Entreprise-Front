@@ -1,10 +1,16 @@
-import { GrilleEvaluation } from "./grille-evaluation.model";
-import { SousCritere } from "./sous-critere.model";
+import { MainCriteria } from './mainCriteria.model';
+import { IndivEval } from './note-tindiv.model';
+import { GroupEval } from './note-tgrp.model';
+import { GrilleEvaluation } from './grille-evaluation.model';
 
 export interface Critere {
-    idCritere?: number;
-    descriptionCritere: string;
-    noteMaxCritere: number;
-    sousCriteres?: SousCritere[];
-    grilleEvaluation?: GrilleEvaluation | number; // Can reference object or just ID
-  }
+  idCritere?: number;
+  titreCritere: string;
+  codeCritere: string;
+  descriptionCritere: string;
+  TotalPoints: number;
+  mainCriteria?: MainCriteria[];
+  indivEvals?: IndivEval[];
+  groupEvals?: GroupEval[];
+  grilleEvaluation?: GrilleEvaluation;
+}

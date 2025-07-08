@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RegisterService } from '../service/register.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-register',
@@ -21,7 +21,7 @@ export class RegisterComponent {
   errorMessage = '';
   roles = ['ETUDIANT', 'ENSEIGNANT', 'COORDINATEUR'];
 roleSelected = ''
-  qrCodeUrl: SafeUrl | null = null;
+ 
   matricule: string = '';
 niveau: string = '';
 specialite: string = '';
@@ -34,8 +34,7 @@ anneeExperience: any ;
 
 
   constructor(
-    private authService: RegisterService,
-    private sanitizer: DomSanitizer
+    private authService: RegisterService
   ) {}
 
   onRegister(): void {
@@ -84,15 +83,7 @@ anneeExperience: any ;
         this.message = response.message || 'User registered successfully';
         this.errorMessage = '';
         console.log(response)
-    const base64Match = response.match(/([A-Za-z0-9+/=]{100,})$/); // Match long base64 string
-    if (base64Match && base64Match[1]) {
-      this.qrCodeUrl = this.sanitizer.bypassSecurityTrustUrl(
-        'data:image/png;base64,' + base64Match[1]
-      );
-
-    } else {
-      console.warn('No base64 image found in response');
-    }
+        
      // Reset form data
   this.firstname = '';
   this.lastname = '';

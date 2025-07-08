@@ -1,333 +1,596 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import {Observable, BehaviorSubject, of, switchMap} from 'rxjs';
-import { map, tap, catchError, finalize } from 'rxjs/operators';
-import { Tache, StatutTache, PrioriteTache, PieceJointe } from '../models/tache.model';
+import { HttpClient, HttpHeaders, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import {Observable, BehaviorSubject, throwError, of, switchMap, filter} from 'rxjs';
+import { catchError, map, tap, retry, timeout } from 'rxjs/operators';
+import { Tache } from '../models/tache.model';
+import { sousTache } from '../models/sousTache.model';
+
+type StatutTache = "ToDo" | "INPROGRESS" | "DONE" | "Test" | "VALIDATED" | "CANCELED";
+type PrioriteTache = "HIGHEST" | "HIGH" | "MEDIUM" | "LOW" | "LOWEST" | null;
+
+interface PieceJointe {
+  idPieceJointe?: number;
+  nom?: string;
+  url: string;
+  type: 'FICHIER' | 'LIEN';
+  dateAjout: Date;
+  tache?: Tache;
+}
+
+interface TacheUpdatePayload {
+  titreTache?: string;
+  descriptionTache?: string;
+  priorite?: PrioriteTache;
+  statut?: StatutTache;
+  dateDebut?: Date | null;
+  dateFin?: Date | null;
+  coverColor?: string;
+  assigneA?: string;
+  members?: string[];
+  labels?: string[];
+  sousTaches?: sousTache[];
+  piecesJointes?: PieceJointe[];
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class TacheService {
-  private apiUrl = 'http://localhost:8081/api/taches';
-  private tachesCache = new Map<number, Tache>();
+  private readonly apiUrl = 'http://localhost:8081/api/taches';
+  private readonly timeout_duration = 10000;
   private tachesSubject = new BehaviorSubject<Tache[]>([]);
-  taches$ = this.tachesSubject.asObservable();
-  private savingInProgress = new Map<number, boolean>();
+  public taches$ = this.tachesSubject.asObservable();
+  private tacheCache = new Map<number, Tache>();
+  private cacheExpiry = new Map<number, number>();
+  private readonly CACHE_DURATION = 5 * 60 * 1000;
 
   constructor(private http: HttpClient) {
-    this.loadInitialTaches();
+    this.setupInterceptors();
   }
 
-  // Chargement initial depuis le localStorage
-  private loadInitialTaches(): void {
-    try {
-      const cachedTaches = localStorage.getItem('tachesCache');
-      if (cachedTaches) {
-        const parsedTaches = JSON.parse(cachedTaches);
-        Object.entries(parsedTaches).forEach(([key, value]) => {
-          const tache = this.parseTacheDates(value as Tache);
-          this.tachesCache.set(parseInt(key), tache);
-        });
-        this.tachesSubject.next(Array.from(this.tachesCache.values()));
-      }
-    } catch (e) {
-      console.warn('Erreur lors du chargement du cache local:', e);
+  private setupInterceptors(): void {}
+
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('jwtToken');
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+  }
+
+  private getHttpOptions() {
+    return {
+      headers: this.getHeaders(),
+
+      withCredentials: true
+    };
+  }
+
+  private normalizePriority(priorite: any): PrioriteTache {
+    if (!priorite || priorite === 'null' || priorite === '') return null;
+    const normalizedPriorite = priorite.toString().toUpperCase();
+    const validPriorities: PrioriteTache[] = ['HIGHEST', 'HIGH', 'MEDIUM', 'LOW', 'LOWEST'];
+    return validPriorities.includes(normalizedPriorite as PrioriteTache) ? normalizedPriorite as PrioriteTache : null;
+  }
+
+  private normalizeStatus(statut: any): StatutTache {
+    if (!statut) return 'ToDo';
+    const validStatuts: StatutTache[] = ["ToDo", "INPROGRESS", "DONE", "Test", "VALIDATED", "CANCELED"];
+    return validStatuts.includes(statut) ? statut : 'ToDo';
+  }
+
+  private prepareDatesForBackend(tache: any): any {
+    const copy = { ...tache };
+    if (copy.dateDebut instanceof Date) copy.dateDebut = copy.dateDebut.toISOString();
+    if (copy.dateFin instanceof Date) copy.dateFin = copy.dateFin.toISOString();
+    return copy;
+  }
+
+  private isCacheValid(id: number): boolean {
+    const expiry = this.cacheExpiry.get(id);
+    return expiry ? Date.now() < expiry : false;
+  }
+
+  private updateCache(tache: Tache): void {
+    if (tache.idTache) {
+      this.tacheCache.set(tache.idTache, tache);
+      this.cacheExpiry.set(tache.idTache, Date.now() + this.CACHE_DURATION);
     }
-    this.refreshAllTaches().subscribe();
   }
 
-  // Conversion des dates string en objets Date
-  private parseTacheDates(tache: Tache): Tache {
+  private clearCacheTask(id: number): void {
+    this.tacheCache.delete(id);
+    this.cacheExpiry.delete(id);
+  }
+
+  private handleError = (error: HttpErrorResponse, context?: string): Observable<never> => {
+    let errorMessage = 'Une erreur est survenue';
+    let userMessage = 'Une erreur est survenue lors de l\'opération';
+    console.group(`🚨 HTTP Error ${context ? `(${context})` : ''}`);
+    console.error('Full error object:', error);
+
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Erreur client: ${error.error.message}`;
+      userMessage = 'Erreur de connexion. Vérifiez votre connexion internet.';
+      console.error('Client-side error:', error.error.message);
+    } else {
+      console.error(`Status: ${error.status}`);
+      console.error('Response body:', error.error);
+
+      switch (error.status) {
+        case 400:
+          if (error.error?.message?.includes('Cannot deserialize')) {
+            errorMessage = 'Erreur de format des données (enum mismatch)';
+            userMessage = 'Format de données invalide. Vérifiez les valeurs sélectionnées.';
+          } else {
+            errorMessage = 'Requête invalide';
+            userMessage = 'Données invalides. Vérifiez les informations saisies.';
+          }
+          break;
+        case 401:
+          errorMessage = 'Non autorisé';
+          userMessage = 'Vous devez vous reconnecter.';
+          break;
+        case 403:
+          errorMessage = 'Accès interdit (probablement CSRF token)';
+          userMessage = 'Accès interdit. Rechargez la page et réessayez.';
+          break;
+        case 404:
+          errorMessage = 'Ressource non trouvée';
+          userMessage = 'Élément non trouvé.';
+          break;
+        case 409:
+          errorMessage = 'Conflit de données';
+          userMessage = 'Conflit détecté. Rechargez et réessayez.';
+          break;
+        case 500:
+          errorMessage = 'Erreur serveur interne';
+          userMessage = 'Erreur serveur. Contactez le support technique.';
+          break;
+        default:
+          errorMessage = `Erreur HTTP ${error.status}: ${error.message}`;
+          userMessage = 'Erreur inattendue. Réessayez plus tard.';
+      }
+    }
+
+    console.groupEnd();
+
+    return throwError(() => ({
+      originalError: error,
+      message: errorMessage,
+      userMessage: userMessage,
+      status: error.status,
+      context: context
+    }));
+  };
+
+  getAllTaches(): Observable<Tache[]> {
+    return this.http.get<Tache[]>(`${this.apiUrl}/all`, this.getHttpOptions())
+      .pipe(
+        timeout(this.timeout_duration),
+        retry(2),
+        map(taches => taches.map(t => this.processTaskFromServer(t))),
+        tap(taches => {
+          this.tachesSubject.next(taches);
+          taches.forEach(tache => this.updateCache(tache));
+        }),
+        catchError((error) => this.handleError(error, 'getAllTaches'))
+      );
+  }
+
+  getTacheById(id: number): Observable<Tache | null> {
+    if (this.isCacheValid(id)) {
+      const cachedTache = this.tacheCache.get(id);
+      if (cachedTache) return of(cachedTache);
+    }
+
+    return this.http.get<Tache>(`${this.apiUrl}/${id}`, this.getHttpOptions())
+      .pipe(
+        timeout(this.timeout_duration),
+        retry(2),
+        map(tache => this.processTaskFromServer(tache)),
+        tap(tache => { if (tache) this.updateCache(tache); }),
+        catchError((error) => error.status === 404 ? of(null) : this.handleError(error, 'getTacheById'))
+      );
+  }
+
+  getTachesByProjetId(projetId: number): Observable<Tache[]> {
+    const params = new HttpParams().set('projetId', projetId.toString());
+    return this.http.get<Tache[]>(`${this.apiUrl}/projet/${projetId}`, { ...this.getHttpOptions(), params })
+      .pipe(
+        timeout(this.timeout_duration),
+        retry(2),
+        map(taches => taches.map(t => this.processTaskFromServer(t))),
+        catchError((error) => this.handleError(error, 'getTachesByProjetId'))
+      );
+  }
+
+  addTache(tache: Tache): Observable<Tache> {
+    const payload = this.prepareDatesForBackend(tache);
+    return this.http.post<Tache>(`${this.apiUrl}/create`, payload, this.getHttpOptions())
+      .pipe(
+        timeout(this.timeout_duration),
+        retry(1),
+        map(created => this.processTaskFromServer(created)),
+        tap(created => { this.updateCache(created); this.refreshTachesList(); }),
+        catchError((error) => this.handleError(error, 'addTache'))
+      );
+  }
+
+  updateTache(tache: Tache): Observable<Tache> {
+    if (!tache.idTache) return throwError(() => new Error('ID de tâche manquant'));
+    const payload = this.prepareDatesForBackend(tache);
+    return this.http.put<Tache>(`${this.apiUrl}/update/${tache.idTache}`, payload, this.getHttpOptions())
+      .pipe(
+        timeout(this.timeout_duration),
+        retry(1),
+        map(updated => this.processTaskFromServer(updated)),
+        tap(updated => { this.updateCache(updated); this.refreshTachesList(); }),
+        catchError((error) => this.handleError(error, 'updateTache'))
+      );
+  }
+
+  partialUpdateTache(id: number, updates: TacheUpdatePayload): Observable<Tache> {
+    const payload = this.prepareDatesForBackend(updates);
+    return this.http.patch<Tache>(`${this.apiUrl}/partialUpdate/${id}`, payload, this.getHttpOptions())
+      .pipe(
+        timeout(this.timeout_duration),
+        retry(1),
+        map(updated => this.processTaskFromServer(updated)),
+        tap(updated => { this.updateCache(updated); this.refreshTachesList(); }),
+        catchError((error) => this.handleError(error, 'partialUpdateTache'))
+      );
+  }
+
+  updateTacheDates(id: number, dateDebut: string | null, dateFin: string | null): Observable<Tache> {
+    const payload = {
+      dateDebut: dateDebut,
+      dateFin: dateFin
+    };
+
+    const url = `${this.apiUrl}/dates/update/${id}`;
+    console.log('=== SERVICE - REQUÊTE HTTP ===');
+    console.log('URL appelée:', url);
+    console.log('Payload envoyé:', payload);
+
+    return this.http.post<Tache>(url, payload,this.getHttpOptions()).pipe(
+      tap(response => {
+        console.log('=== SERVICE - RÉPONSE REÇUE ===');
+        console.log('Réponse:', response);
+      }),
+      catchError(error => {
+        console.error('=== SERVICE - ERREUR ===');
+        console.error('Erreur HTTP:', error);
+        console.error('Statut:', error.status);
+        console.error('URL qui a échoué:', url);
+        throw error;
+      })
+    );
+  }
+
+  deleteTache(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/delete/${id}`, this.getHttpOptions())
+      .pipe(
+        timeout(this.timeout_duration),
+        retry(1),
+        tap(() => {
+          this.clearCacheTask(id);
+          this.refreshTachesList();
+        }),
+        catchError((error) => this.handleError(error, 'deleteTache'))
+      );
+  }
+
+  // ========== SPECIFIC UPDATE METHODS ==========
+
+  /**
+   * Update task priority
+   */
+  updateTachePriority(id: number, priorite: PrioriteTache): Observable<Tache> {
+    return this.partialUpdateTache(id, { priorite });
+  }
+
+  /**
+   * Update task status
+   */
+  updateTacheStatus(id: number, statut: StatutTache): Observable<Tache> {
+    return this.partialUpdateTache(id, { statut });
+  }
+
+  /**
+   * Update task description
+   */
+  updateDescription(id: number, description: string): Observable<Tache> {
+    return this.partialUpdateTache(id, { descriptionTache: description });
+  }
+
+
+  /**
+   * Update task cover color
+   */
+  updateCoverColor(id: number, color: string): Observable<Tache> {
+    return this.partialUpdateTache(id, { coverColor: color, labels: [color] });
+  }
+
+  /**
+   * Update task members
+   */
+  updateTacheMembers(id: number, members: string[]): Observable<Tache> {
+    return this.partialUpdateTache(id, { members });
+  }
+
+  /**
+   * Update task title
+   */
+  updateTacheTitle(id: number, titre: string): Observable<Tache> {
+    return this.partialUpdateTache(id, { titreTache: titre });
+  }
+
+  // ========== ATTACHMENT METHODS ==========
+
+  /**
+   * Add attachment to task
+   */
+  addAttachment(id: number, attachment: PieceJointe): Observable<Tache> {
+    return this.http.post<Tache>(
+      `${this.apiUrl}/attachments/add/${id}`,
+      attachment,
+      this.getHttpOptions()
+    ).pipe(
+      catchError((error: HttpErrorResponse) => {
+        // Handle empty response case
+        if (error.status === 200 && error.error instanceof ProgressEvent) {
+          return throwError(() => ({
+            message: 'Empty response from server',
+            userMessage: 'The server returned an empty response'
+          }));
+        }
+        return this.handleError(error, 'addAttachment');
+      })
+    );
+  }
+  uploadFile(tacheId: number, file: File): Observable<{ success: boolean; filePath?: string; pieceJointe?: PieceJointe; message?: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const token = localStorage.getItem('jwtToken');
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.post<{
+      success: boolean;
+      filePath: string;
+      pieceJointe: PieceJointe;
+      message?: string;
+    }>(`${this.apiUrl}/files/upload/${tacheId}`, formData, {
+      headers: headers,
+      withCredentials: true
+    }).pipe(
+      timeout(this.timeout_duration),
+      retry(1),
+      catchError((error) => {
+        console.error('File upload error:', error);
+        return of({
+          success: false,
+          message: error.error?.message || 'Failed to upload file'
+        });
+      })
+    );
+  }
+
+
+  removeAttachmentAndRefresh(tacheId: number, pieceJointeId: number): Observable<Tache> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/remove/${tacheId}/${pieceJointeId}`,
+      {
+        ...this.getHttpOptions(),
+        withCredentials: true
+      }
+    ).pipe(
+      timeout(this.timeout_duration),
+      retry(1),
+      switchMap(() => this.getTacheById(tacheId)),
+      filter((tache): tache is Tache => tache !== null),
+      tap(tache => {
+        this.updateCache(tache);
+      }),
+      catchError((error) => this.handleError(error, 'removeAttachment'))
+    );
+  }
+
+
+
+  /**
+   * Add subtask to task
+   */
+  addSousTache(tacheId: number, sousTache: sousTache): Observable<Tache> {
+    return this.http.post<Tache>(`${this.apiUrl}/${tacheId}/subtasks`,
+      sousTache, this.getHttpOptions())
+      .pipe(
+        timeout(this.timeout_duration),
+        retry(1),
+        map(updatedTache => this.processTaskFromServer(updatedTache)),
+        tap(updatedTache => {
+          this.updateCache(updatedTache);
+        }),
+        catchError((error) => this.handleError(error, 'addSousTache'))
+      );
+  }
+
+  /**
+   * Update subtask
+   */
+  updateSousTache(tacheId: number, sousTache: sousTache): Observable<Tache> {
+    return this.http.put<Tache>(`${this.apiUrl}/${tacheId}/subtasks/${sousTache.idSousTache}`,
+      sousTache, this.getHttpOptions())
+      .pipe(
+        timeout(this.timeout_duration),
+        retry(1),
+        map(updatedTache => this.processTaskFromServer(updatedTache)),
+        tap(updatedTache => {
+          this.updateCache(updatedTache);
+        }),
+        catchError((error) => this.handleError(error, 'updateSousTache'))
+      );
+  }
+
+  /**
+   * Delete subtask
+   */
+  deleteSousTache(tacheId: number, sousTacheId: number): Observable<Tache> {
+    return this.http.delete<Tache>(`${this.apiUrl}/${tacheId}/subtasks/${sousTacheId}`,
+      this.getHttpOptions())
+      .pipe(
+        timeout(this.timeout_duration),
+        retry(1),
+        map(updatedTache => this.processTaskFromServer(updatedTache)),
+        tap(updatedTache => {
+          this.updateCache(updatedTache);
+        }),
+        catchError((error) => this.handleError(error, 'deleteSousTache'))
+      );
+  }
+
+  // ========== UTILITY METHODS ==========
+
+  /**
+   * Process task data received from server
+   */
+  private processTaskFromServer(tache: any): Tache {
     return {
       ...tache,
+      priorite: this.normalizePriority(tache.priorite),
+      statut: this.normalizeStatus(tache.statut),
       dateDebut: tache.dateDebut ? new Date(tache.dateDebut) : null,
       dateFin: tache.dateFin ? new Date(tache.dateFin) : null,
-      //lastUpdated: tache.lastUpdated ? new Date(tache.lastUpdated) : null,
-      //lastSynced: tache.lastSynced ? new Date(tache.lastSynced) : null
+      members: tache.members || (tache.assigneA ? [tache.assigneA] : []),
+      checklist: tache.checklist || [],
+      labels: tache.labels || [tache.coverColor || 'white'],
+      piecesJointes: tache.piecesJointes || [],
+      sousTaches: tache.sousTaches || []
     };
   }
 
-  // Sauvegarde dans le localStorage
-  private saveToLocalStorage(): void {
-    try {
-      const cacheObject: Record<number, Tache> = {};
-      this.tachesCache.forEach((value, key) => {
-        cacheObject[key] = value;
-      });
-      localStorage.setItem('tachesCache', JSON.stringify(cacheObject));
-    } catch (e) {
-      console.warn('Erreur lors de la sauvegarde locale:', e);
+  /**
+   * Refresh the tasks list
+   */
+  private refreshTachesList(): void {
+    // Only refresh if we have active subscribers
+    if (this.tachesSubject.observers.length > 0) {
+      this.getAllTaches().subscribe();
     }
   }
 
-  // Rafraîchir toutes les tâches depuis le serveur
-  refreshAllTaches(): Observable<Tache[]> {
-    return this.http.get<Tache[]>(`${this.apiUrl}/all`).pipe(
-      tap(taches => {
-        taches.forEach(tache => {
-          const parsedTache = this.parseTacheDates(tache);
-          this.tachesCache.set(parsedTache.idTache!, {
-            ...parsedTache,
-            lastSynced: new Date()
-          });
-        });
-        this.tachesSubject.next(Array.from(this.tachesCache.values()));
-        this.saveToLocalStorage();
-      }),
-      catchError(error => {
-        console.error('Erreur lors du rafraîchissement:', error);
-        return of(Array.from(this.tachesCache.values()));
-      })
-    );
+  /**
+   * Clear all caches
+   */
+  clearCache(): void {
+    this.tacheCache.clear();
+    this.cacheExpiry.clear();
   }
 
-  // Obtenir toutes les tâches
-  getAllTaches(forceRefresh = false): Observable<Tache[]> {
-    if (forceRefresh || this.tachesCache.size === 0) {
-      return this.refreshAllTaches();
-    }
-    return of(Array.from(this.tachesCache.values()));
-  }
-
-  // Obtenir une tâche par ID
-  getTacheById(id: number): Observable<Tache> {
-    if (this.tachesCache.has(id)) {
-      const cachedTache = this.tachesCache.get(id)!;
-      if (this.isCacheRecent(cachedTache)) {
-        return of(cachedTache);
-      }
-    }
-
-    return this.http.get<Tache>(`${this.apiUrl}/${id}`).pipe(
-      tap(tache => {
-        const parsedTache = this.parseTacheDates(tache);
-        this.tachesCache.set(id, {
-          ...parsedTache,
-          lastSynced: new Date()
-        });
-        this.saveToLocalStorage();
-      }),
-      catchError(error => {
-        console.error(`Erreur lors de la récupération de la tâche ${id}:`, error);
-        if (this.tachesCache.has(id)) {
-          return of(this.tachesCache.get(id)!);
-        }
-        throw error;
-      })
-    );
-  }
-
-  // Ajouter une nouvelle tâche
-  addTache(tache: Tache): Observable<Tache> {
-    return this.http.post<Tache>(`${this.apiUrl}/add`, tache).pipe(
-      tap(newTache => {
-        const parsedTache = this.parseTacheDates(newTache);
-        this.tachesCache.set(parsedTache.idTache!, {
-          ...parsedTache,
-          lastSynced: new Date(),
-          lastUpdated: new Date()
-        });
-        this.tachesSubject.next(Array.from(this.tachesCache.values()));
-        this.saveToLocalStorage();
-      }),
-      catchError(error => {
-        console.error('Erreur lors de l\'ajout:', error);
-        throw error;
-      })
-    );
-  }
-
-  // Mettre à jour une tâche existante
-  updateTache(tache: Tache): Observable<Tache> {
-    if (!tache.idTache) {
-      return this.addTache(tache);
-    }
-
-    if (this.savingInProgress.get(tache.idTache)) {
-      return of(tache);
-    }
-
-    this.savingInProgress.set(tache.idTache, true);
-
-    const updatedTache = {
-      ...tache,
-      lastUpdated: new Date(),
-      pendingChanges: true
+  /**
+   * Get cached task count (for debugging)
+   */
+  getCacheInfo(): { size: number, entries: number[] } {
+    return {
+      size: this.tacheCache.size,
+      entries: Array.from(this.tacheCache.keys())
     };
-
-    this.tachesCache.set(tache.idTache, updatedTache);
-    this.tachesSubject.next(Array.from(this.tachesCache.values()));
-    this.saveToLocalStorage();
-
-    return this.http.put<Tache>(`${this.apiUrl}/${tache.idTache}`, updatedTache).pipe(
-      tap(serverTache => {
-        const parsedTache = this.parseTacheDates(serverTache);
-        this.tachesCache.set(tache.idTache!, {
-          ...parsedTache,
-          lastSynced: new Date(),
-          pendingChanges: false
-        });
-        this.tachesSubject.next(Array.from(this.tachesCache.values()));
-        this.saveToLocalStorage();
-      }),
-      catchError(error => {
-        console.error(`Erreur lors de la mise à jour de la tâche ${tache.idTache}:`, error);
-        const currentTache = this.tachesCache.get(tache.idTache!);
-        if (currentTache) {
-          this.tachesCache.set(tache.idTache!, {
-            ...currentTache,
-            pendingChanges: true
-          });
-          this.saveToLocalStorage();
-        }
-        throw error;
-      }),
-      finalize(() => {
-        this.savingInProgress.set(tache.idTache!, false);
-      })
-    );
-
   }
 
-  // Supprimer une tâche
-  deleteTache(id: number | undefined): Observable<void> {
-    if (!id) {
-      return of(void 0);
-    }
-
-    if (this.tachesCache.has(id)) {
-      this.tachesCache.delete(id);
-      this.tachesSubject.next(Array.from(this.tachesCache.values()));
-      this.saveToLocalStorage();
-    }
-
-    return this.http.delete<void>(`${this.apiUrl}/delete/${id}`).pipe(
-      catchError(error => {
-        console.error(`Erreur lors de la suppression de la tâche ${id}:`, error);
-        throw error;
-      })
-    );
+  /**
+   * Force refresh all data
+   */
+  forceRefresh(): Observable<Tache[]> {
+    this.clearCache();
+    return this.getAllTaches();
   }
 
-  // Méthodes spécifiques
-  updateCoverColor(tacheId: number, color: string): Observable<Tache> {
-    return this.http.patch<Tache>(`${this.apiUrl}/${tacheId}/cover`, { color }).pipe(
-      tap(updatedTache => {
-        // Ensure this updates the BehaviorSubject
-        this.tachesCache.set(tacheId, updatedTache);
-        this.tachesSubject.next(Array.from(this.tachesCache.values()));
-      })
-    );
+  // ========== SEARCH AND FILTER METHODS ==========
+
+  /**
+   * Search tasks by title or description
+   */
+  searchTaches(query: string): Observable<Tache[]> {
+    const params = new HttpParams().set('search', query);
+
+    return this.http.get<Tache[]>(`${this.apiUrl}/search`,
+      { ...this.getHttpOptions(), params })
+      .pipe(
+        timeout(this.timeout_duration),
+        map(taches => taches.map(t => this.processTaskFromServer(t))),
+        catchError((error) => this.handleError(error, 'searchTaches'))
+      );
   }
 
-  updateTacheStatus(tacheId: number, statut: StatutTache): Observable<Tache> {
-    return this.updateTacheProperty(tacheId, 'statut', statut);
+  /**
+   * Filter tasks by status
+   */
+  getTachesByStatus(statut: StatutTache): Observable<Tache[]> {
+    const params = new HttpParams().set('statut', statut);
+
+    return this.http.get<Tache[]>(`${this.apiUrl}/filter`,
+      { ...this.getHttpOptions(), params })
+      .pipe(
+        timeout(this.timeout_duration),
+        map(taches => taches.map(t => this.processTaskFromServer(t))),
+        catchError((error) => this.handleError(error, 'getTachesByStatus'))
+      );
   }
 
-  updateTachePriority(tacheId: number, priorite: PrioriteTache): Observable<Tache> {
-    return this.updateTacheProperty(tacheId, 'priorite', priorite);
+  /**
+   * Filter tasks by priority
+   */
+  getTachesByPriority(priorite: PrioriteTache): Observable<Tache[]> {
+    const params = new HttpParams().set('priorite', priorite || '');
+
+    return this.http.get<Tache[]>(`${this.apiUrl}/filter`,
+      { ...this.getHttpOptions(), params })
+      .pipe(
+        timeout(this.timeout_duration),
+        map(taches => taches.map(t => this.processTaskFromServer(t))),
+        catchError((error) => this.handleError(error, 'getTachesByPriority'))
+      );
   }
 
-  updateTacheDates(tacheId: number, dateDebut: Date | null, dateFin: Date | null): Observable<Tache> {
-    return this.updateTacheProperty(tacheId, 'dateDebut', dateDebut).pipe(
-      switchMap(tache => this.updateTacheProperty(tacheId, 'dateFin', dateFin))
-    );
+  // ========== BULK OPERATIONS ==========
+
+  /**
+   * Update multiple tasks at once
+   */
+  bulkUpdateTaches(updates: { id: number, updates: TacheUpdatePayload }[]): Observable<Tache[]> {
+    return this.http.patch<Tache[]>(`${this.apiUrl}/bulk-update`,
+      updates, this.getHttpOptions())
+      .pipe(
+        timeout(this.timeout_duration),
+        retry(1),
+        map(taches => taches.map(t => this.processTaskFromServer(t))),
+        tap(taches => {
+          taches.forEach(tache => this.updateCache(tache));
+          this.refreshTachesList();
+        }),
+        catchError((error) => this.handleError(error, 'bulkUpdateTaches'))
+      );
   }
 
-  addAttachment(tacheId: number, attachment: PieceJointe): Observable<Tache> {
-    if (this.tachesCache.has(tacheId)) {
-      const tache = this.tachesCache.get(tacheId)!;
-      const piecesJointes = [...(tache.piecesJointes || [])];
-      piecesJointes.push(attachment);
-
-      return this.updateTache({
-        ...tache,
-        piecesJointes
-      });
-    }
-
-    return this.http.post<Tache>(`${this.apiUrl}/${tacheId}/attachments`, attachment).pipe(
-      tap(updatedTache => {
-        const parsedTache = this.parseTacheDates(updatedTache);
-        this.tachesCache.set(tacheId, {
-          ...parsedTache,
-          lastSynced: new Date()
-        });
-        this.tachesSubject.next(Array.from(this.tachesCache.values()));
-        this.saveToLocalStorage();
-      })
-    );
-  }
-
-  removeAttachment(tacheId: number, attachmentIndex: number): Observable<Tache> {
-    if (this.tachesCache.has(tacheId)) {
-      const tache = this.tachesCache.get(tacheId)!;
-      if (!tache.piecesJointes || attachmentIndex >= tache.piecesJointes.length) {
-        return of(tache);
-      }
-
-      const piecesJointes = [...tache.piecesJointes];
-      piecesJointes.splice(attachmentIndex, 1);
-
-      return this.updateTache({
-        ...tache,
-        piecesJointes
-      });
-    }
-
-    return this.http.delete<Tache>(`${this.apiUrl}/${tacheId}/attachments/${attachmentIndex}`).pipe(
-      tap(updatedTache => {
-        const parsedTache = this.parseTacheDates(updatedTache);
-        this.tachesCache.set(tacheId, {
-          ...parsedTache,
-          lastSynced: new Date()
-        });
-        this.tachesSubject.next(Array.from(this.tachesCache.values()));
-        this.saveToLocalStorage();
-      })
-    );
-  }
-
-  updateDescription(tacheId: number, description: string): Observable<Tache> {
-    return this.updateTacheProperty(tacheId, 'descriptionTache', description);
-  }
-
-  // Méthodes utilitaires
-  private updateTacheProperty<K extends keyof Tache>(
-    tacheId: number,
-    property: K,
-    value: Tache[K]
-  ): Observable<Tache> {
-    if (this.tachesCache.has(tacheId)) {
-      const tache = { ...this.tachesCache.get(tacheId)! };
-      tache[property] = value;
-      return this.updateTache(tache);
-    }
-
-    return this.http.patch<Tache>(`${this.apiUrl}/${tacheId}`, { [property]: value }).pipe(
-      tap(updatedTache => {
-        const parsedTache = this.parseTacheDates(updatedTache);
-        this.tachesCache.set(tacheId, {
-          ...parsedTache,
-          lastSynced: new Date()
-        });
-        this.tachesSubject.next(Array.from(this.tachesCache.values()));
-        this.saveToLocalStorage();
-      })
-    );
-  }
-
-  private isCacheRecent(tache: Tache): boolean {
-    if (!tache.lastSynced) return false;
-    const diffInMinutes = (new Date().getTime() - new Date(tache.lastSynced).getTime()) / (1000 * 60);
-    return diffInMinutes < 5;
-  }
-
-  syncPendingChanges(): void {
-    this.tachesCache.forEach((tache, id) => {
-      if (tache.pendingChanges) {
-        this.updateTache(tache).subscribe();
-      }
-    });
+  /**
+   * Delete multiple tasks at once
+   */
+  bulkDeleteTaches(ids: number[]): Observable<void> {
+    return this.http.request<void>('DELETE', `${this.apiUrl}/bulk-delete`,
+      { ...this.getHttpOptions(), body: { ids } })
+      .pipe(
+        timeout(this.timeout_duration),
+        retry(1),
+        tap(() => {
+          ids.forEach(id => this.clearCacheTask(id));
+          this.refreshTachesList();
+        }),
+        catchError((error) => this.handleError(error, 'bulkDeleteTaches'))
+      );
   }
 }

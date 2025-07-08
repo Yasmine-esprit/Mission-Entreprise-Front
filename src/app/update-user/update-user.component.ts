@@ -8,60 +8,84 @@ import { UserService } from '../service/user.service';
   styleUrls: ['./update-user.component.css']
 })
 export class UpdateUserComponent implements OnInit {
-  userId : any;
-  user : any;
+  userId: any;
+  user: any = {};
+
+  // Champs modifiables liés au formulaire
   firstname = '';
   lastname = '';
   email = '';
   password = '';
- 
+  confirmPassword = '';
   message = '';
-  error = '';
   errorMessage = '';
-  constructor(private route : ActivatedRoute,
-              private userService : UserService,
-               private router: Router
-  ){}
 
-  ngOnInit(): void {
-    this.userId = this.route.snapshot.params['id']
-    console.log(this.userId)
-    this.userService.getUserById(this.userId).subscribe(
-      response=>{
-        this.user = response
+  constructor(
+    private route: ActivatedRoute,
+    private userService: UserService,
+    private router: Router
+  ) {}
 
-      },
-      error=>{
-        console.log(error)
-        this.errorMessage = 'Failed to load user';
-      }
-    )
-    
-  }
+ngOnInit(): void {
+  this.userId = this.route.snapshot.params['id'];
+  this.userService.getUserById(this.userId).subscribe(
+    response => {
+      this.user = response;
+      this.firstname = this.user.prenomUser;
+      this.lastname = this.user.nomUser;
+      this.email = this.user.emailUser;
+      // tu peux initialiser password / confirmPassword à '' par défaut
+      this.password = '';
+      this.confirmPassword = '';
+    },
+    error => {
+      console.log(error);
+      this.errorMessage = 'Failed to load user';
+    }
+  );
+}
+
+
+
 
  onUpdate(): void {
-    const updatedUser = {
-      ...this.user,
-      passwordUser: this.password // if password is handled separately
-    };
+  const updatedUser: any = {};
 
-    console.log(updatedUser)
-    this.userService.UpdateUser(this.userId, updatedUser).subscribe({
-      next: (res) => {
-        this.message = 'User updated successfully';
-        this.errorMessage = '';
-        console.log(res);
-        // Optional redirect
-        setTimeout(() => {
-          this.router.navigate(['/home']);
-        }, 1000);
-      },
-      error: (err) => {
-        console.error(err);
-        this.message = '';
-        this.errorMessage = 'Update failed. Please try again.';
-      }
-    });
+  if (this.firstname && this.firstname !== this.user.prenomUser) {
+
+    updatedUser.prenomUser = this.firstname;
+    
   }
+  if (this.lastname && this.lastname !== this.user.nomUser) {
+    updatedUser.nomUser = this.lastname;
+  }
+  if (this.email && this.email !== this.user.emailUser) {
+    updatedUser.emailUser = this.email;
+  }
+   console.log('Updating user with:', updatedUser);
+  // Le mot de passe n'existe pas dans UserDTO, à gérer à part si besoin
+
+  if (Object.keys(updatedUser).length === 0) {
+    this.message = 'No changes to update';
+    this.errorMessage = '';
+    return;
+  }
+
+ 
+
+  this.userService.UpdateUser(this.userId, updatedUser).subscribe({
+    next: res => {
+      this.message = 'User updated successfully';
+      this.errorMessage = '';
+      console.log(res);
+    
+    },
+    error: err => {
+      console.error(err);
+      this.message = '';
+      this.errorMessage = 'Update failed. Please try again.';
+    }
+  });
+}
 
 }

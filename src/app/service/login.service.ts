@@ -4,6 +4,7 @@ import { AuthenticationResponse } from '../models/authentication-response';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http'
 import { jwtDecode } from 'jwt-decode';
+import {tap} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -18,8 +19,33 @@ export class LoginService {
     return this.http.post<AuthenticationResponse>(this.apiUrl, request);
   }
 
+  private validateToken(token: string | null): boolean {
+    if (!token) return false;
+
+    try {
+      const parts = token.split('.');
+      const isValid = parts.length === 3 &&
+        parts[0].length > 0 &&
+        parts[1].length > 0 &&
+        parts[2].length > 0;
+
+      if (!isValid) {
+        console.error('Invalid JWT format - incorrect segment structure');
+      }
+      return isValid;
+    } catch (error) {
+      console.error('Token validation error:', error);
+      return false;
+    }
+  }
+
   storeToken(token: string): void {
-    localStorage.setItem('jwtToken', token);
+    if (this.validateToken(token)) {
+      localStorage.setItem('jwtToken', token);
+    } else {
+      console.error('Attempted to store invalid JWT token');
+      throw new Error('Invalid JWT token format');
+    }
   }
 
   getToken(): string | null {
@@ -35,7 +61,7 @@ export class LoginService {
   getUserRole(): string | null {
     const token = localStorage.getItem('jwtToken');
     if (!token) return null;
-  
+
     try {
       const decoded: any = jwtDecode(token);
       console.log(decoded)
@@ -47,15 +73,15 @@ export class LoginService {
 
   sendResetLink(payload: any): Observable<any> {
     return this.http.post('http://localhost:8081/auth/forget', payload, {
-      responseType: 'text' 
+      responseType: 'text'
     });
   }
 
   enableUser(email: string): Observable<string> {
     return this.http.put(`http://localhost:8081/auth/enable/${email}`, {}, { responseType: 'text' });
   }
-  
-  
+
+
 
   resetPassword(token: string, newPassword: string) {
     const resetPasswordRequest = {
@@ -63,7 +89,7 @@ export class LoginService {
     };
     console.log("inside service token ", token , "pass " ,resetPasswordRequest )
     return this.http.post(`http://localhost:8081/auth/reset-password/${token}`, resetPasswordRequest, {
-      responseType: 'text' 
+      responseType: 'text'
     });
   }
 
@@ -71,7 +97,7 @@ export class LoginService {
   verify2FA(twoFactorRequest: any): Observable<any> {
     return this.http.post<any>("http://localhost:8081/auth/verify-2fa", twoFactorRequest);
   }
-  
-  
-  
+
+
+
 }
