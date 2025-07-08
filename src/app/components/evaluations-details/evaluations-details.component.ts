@@ -19,7 +19,7 @@ export class EvaluationsDetailsComponent {
   ];
 
   goToNewEvaluation() {
-    this.router.navigate(['/new-evaluation']);
+    this.router.navigate(['/createEvaluation']);
   }
 
   viewEvaluation(evaluation: any) {

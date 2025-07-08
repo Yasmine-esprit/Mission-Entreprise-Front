@@ -19,7 +19,6 @@ import { EvaluationComponent } from './components/evaluation/evaluation.componen
 import { CritereComponent } from './components/critere/critere.component';
 import { EvaluationsDetailsComponent } from './components/evaluations-details/evaluations-details.component';
 import { CreateCritereComponent } from './components/create-critere/create-critere.component';
-
 import { QrCodeComponent } from './qr-code/qr-code.component';
 
 
@@ -34,8 +33,7 @@ const routes: Routes = [
   { path: 'registerUser', component: RegisterComponent }, //,canActivate:[authOnlyGuardGuard]
   {path: 'reset-password',component: ResetPassComponent},
   { path: 'kanban', component: KanbanBoardComponent }, //j'ajoute prochainement canActivate: [authOnlyGuardGuard],
-  { path: 'tache/:id', component: TacheComponent }, //j'ajoute prochainement canActivate: [authOnlyGuardGuard],
-  { path: 'registerUser', component: RegisterComponent }, 
+  { path: 'task/:id', component: TacheComponent }, //j'ajoute prochainement canActivate: [authOnlyGuardGuard],
   { path: 'discussion' , component: DiscussionComponent },
   { path: 'admin', component: AdminComponent },
   { path: 'updateUser/:id', component: UpdateUserComponent },
@@ -48,6 +46,7 @@ const routes: Routes = [
   {path: 'evalDetails', component:EvaluationsDetailsComponent},
   {path: 'createCritere', component:CreateCritereComponent},
   {path: 'qrCode', component:QrCodeComponent},
+  {path: 'createEvaluation', component:CreateCritereComponent}
 
 ];
 

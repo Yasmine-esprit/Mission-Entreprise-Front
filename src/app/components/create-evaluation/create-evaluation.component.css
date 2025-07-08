@@ -1,0 +1,104 @@
+.container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+}
+
+h4, h5 {
+  font-weight: 600;
+}
+
+label {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.form-control,
+.form-select {
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+textarea.form-control {
+  min-height: 100px;
+}
+
+.toggle {
+  display: flex;
+  margin-top: 2rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+}
+
+.toggle button {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.toggle button.active {
+  background: #007bff;
+  color: white;
+}
+
+.row.g-3 > .col-md-4 {
+  margin-bottom: 1rem;
+}
+
+.table-responsive {
+  margin-top: 1rem;
+}
+
+.table {
+  border: 1px solid #dee2e6;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+  text-align: center;
+  padding: 0.75rem;
+}
+
+.table thead th {
+  background-color: #f9f9f9;
+  font-weight: 600;
+}
+
+input[type="number"] {
+  max-width: 80px;
+  margin: 0 auto;
+}
+
+input[type="text"]::placeholder {
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
+.text-end {
+  text-align: right;
+}
+
+button.btn-success {
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+}

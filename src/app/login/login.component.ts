@@ -17,17 +17,19 @@ export class LoginComponent {
   is2FAVerificationNeeded = false;
   twoFACode = '';  // Store the 2FA code entered by the user
 
-  constructor(private authService: LoginService, 
+  constructor(private authService: LoginService,
     private router: Router,   private userService: UserService ) {}
 
  onLogin(): void {
-  const request: AuthenticationRequest = {
+    const request: AuthenticationRequest = {
     email: this.email,
     password: this.password
   };
+    console.log(request);
 
   this.authService.login(request).subscribe({
     next: (response: any) => {
+      console.log((response.token));
       if (response.token) {
         this.authService.storeToken(response.token);
         console.log('Login successful');
