@@ -1,0 +1,44 @@
+<div class="post-detail-container" *ngIf="post">
+  <div class="post-detail-card">
+    <div class="post-detail-header">
+      <div class="post-detail-title-row">
+        <span class="post-detail-title">{{ post.title }}</span>
+        <span class="post-detail-likes">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path fill="#64748b" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          {{ post.likes }}
+        </span>
+      </div>
+      <div class="post-detail-user-row">
+        <span class="post-detail-avatar">{{ post.user.avatar }}</span>
+        <span class="post-detail-username">{{ post.user.name }}</span>
+        <span class="post-detail-time">• {{ post.time }}</span>
+      </div>
+      <div class="post-detail-tags">
+        <span class="post-detail-tag" *ngFor="let tag of post.tags">{{ tag }}</span>
+      </div>
+    </div>
+    <div class="post-detail-content">
+      <pre>{{ post.content }}</pre>
+      <div class="post-detail-photos" *ngIf="post.photos && post.photos.length">
+        <img *ngFor="let photo of post.photos" [src]="photo" class="post-detail-photo" />
+      </div>
+    </div>
+  </div>
+
+  <div class="post-detail-comments">
+    <h3>Comments ({{ comments.length }})</h3>
+    <div class="post-detail-comment-card" *ngFor="let comment of comments">
+      <div class="post-detail-comment-header">
+        <span class="post-detail-comment-avatar">{{ comment.authorName ? comment.authorName[0].toUpperCase() : '?' }}</span>
+        <span class="post-detail-comment-username">{{ comment.authorName || 'Unknown' }}</span>
+        <span class="post-detail-comment-time">• {{ comment.dateInteraction }}</span>
+        <button class="like-btn" (click)="likeComment(comment.idInteraction)" [disabled]="likedComments.has(comment.idInteraction)">👍 Like</button>
+      </div>
+      <div class="post-detail-comment-content">{{ comment.contenuInteraction }}</div>
+    </div>
+  </div>
+  <div class="add-comment-section">
+    <textarea [(ngModel)]="newCommentContent" placeholder="Write your comment..." rows="3"></textarea>
+    <button (click)="addComment()" [disabled]="!newCommentContent?.trim()">Add Comment</button>
+  </div>
+</div>

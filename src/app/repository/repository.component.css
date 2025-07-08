@@ -1,0 +1,366 @@
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 2rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.repo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.repo-card {
+  border: 1px solid #e1e4e8;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.repo-card h3 {
+  margin: 0;
+}
+
+.tag {
+  margin-left: 1rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 5px;
+  font-size: 0.75rem;
+}
+
+.public {
+  background-color: #e6f4ea;
+  color: #1a7f37;
+}
+
+.private {
+  background-color: #fbeaea;
+  color: #a61b1b;
+}
+
+.details {
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: 0.5rem;
+}
+
+.buttons {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.gitmanager-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px 0 32px;
+  background: #fff;
+}
+
+.logo-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.search-bar {
+  flex: 1;
+  margin: 0 32px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  font-size: 1rem;
+  background: #fafbfc;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.new-repo-btn, .close-btn {
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.close-btn {
+  background: #f5f5f5;
+  color: #222;
+  border: 1px solid #e0e0e0;
+}
+
+.repositories-section {
+  padding: 0 32px 32px 32px;
+}
+
+.repositories-section h2 {
+  margin-top: 32px;
+  margin-bottom: 0;
+  font-size: 2rem;
+}
+
+.repositories-section p {
+  color: #666;
+  margin-bottom: 18px;
+}
+
+.create-repo-btn {
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+  cursor: pointer;
+}
+
+.repo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.repo-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 28px 32px 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.repo-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.25rem;
+  margin: 0 0 4px 0;
+}
+
+.repo-name {
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tag {
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 2px 10px;
+  margin-left: 8px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.tag.public {
+  background: #f0f7ff;
+  color: #2563eb;
+  border: 1px solid #b6d4fe;
+}
+
+.tag.private {
+  background: #f5f5f5;
+  color: #222;
+  border: 1px solid #d1d5db;
+}
+
+.repo-desc {
+  color: #444;
+  margin: 0 0 8px 0;
+}
+
+.details {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  color: #666;
+  font-size: 0.98rem;
+}
+
+.lang {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot.ts {
+  background: #3178c6;
+}
+
+.dot.java {
+  background: #e76f00;
+}
+
+.dot.py {
+  background: #3572A5;
+}
+
+.updated {
+  font-size: 0.97rem;
+  color: #888;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.buttons button {
+  background: #f5f5f5;
+  color: #222;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.buttons button:hover {
+  background: #e0e7ef;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.18);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.12);
+  padding: 32px 36px 28px 36px;
+  min-width: 340px;
+  max-width: 95vw;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.modal h2 {
+  margin: 0 0 10px 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+.modal label {
+  font-weight: 500;
+  margin-bottom: 4px;
+  display: block;
+  color: #222;
+}
+.modal input[type="text"],
+.modal textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  font-size: 1rem;
+  margin-bottom: 12px;
+  background: #fafbfc;
+  resize: none;
+}
+.visibility-group {
+  margin-bottom: 10px;
+}
+.visibility-options {
+  display: flex;
+  gap: 18px;
+  margin-top: 6px;
+}
+.vis-radio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.vis-radio input[type="radio"] {
+  accent-color: #2563eb;
+  margin-right: 4px;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+}
+.cancel-btn {
+  background: #f5f5f5;
+  color: #222;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 7px 18px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.create-btn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 18px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.create-btn:hover {
+  background: #174bbd;
+}
+.cancel-btn:hover {
+  background: #e0e7ef;
+}
+
+.input-error {
+  color: #e53935;
+  font-size: 0.97rem;
+  margin-bottom: 8px;
+  margin-top: -8px;
+}

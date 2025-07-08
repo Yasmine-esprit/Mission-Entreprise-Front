@@ -29,6 +29,9 @@ import {AddUsersComponent} from "./add-users/add-users.component";
 import {UpdateUserComponent} from "./update-user/update-user.component";
 import {AdminComponent} from "./admin/admin.component";
 import {DiscussionComponent} from "./discussion/discussion.component";
+import { RepositoryComponent } from './repository/repository.component';
+import { PostComponent } from './post/post.component';
+import { PostDetailComponent } from './post-detail/post-detail.component';
 
 
 registerLocaleData(localeFr);
@@ -58,7 +61,10 @@ registerLocaleData(localeFr);
     ChangePDFComponent,
     FileSizePipe,
     SousTacheComponent,
-    GroupeComponent
+    GroupeComponent,
+    RepositoryComponent,
+    PostComponent,
+    PostDetailComponent
 
 
   ],

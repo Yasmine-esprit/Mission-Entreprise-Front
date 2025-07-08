@@ -15,9 +15,9 @@ import { DiscussionComponent } from './discussion/discussion.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
 import { ChangepassComponent } from './changepass/changepass.component';
 import { ChangePDFComponent } from './change-pdf/change-pdf.component';
-
-
-
+import { RepositoryComponent } from './repository/repository.component';
+import { PostComponent } from './post/post.component';
+import { PostDetailComponent } from './post-detail/post-detail.component';
 
 
 const routes: Routes = [
@@ -36,7 +36,11 @@ const routes: Routes = [
   {path: 'reset-password',component: ResetPassComponent},
   {path: 'addUsers' , component:AddUsersComponent},
   {path: 'changePass', component: ChangepassComponent },
-  {path:'changePhoto', component: ChangePDFComponent}
+  {path:'changePhoto', component: ChangePDFComponent},
+  {path:'repo', component: RepositoryComponent},
+  {path:'repository', component: RepositoryComponent},
+  { path: 'post', component: PostComponent },
+  { path: 'post/:id', component: PostDetailComponent },
 
 ];
 

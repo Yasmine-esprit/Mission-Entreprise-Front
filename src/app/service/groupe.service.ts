@@ -30,4 +30,8 @@ export class GroupeService {
   getById(id: number): Observable<Groupe> {
     return this.http.get<Groupe>(`${this.baseUrl}/${id}`);
   }
+
+  createGroupe(request: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/create`, request);
+  }
 }
